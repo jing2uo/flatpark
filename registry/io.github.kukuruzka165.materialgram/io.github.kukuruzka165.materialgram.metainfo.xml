@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.kukuruzka165.materialgram</id>
+  <name>materialgram</name>
+  <summary>Telegram Desktop fork with Material Design and extra features</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <developer id="io.github.kukuruzka165">
+    <name>kukuruzka165</name>
+  </developer>
+  <url type="homepage">https://kukuruzka165.github.io/materialgram/</url>
+  <url type="bugtracker">https://github.com/kukuruzka165/materialgram/issues</url>
+  <description>
+    <p>This is a community package of materialgram and is not affiliated with or endorsed by its developer.</p>
+    <p>materialgram is a Telegram Desktop based messenger with Material Design and additional features.</p>
+  </description>
+  <screenshots>
+    <screenshot type="default">
+      <caption>materialgram</caption>
+      <image>https://github.com/kukuruzka165/materialgram/raw/main/docs/assets/preview.png</image>
+    </screenshot>
+  </screenshots>
+  <launchable type="desktop-id">io.github.kukuruzka165.materialgram.desktop</launchable>
+  <categories>
+    <category>Network</category>
+    <category>InstantMessaging</category>
+  </categories>
+  <keywords>
+    <keyword>tg</keyword>
+    <keyword>telegram</keyword>
+    <keyword>tdesktop</keyword>
+    <keyword>materialgram</keyword>
+    <keyword>messaging</keyword>
+    <keyword>messenger</keyword>
+    <keyword>chat</keyword>
+  </keywords>
+  <requires>
+    <internet>always</internet>
+    <control>keyboard</control>
+    <display_length compare="ge">480</display_length>
+  </requires>
+  <supports>
+    <control>pointing</control>
+    <control>touch</control>
+  </supports>
+  <content_rating type="oars-1.1">
+    <content_attribute id="social-chat">intense</content_attribute>
+    <content_attribute id="social-audio">intense</content_attribute>
+    <content_attribute id="social-contacts">intense</content_attribute>
+    <content_attribute id="money-purchasing">intense</content_attribute>
+    <content_attribute id="money-advertising">moderate</content_attribute>
+  </content_rating>
+  <provides>
+    <binary>materialgram</binary>
+    <mediatype>x-scheme-handler/tg</mediatype>
+    <mediatype>x-scheme-handler/tonsite</mediatype>
+  </provides>
+  <releases>
+    <release version="6.7.7.1" date="2026-04-22">
+      <description>
+        <ul>
+          <li>Better platform detection for photos and profile photos</li>
+          <li>Show mutual contacts in contacts box</li>
+          <li>Material Design 3 button ripple effect</li>
+          <li>Based on Telegram Desktop with AI text editor, enhanced polls and more</li>
+        </ul>
+      </description>
+    </release>
+    <release version="6.4.0.1" date="2026-01-04">
+      <description>
+        <ul>
+          <li>Enhance platform detection for photos</li>
+          <li>AI summaries for channel posts and new profile pages from upstream</li>
+        </ul>
+      </description>
+    </release>
+    <release version="6.2.3.1" date="2025-10-12">
+      <description>
+        <ul>
+          <li>Fix crash when opening chats on the Flatpak build</li>
+          <li>Assorted upstream crash fixes</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+</component>

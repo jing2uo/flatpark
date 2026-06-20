@@ -1,0 +1,21 @@
+id: io.github.kukuruzka165.materialgram
+name: materialgram
+summary: Telegram Desktop fork with Material Design and extra features
+website: https://kukuruzka165.github.io/materialgram/
+source_url: https://github.com/kukuruzka165/materialgram
+build:
+  manifest: io.github.kukuruzka165.materialgram.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Network
+  tags:
+    - Telegram
+    - Chat
+    - Messaging
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: false
+  extra_data_first: true
+  dangerous_permissions: []

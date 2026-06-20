@@ -1,0 +1,17 @@
+[Desktop Entry]
+Type=Application
+Name=materialgram
+Comment=Unofficial Telegram Desktop with Material Design
+TryExec=materialgram
+Exec=materialgram -- %u
+Icon=io.github.kukuruzka165.materialgram
+Terminal=false
+StartupWMClass=materialgram
+Categories=Chat;Network;InstantMessaging;Qt;
+MimeType=x-scheme-handler/tg;x-scheme-handler/tonsite;
+Keywords=tg;chat;im;messaging;messenger;sms;tdesktop;telegram;materialgram;
+Actions=quit;
+
+[Desktop Action quit]
+Exec=materialgram -quit
+Name=Quit materialgram

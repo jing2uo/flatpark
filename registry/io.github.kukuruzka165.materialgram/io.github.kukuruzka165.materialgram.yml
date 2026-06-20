@@ -1,0 +1,56 @@
+id: io.github.kukuruzka165.materialgram
+runtime: org.freedesktop.Platform
+runtime-version: "25.08"
+sdk: org.freedesktop.Sdk
+command: materialgram
+separate-locales: false
+build-options:
+  no-debuginfo: true
+finish-args:
+  # Telegram client: needs the network and display; audio for calls and
+  # notification sounds; dri for hardware-accelerated video. Kept to the
+  # tightest set that still works — no --filesystem=home.
+  - --share=ipc
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --socket=pulseaudio
+  - --device=dri
+  # Desktop integration: notifications, tray icon, idle/lock detection, and
+  # the app's own MPRIS name for media-key control of in-app audio/video.
+  - --talk-name=org.freedesktop.Notifications
+  - --talk-name=org.kde.StatusNotifierWatcher
+  - --talk-name=org.freedesktop.ScreenSaver
+  - --system-talk-name=org.freedesktop.login1
+  - --own-name=org.mpris.MediaPlayer2.materialgram.*
+  # Default save location for downloaded files (the app uses portals otherwise).
+  - --filesystem=xdg-download
+modules:
+  - name: materialgram
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 apply_extra.sh /app/bin/apply_extra
+      - install -Dm755 materialgram-wrapper /app/bin/materialgram
+      - install -Dm644 io.github.kukuruzka165.materialgram.desktop /app/share/applications/io.github.kukuruzka165.materialgram.desktop
+      - install -Dm644 io.github.kukuruzka165.materialgram.metainfo.xml /app/share/metainfo/io.github.kukuruzka165.materialgram.metainfo.xml
+      - install -Dm644 io.github.kukuruzka165.materialgram.png /app/share/icons/hicolor/512x512/apps/io.github.kukuruzka165.materialgram.png
+    sources:
+      # BEGIN MANAGED EXTRA-DATA
+      - type: extra-data
+        filename: materialgram.tar.zst
+        only-arches:
+          - x86_64
+        url: https://github.com/kukuruzka165/materialgram/releases/download/v6.7.7.1/materialgram-v6.7.7.1.tar.zst
+        sha256: 521088cda0b265fcb14e0a754018c2adbc398e5ee0d010f029c64a8a2dd4fda9
+        size: 86662755
+      # END MANAGED EXTRA-DATA
+      - type: file
+        path: apply_extra.sh
+      - type: file
+        path: materialgram-wrapper
+      - type: file
+        path: io.github.kukuruzka165.materialgram.desktop
+      - type: file
+        path: io.github.kukuruzka165.materialgram.metainfo.xml
+      - type: file
+        path: io.github.kukuruzka165.materialgram.png

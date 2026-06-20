@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+
+# materialgram ships as one self-contained binary (Qt, FFmpeg, OpenSSL et al.
+# are statically linked — see the minimal NEEDED list), staged by apply_extra to
+# /app/extra/materialgram. Flatpak already redirects $HOME into the per-app data
+# dir, so the messenger's data lands in the sandbox with no redirection needed.
+# Qt picks Wayland or xcb on its own from the sockets granted in finish-args.
+exec /app/extra/materialgram "$@"

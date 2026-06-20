@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.flatpark.BuildOne</id>
+  <name>Build One</name>
+  <summary>Synthetic build fixture</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <launchable type="desktop-id">io.flatpark.BuildOne.desktop</launchable>
+  <description>
+    <p>A synthetic application used by FlatPark's build and publish tests.</p>
+  </description>
+</component>

@@ -1,0 +1,118 @@
+# Trusted publish: only on push to main (merged PR) or manual dispatch. This is
+# the ONLY workflow that touches the signing key, R2, and Pages. It builds just
+# the changed apps into the authoritative repo pulled from R2, re-signs, and
+# republishes the repo + site with an atomic cutover.
+name: publish
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      rebuild_all:
+        description: Rebuild every app (ignore the changed-apps diff)
+        type: boolean
+        default: false
+
+# Serialize: never let two publishes race on the repo.
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      OUT_DIR: ${{ github.workspace }}/out
+      REPO_DIR: ${{ github.workspace }}/out/repo
+      GNUPGHOME_DIR: ${{ github.workspace }}/.gnupg-flatpark
+      R2_BUCKET: ${{ vars.R2_BUCKET }}
+      CF_PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT }}
+      # rclone S3 remote "r2" — the name must be a single token (no _/-), since
+      # rclone derives it from the env var up to the first underscore.
+      RCLONE_CONFIG_R2_TYPE: s3
+      RCLONE_CONFIG_R2_PROVIDER: Cloudflare
+      RCLONE_CONFIG_R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      RCLONE_CONFIG_R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      RCLONE_CONFIG_R2_ENDPOINT: https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com
+      RCLONE_CONFIG_R2_ACL: private
+      RCLONE_CONFIG_R2_NO_CHECK_BUCKET: "true"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder ostree
+          curl -fsSL https://rclone.org/install.sh | sudo bash
+          flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
+      - name: Import signing subkey (master never reaches CI)
+        env:
+          FLATPAK_GPG_PRIVATE_KEY: ${{ secrets.FLATPAK_GPG_PRIVATE_KEY }}
+        run: |
+          mkdir -p "$GNUPGHOME_DIR"; chmod 700 "$GNUPGHOME_DIR"
+          printf '%s\n' "$FLATPAK_GPG_PRIVATE_KEY" \
+            | GNUPGHOME="$GNUPGHOME_DIR" gpg --batch --import
+          GNUPGHOME="$GNUPGHOME_DIR" gpg --list-secret-keys
+
+      - name: Pull current repo from R2 (incremental base)
+        run: |
+          mkdir -p "$REPO_DIR"
+          rclone copy "r2:$R2_BUCKET" "$REPO_DIR" --fast-list || true
+
+      - name: Decide which apps to build
+        id: apps
+        env:
+          REBUILD_ALL: ${{ github.event_name == 'workflow_dispatch' && inputs.rebuild_all }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if [ "$REBUILD_ALL" = "true" ]; then
+            ids="$(./scripts/scan-registry.sh --ids | tr '\n' ' ')"          # full rebuild
+          elif [ -d "$REPO_DIR/objects" ] && git rev-parse --verify -q "${BEFORE}^{commit}" >/dev/null 2>&1; then
+            ids="$(./scripts/changed-apps.sh "$BEFORE" "$GITHUB_SHA" | tr '\n' ' ')"
+          else
+            ids="$(./scripts/scan-registry.sh --ids | tr '\n' ' ')"          # cold start / unknown base
+          fi
+          echo "ids=$ids" >> "$GITHUB_OUTPUT"
+          echo "building: ${ids:-<none>}"
+
+      - name: Build changed apps into the repo
+        if: steps.apps.outputs.ids != ''
+        env:
+          IDS: ${{ steps.apps.outputs.ids }}
+        run: |
+          for id in $IDS; do
+            echo "::group::build $id"; ./scripts/build-app.sh "$id"; echo "::endgroup::"
+          done
+
+      - name: Re-sign summary + write discovery files
+        run: |
+          ./scripts/publish-repo.sh
+          while IFS= read -r id; do ./scripts/gen-discovery.sh "$id"; done < <(./scripts/scan-registry.sh --ids)
+
+      - name: Build the site (full catalog)
+        run: ./scripts/gen-site.sh $(./scripts/scan-registry.sh --ids | tr '\n' ' ')
+
+      - name: Sync repo to R2 (objects first, summary last)
+        run: ./scripts/sync-r2.sh
+
+      - name: Deploy site to Cloudflare Pages (atomic)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx -y wrangler@3 pages deploy "$OUT_DIR/site" \
+            --project-name="$CF_PAGES_PROJECT" --branch=main
+          echo "### Deployed" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Site: https://flatpark.org" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Repo: https://dl.flatpark.org/flatpark.flatpakrepo" >> "$GITHUB_STEP_SUMMARY"

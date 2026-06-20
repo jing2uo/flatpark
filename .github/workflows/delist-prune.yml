@@ -1,0 +1,69 @@
+# Manual, destructive: reclaim R2 space. Delists apps whose registry/<id>/ is
+# gone, prunes every ref to its current commit, re-signs, republishes, then
+# deletes ONLY the pruned objects from R2 (prune-diff targeted delete — never a
+# blind mirror). Kept separate from the additive daily publish.
+name: delist-prune
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: publish   # share the publish lock so prune never races a publish
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    env:
+      OUT_DIR: ${{ github.workspace }}/out
+      REPO_DIR: ${{ github.workspace }}/out/repo
+      GNUPGHOME_DIR: ${{ github.workspace }}/.gnupg-flatpark
+      R2_BUCKET: ${{ vars.R2_BUCKET }}
+      CF_PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT }}
+      RCLONE_CONFIG_R2_TYPE: s3
+      RCLONE_CONFIG_R2_PROVIDER: Cloudflare
+      RCLONE_CONFIG_R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      RCLONE_CONFIG_R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      RCLONE_CONFIG_R2_ENDPOINT: https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com
+      RCLONE_CONFIG_R2_ACL: private
+      RCLONE_CONFIG_R2_NO_CHECK_BUCKET: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder ostree
+          curl -fsSL https://rclone.org/install.sh | sudo bash
+      - name: Import signing subkey
+        env:
+          FLATPAK_GPG_PRIVATE_KEY: ${{ secrets.FLATPAK_GPG_PRIVATE_KEY }}
+        run: |
+          mkdir -p "$GNUPGHOME_DIR"; chmod 700 "$GNUPGHOME_DIR"
+          printf '%s\n' "$FLATPAK_GPG_PRIVATE_KEY" \
+            | GNUPGHOME="$GNUPGHOME_DIR" gpg --batch --import
+      - name: Pull current repo from R2
+        run: |
+          mkdir -p "$REPO_DIR"
+          rclone copy "r2:$R2_BUCKET" "$REPO_DIR" --fast-list
+      - name: Delist + prune to current commit
+        run: |
+          export RECLAIM_LIST="$OUT_DIR/reclaim-objects.txt"
+          ./scripts/prune-and-reclaim.sh
+      - name: Re-sign + rebuild discovery and site
+        run: |
+          ./scripts/publish-repo.sh
+          while IFS= read -r id; do ./scripts/gen-discovery.sh "$id"; done < <(./scripts/scan-registry.sh --ids)
+          ./scripts/gen-site.sh $(./scripts/scan-registry.sh --ids | tr '\n' ' ')
+      - name: Sync new summary first, then delete orphaned objects
+        run: RECLAIM_LIST="$OUT_DIR/reclaim-objects.txt" ./scripts/sync-r2.sh
+      - name: Redeploy site
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx -y wrangler@3 pages deploy "$OUT_DIR/site" --project-name="$CF_PAGES_PROJECT" --branch=main

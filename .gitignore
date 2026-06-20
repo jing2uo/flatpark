@@ -1,0 +1,13 @@
+out/
+.gnupg-flatpark/
+.gnupg-ci/
+.vscode/
+*.log
+
+# Astro site: deps, build output, and generated registry data
+site/node_modules/
+site/dist/
+site/.astro/
+site/public/catalog.json
+site/public/apps/
+site/public/icons/

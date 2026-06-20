@@ -1,0 +1,17 @@
+---
+const { count } = Astro.props;
+const appWord = count === 1 ? 'app' : 'apps';
+---
+
+<section data-hero class="hero-collapse">
+  <div class="min-h-0 overflow-hidden">
+    <div class="mx-auto flex min-h-[52vh] max-w-3xl flex-col items-center justify-center px-5 text-center">
+      <h1 class="text-4xl font-extrabold tracking-tight md:text-6xl">
+        Yet another Flatpak hub
+      </h1>
+      <p class="mt-5 text-lg text-muted">
+        Currently hosting <span class="font-semibold text-ink">{count}</span> signed {appWord}.
+      </p>
+    </div>
+  </div>
+</section>

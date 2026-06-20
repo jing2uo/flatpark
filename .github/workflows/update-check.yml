@@ -1,0 +1,47 @@
+# Scheduled upstream-update detection. Runs each app's update resolver, recomputes
+# the extra-data pins, and opens a PR when anything moved. No signing key or R2
+# creds here — it only reads public URLs and opens a PR; a human merges it, which
+# triggers publish.yml.
+name: update-check
+
+on:
+  schedule:
+    - cron: "17 6 * * *"   # daily, 06:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Recompute pins from upstream
+        run: |
+          ids="$(./scripts/check-updates.sh | tr '\n' ' ')"
+          echo "changed=$ids" >> "$GITHUB_ENV"
+          echo "changed apps: ${ids:-<none>}"
+      - name: Open / update PR if pins changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- registry/; then
+            echo "no pin changes"; exit 0
+          fi
+          branch=auto/update-pins
+          git config user.name "flatpark-bot"
+          git config user.email "bot@flatpark.org"
+          git checkout -B "$branch"
+          git add registry/
+          git commit -m "chore(update): refresh extra-data pins (${changed:-apps})"
+          git push -f origin "$branch"
+          body="$(printf 'Automated pin refresh for: %s\n\nMerging triggers a rebuild + publish of the changed app(s).' "${changed:-(see diff)}")"
+          if ! gh pr view "$branch" >/dev/null 2>&1; then
+            gh pr create --base main --head "$branch" \
+              --title "Update extra-data pins" --body "$body"
+          fi

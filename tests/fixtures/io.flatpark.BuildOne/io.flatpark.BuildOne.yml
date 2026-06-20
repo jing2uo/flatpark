@@ -1,0 +1,26 @@
+id: io.flatpark.BuildOne
+runtime: org.freedesktop.Platform
+runtime-version: '25.08'
+sdk: org.freedesktop.Sdk
+command: build-one
+build-options:
+  no-debuginfo: true
+finish-args:
+  - --share=network
+modules:
+  - name: build-one
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 build-one.sh /app/bin/build-one
+      - install -Dm644 io.flatpark.BuildOne.desktop /app/share/applications/io.flatpark.BuildOne.desktop
+      - install -Dm644 io.flatpark.BuildOne.metainfo.xml /app/share/metainfo/io.flatpark.BuildOne.metainfo.xml
+      - install -Dm644 io.flatpark.BuildOne.svg /app/share/icons/hicolor/scalable/apps/io.flatpark.BuildOne.svg
+    sources:
+      - type: file
+        path: build-one.sh
+      - type: file
+        path: io.flatpark.BuildOne.desktop
+      - type: file
+        path: io.flatpark.BuildOne.metainfo.xml
+      - type: file
+        path: io.flatpark.BuildOne.svg

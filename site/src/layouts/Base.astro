@@ -1,0 +1,186 @@
+---
+import '../styles/global.css';
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <title>{title}</title>
+  </head>
+  <body class="min-h-screen">
+    <slot />
+
+    <script>
+      // Catalog search (index only; no-ops elsewhere) + copy buttons.
+      const searchInput = document.querySelector('[data-search]');
+      const cards = Array.from(document.querySelectorAll('[data-app-card]'));
+      const empty = document.querySelector('[data-empty]');
+
+      function apply() {
+        const q = (searchInput?.value || '').trim().toLowerCase();
+        let visible = 0;
+        for (const card of cards) {
+          const hay = card.dataset.search || '';
+          const show = q === '' || hay.includes(q);
+          card.hidden = !show;
+          if (show) visible += 1;
+        }
+        if (empty) empty.hidden = visible !== 0;
+      }
+
+      searchInput?.addEventListener('input', apply);
+
+      // Header search is global. On the catalog (cards present) it filters live;
+      // on other pages submitting navigates to the catalog with ?q=.
+      const searchForm = searchInput?.closest('form');
+      if (searchForm) {
+        searchForm.addEventListener('submit', (e) => {
+          if (cards.length) e.preventDefault();
+        });
+      }
+      const q = new URLSearchParams(location.search).get('q');
+      if (q && searchInput) searchInput.value = q;
+
+      for (const button of document.querySelectorAll('[data-copy]')) {
+        button.addEventListener('click', async (e) => {
+          e.preventDefault();
+          const label = button.textContent;
+          try {
+            await navigator.clipboard.writeText(button.dataset.copy || '');
+            button.textContent = 'Copied';
+          } catch {
+            button.textContent = 'Copy failed';
+          }
+          setTimeout(() => {
+            button.textContent = label;
+          }, 1200);
+        });
+      }
+
+      apply();
+
+      // Scope tabs (setup page; no-ops elsewhere): switch which command panel
+      // shows. Tabs carry data-tab, panels carry the matching data-panel.
+      for (const tabs of document.querySelectorAll('[data-tabs]')) {
+        const buttons = Array.from(tabs.querySelectorAll('[data-tab]'));
+        const panels = Array.from(tabs.querySelectorAll('[data-panel]'));
+        for (const button of buttons) {
+          button.addEventListener('click', () => {
+            const id = button.dataset.tab;
+            for (const b of buttons) {
+              const on = b === button;
+              b.classList.toggle('is-active', on);
+              b.setAttribute('aria-selected', String(on));
+            }
+            for (const p of panels) p.hidden = p.dataset.panel !== id;
+          });
+        }
+      }
+
+      // Screenshot carousel: one slide at a time, dots below to switch. Drop any
+      // slide whose hotlinked image fails so the page never shows a broken icon.
+      for (const carousel of document.querySelectorAll('[data-carousel]')) {
+        let slides = Array.from(carousel.querySelectorAll('[data-slide]'));
+        let dots = Array.from(carousel.querySelectorAll('[data-dot]'));
+        const dotsWrap = carousel.querySelector('[data-dots]');
+        let cur = 0;
+        const render = () => {
+          slides.forEach((s, i) => s.classList.toggle('hidden', i !== cur));
+          dots.forEach((d, i) => {
+            d.classList.toggle('bg-brand', i === cur);
+            d.classList.toggle('bg-line', i !== cur);
+          });
+          dotsWrap?.classList.toggle('hidden', slides.length <= 1);
+        };
+        const drop = (s) => {
+          const i = slides.indexOf(s);
+          if (i < 0) return;
+          s.remove();
+          dots[i]?.remove();
+          slides.splice(i, 1);
+          dots.splice(i, 1);
+          if (cur >= slides.length) cur = Math.max(0, slides.length - 1);
+          if (!slides.length) carousel.remove();
+          else render();
+        };
+        dots.forEach((d, i) => d.addEventListener('click', () => { cur = i; render(); }));
+        slides.forEach((s) => s.querySelector('img')?.addEventListener('error', () => drop(s)));
+        render();
+      }
+
+      // Hero folds away on the first downward scroll/swipe, revealing the
+      // catalog; scrolling back to the very top brings it back.
+      const hero = document.querySelector('[data-hero]');
+      if (hero) {
+        const collapse = () => hero.classList.add('is-collapsed');
+        const expand = () => {
+          if (window.scrollY <= 0) hero.classList.remove('is-collapsed');
+        };
+        window.addEventListener(
+          'wheel',
+          (e) => (e.deltaY > 0 ? collapse() : e.deltaY < 0 ? expand() : null),
+          { passive: true },
+        );
+        window.addEventListener('keydown', (e) => {
+          if (['ArrowDown', 'PageDown', ' '].includes(e.key)) collapse();
+          else if (['ArrowUp', 'PageUp', 'Home'].includes(e.key)) expand();
+        });
+        let touchY = null;
+        window.addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
+        window.addEventListener(
+          'touchmove',
+          (e) => {
+            if (touchY === null) return;
+            const dy = touchY - e.touches[0].clientY;
+            if (dy > 24) collapse();
+            else if (dy < -24) expand();
+          },
+          { passive: true },
+        );
+      }
+
+      // Detail-page install split button: the main button (and the menu item)
+      // copy the install command; the caret toggles a menu with the download.
+      for (const btn of document.querySelectorAll('[data-install-copy]')) {
+        btn.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(btn.dataset.installCopy || '');
+          } catch {}
+          const label = btn.querySelector('[data-install-label]');
+          if (label) {
+            const prev = label.textContent;
+            label.textContent = 'Copied!';
+            setTimeout(() => { label.textContent = prev; }, 1200);
+          }
+        });
+      }
+      const installRoot = document.querySelector('[data-install]');
+      if (installRoot) {
+        const toggle = installRoot.querySelector('[data-install-toggle]');
+        const menu = installRoot.querySelector('[data-install-menu]');
+        toggle?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const willOpen = menu.hidden;
+          menu.hidden = !willOpen;
+          toggle.setAttribute('aria-expanded', String(willOpen));
+        });
+        document.addEventListener('click', (e) => {
+          if (!installRoot.contains(e.target)) {
+            menu.hidden = true;
+            toggle?.setAttribute('aria-expanded', 'false');
+          }
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            menu.hidden = true;
+            toggle?.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

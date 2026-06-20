@@ -1,0 +1,9 @@
+id: io.flatpark.BuildOne
+name: Build One
+summary: Synthetic build fixture
+build:
+  manifest: io.flatpark.BuildOne.yml
+  branch: stable
+  mode: manual
+catalog:
+  category: Utilities

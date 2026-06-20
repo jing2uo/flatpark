@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+/* FlatPark theme tokens — Flathub-style light palette with GNOME blue. */
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --color-brand: #3584e4;
+  --color-brand-dark: #1c71d8;
+  --color-ink: #1d1d1f;
+  --color-muted: #5e5c64;
+  --color-line: #e7e7ea;
+  --color-surface: #ffffff;
+  --color-canvas: #fafafb;
+}
+
+html {
+  font-family: var(--font-sans);
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Small repeated component classes built from utilities. */
+.chip {
+  @apply inline-flex min-h-6 items-center rounded-full bg-canvas px-2.5 text-xs font-semibold text-muted;
+}
+
+.chip-mode {
+  @apply bg-brand/10 text-brand;
+}
+
+.cmd {
+  @apply block whitespace-pre-wrap break-words rounded-lg border border-line bg-[#1d1f24]
+    px-3 py-2.5 font-mono text-sm text-[#e9eaed];
+}
+
+.btn-ghost {
+  @apply inline-flex h-9 items-center rounded-lg border border-line bg-surface px-3
+    text-sm font-semibold hover:border-brand;
+}
+
+.btn-primary {
+  @apply inline-flex h-9 items-center rounded-lg bg-brand px-3 text-sm font-semibold
+    text-white hover:bg-brand-dark;
+}
+
+.seg {
+  @apply h-9 rounded-md px-3 font-semibold text-muted;
+}
+
+.seg.is-active {
+  @apply bg-canvas text-ink;
+}
+
+/* Hero folds away on first scroll to reveal the catalog. The 1fr -> 0fr grid
+   trick animates to the exact content height with no max-height guesswork. */
+.hero-collapse {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.5s ease, opacity 0.4s ease;
+}
+
+.hero-collapse.is-collapsed {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-collapse {
+    transition: none;
+  }
+}

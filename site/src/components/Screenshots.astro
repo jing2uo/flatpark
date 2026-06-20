@@ -1,0 +1,38 @@
+---
+const { screenshots = [] } = Astro.props;
+---
+
+{
+  screenshots.length > 0 && (
+    <div data-carousel class="min-w-0">
+      <div class="relative overflow-hidden rounded-2xl border border-line bg-canvas">
+        {screenshots.map((s, i) => (
+          <figure data-slide class={i === 0 ? '' : 'hidden'}>
+            <img
+              class="h-[22rem] w-full bg-canvas object-contain"
+              src={s.url}
+              alt={s.caption || ''}
+              loading="lazy"
+              data-screenshot
+            />
+            {s.caption ? (
+              <figcaption class="border-t border-line bg-surface px-4 py-2 text-center text-xs text-muted">
+                {s.caption}
+              </figcaption>
+            ) : null}
+          </figure>
+        ))}
+      </div>
+      <div data-dots class={`mt-3 flex justify-center gap-2 ${screenshots.length > 1 ? '' : 'hidden'}`}>
+        {screenshots.map((_, i) => (
+          <button
+            type="button"
+            data-dot
+            aria-label={`Screenshot ${i + 1}`}
+            class={`h-2.5 w-2.5 rounded-full transition ${i === 0 ? 'bg-brand' : 'bg-line'}`}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}

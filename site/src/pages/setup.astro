@@ -1,0 +1,96 @@
+---
+import Base from '../layouts/Base.astro';
+import Topbar from '../components/Topbar.astro';
+import { loadCatalog } from '../lib/data.mjs';
+
+const { repo } = loadCatalog();
+
+const scopes = [
+  { id: 'user', label: 'Per-user', flag: '--user ' },
+  { id: 'system', label: 'System-wide', flag: '' },
+];
+
+const buildSteps = (flag) => [
+  {
+    title: `Add the ${repo.title} remote`,
+    body: `Registers the signed ${repo.title} repository. You only do this once.`,
+    cmd: `flatpak ${flag}remote-add --if-not-exists ${repo.remoteName} ${repo.repoFileUrl}`,
+  },
+  {
+    title: 'Add Flathub for runtimes',
+    body: `${repo.title} apps build on the freedesktop runtime hosted on Flathub. Skip if you already have it.`,
+    cmd: `flatpak ${flag}remote-add --if-not-exists ${repo.runtimeRemoteName} ${repo.runtimeRepoUrl}`,
+  },
+  {
+    title: 'Install an app',
+    body: 'Or just press Install on any app page — it opens your software installer.',
+    cmd: `flatpak ${flag}install ${repo.remoteName} <app-id>`,
+  },
+];
+---
+
+<Base title={`Set up — ${repo.title}`}>
+  <Topbar repo={repo} />
+  <main class="mx-auto max-w-3xl px-5 py-12">
+    <a href="/" class="text-sm text-muted hover:text-ink">&larr; All apps</a>
+    <h1 class="mt-4 text-3xl font-extrabold tracking-tight">Set up {repo.title}</h1>
+    <p class="mt-3 max-w-2xl text-muted">
+      {repo.title} is a signed Flatpak remote. Add it once, then install any app from the catalog —
+      with the CLI or the Install button. The whole remote is signed with a single GPG key.
+    </p>
+
+    <div class="mt-6 rounded-xl border border-line bg-canvas p-4 text-sm text-muted">
+      <p class="font-semibold text-ink">Per-user or system-wide?</p>
+      <ul class="mt-2 flex flex-col gap-1.5">
+        <li><span class="font-semibold text-ink">Per-user</span> — installs just for you, no admin needed.</li>
+        <li><span class="font-semibold text-ink">System-wide</span> — installs for everyone, asks for admin.</li>
+      </ul>
+      <p class="mt-2">Keep both commands on the same tab — don't mix scopes. The commands update to match.</p>
+    </div>
+
+    <div data-tabs class="mt-8">
+      <div role="tablist" aria-label="Install scope" class="inline-flex gap-1 rounded-lg border border-line bg-surface p-1">
+        {
+          scopes.map((scope, i) => (
+            <button
+              type="button"
+              role="tab"
+              data-tab={scope.id}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              class:list={['seg', { 'is-active': i === 0 }]}
+            >
+              {scope.label}
+            </button>
+          ))
+        }
+      </div>
+
+      {
+        scopes.map((scope, i) => (
+          <ol data-panel={scope.id} hidden={i !== 0} class="mt-6 flex flex-col gap-6">
+            {buildSteps(scope.flag).map((step, j) => (
+              <li class="rounded-2xl border border-line bg-surface p-5">
+                <div class="flex items-center gap-3">
+                  <span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-brand/10 text-sm font-bold text-brand">
+                    {j + 1}
+                  </span>
+                  <h2 class="text-base font-bold">{step.title}</h2>
+                </div>
+                <p class="mt-2 text-sm text-muted">{step.body}</p>
+                <div class="mt-3 flex items-center gap-2">
+                  <code class="cmd flex-1">{step.cmd}</code>
+                  <button class="btn-ghost shrink-0" type="button" data-copy={step.cmd}>Copy</button>
+                </div>
+              </li>
+            ))}
+          </ol>
+        ))
+      }
+    </div>
+
+    <p class="mt-8 text-sm text-muted">
+      Verifying the key and browsing apps? Head back to the
+      <a class="text-brand hover:underline" href="/">catalog</a>.
+    </p>
+  </main>
+</Base>

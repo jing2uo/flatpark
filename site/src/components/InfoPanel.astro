@@ -1,0 +1,66 @@
+---
+const { rows = [], permissions = [] } = Astro.props;
+const dot = {
+  safe: 'bg-emerald-500',
+  info: 'bg-slate-400',
+  caution: 'bg-amber-500',
+  warning: 'bg-red-500',
+};
+const order = { warning: 0, caution: 1, info: 2, safe: 3 };
+const sorted = [...permissions].sort((a, b) => (order[a.level] ?? 2) - (order[b.level] ?? 2));
+const sensitive = permissions.filter((p) => p.level === 'warning' || p.level === 'caution').length;
+---
+
+<div class="flex flex-col gap-5 rounded-2xl border border-line bg-surface p-5">
+  {
+    rows.length > 0 && (
+      <div>
+        <h2 class="text-base font-bold">Details</h2>
+        <dl class="mt-3 flex flex-col gap-3 text-sm">
+          {rows.map((row) => (
+            <div class="flex items-baseline justify-between gap-4">
+              <dt class="shrink-0 text-muted">{row.label}</dt>
+              <dd class="min-w-0 truncate text-right font-medium">
+                {row.href ? (
+                  <a class="text-brand hover:underline" href={row.href}>
+                    {row.value}
+                  </a>
+                ) : (
+                  row.value
+                )}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    )
+  }
+
+  <div class={rows.length > 0 ? 'border-t border-line pt-5' : ''}>
+    <div class="flex items-center justify-between">
+      <h2 class="text-base font-bold">Permissions</h2>
+      {
+        permissions.length > 0 && (
+          <span class="chip">{sensitive > 0 ? `${sensitive} to review` : 'Minimal'}</span>
+        )
+      }
+    </div>
+    {
+      sorted.length === 0 ? (
+        <p class="mt-2 text-sm text-muted">No special permissions declared — fully sandboxed.</p>
+      ) : (
+        <ul class="mt-3 flex flex-col gap-3">
+          {sorted.map((p) => (
+            <li class="flex gap-3">
+              <span class={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${dot[p.level] || 'bg-slate-400'}`} />
+              <div class="min-w-0">
+                <p class="text-sm font-semibold">{p.label}</p>
+                {p.detail ? <p class="text-xs text-muted">{p.detail}</p> : null}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</div>

@@ -1,0 +1,38 @@
+---
+const { app } = Astro.props;
+const tags = app.tags ?? [];
+const fallback = (app.name.match(/[A-Za-z0-9]/g) ?? []).slice(0, 2).join('').toUpperCase();
+const search = [app.id, app.name, app.summary, app.category, tags.join(' ')]
+  .join(' ')
+  .toLowerCase();
+---
+
+<a
+  href={`/apps/${app.id}/`}
+  class="flex items-center gap-4 rounded-2xl border border-line bg-surface p-4 transition hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-lg"
+  data-app-card
+  data-search={search}
+>
+  {
+    app.icon ? (
+      <img
+        class="h-16 w-16 shrink-0 rounded-2xl border border-line bg-canvas object-contain p-2"
+        src={app.icon}
+        alt=""
+        width="64"
+        height="64"
+      />
+    ) : (
+      <div class="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-brand text-lg font-black text-white" aria-hidden="true">
+        {fallback}
+      </div>
+    )
+  }
+  <div class="min-w-0">
+    <h3 class="truncate text-base font-bold">{app.name}</h3>
+    <p class="line-clamp-2 text-sm text-muted">{app.summary}</p>
+    <div class="mt-2 flex flex-wrap gap-1.5">
+      <span class="chip">{app.category}</span>
+    </div>
+  </div>
+</a>

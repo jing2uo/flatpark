@@ -1,0 +1,31 @@
+---
+const { repo } = Astro.props;
+---
+
+<header class="sticky top-0 z-20 border-b border-line bg-white/85 backdrop-blur">
+  <div class="mx-auto flex h-16 max-w-6xl items-center gap-4 px-5">
+    <a href="/" class="flex shrink-0 items-center gap-2 font-extrabold tracking-tight">
+      <img src="/logo.svg" alt="" width="32" height="32" class="h-8 w-8" />
+      <span class="hidden sm:inline">{repo.title}</span>
+    </a>
+
+    <form class="mx-auto w-full max-w-md" action="/" role="search">
+      <input
+        class="h-10 w-full rounded-full border border-line bg-canvas px-4 text-sm outline-none focus:border-brand focus:bg-surface focus:ring-2 focus:ring-brand/20"
+        type="search"
+        name="q"
+        placeholder="Search apps"
+        aria-label="Search apps"
+        autocomplete="off"
+        data-search
+      />
+    </form>
+
+    <a
+      href="/setup/"
+      class="inline-flex h-10 shrink-0 items-center rounded-lg bg-brand px-4 text-sm font-semibold text-white hover:bg-brand-dark"
+    >
+      Setup
+    </a>
+  </div>
+</header>

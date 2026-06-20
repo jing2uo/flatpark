@@ -1,0 +1,100 @@
+# Untrusted gate: runs on every PR, including forks. NO secrets are referenced
+# here, so a malicious PR can never reach the signing key or R2/Pages creds.
+# It validates, tests, builds the changed apps and uploads installable bundles;
+# the real signed build+publish happens on push to main.
+name: pr-checks
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - name: Validate every registry descriptor
+        run: |
+          set -e
+          shopt -s nullglob
+          for d in registry/*/flatpark.yml; do
+            echo "validate $d"
+            node scripts/read-descriptor.mjs "$d" >/dev/null
+          done
+      - name: Install site deps
+        working-directory: site
+        run: npm ci || npm install --no-audit --no-fund
+      - name: Shell test suite (build steps self-skip without flatpak-builder)
+        run: bash tests/run-tests.sh
+      - name: Dead-link check (hotlinked screenshots etc.)
+        run: ./scripts/check-links.sh
+
+  # Build the changed apps to catch manifest breakage BEFORE merge, and upload an
+  # installable single-file bundle per app so the change can be test-installed
+  # (extra-data is not embedded — it's fetched on install — so bundles stay tiny).
+  # Runs for fork PRs too: fork `pull_request` runs get NO secrets and a read-only
+  # token, and the build is signed with a throwaway in-job key, so the real
+  # signing key and R2/Pages creds are never exposed. Untrusted build-commands are
+  # gated by GitHub's "require approval for fork PR workflows" setting — approve a
+  # fork run only after reviewing its manifest.
+  build-changed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - name: Install flatpak-builder
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder ostree
+          flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+      - name: Determine changed apps
+        id: changed
+        run: |
+          base="${{ github.event.pull_request.base.sha }}"
+          ids="$(./scripts/changed-apps.sh "$base" HEAD | tr '\n' ' ')"
+          echo "ids=$ids" >> "$GITHUB_OUTPUT"
+          echo "changed apps: ${ids:-<none>}"
+      - name: Build changed apps (throwaway signing key, no publish)
+        if: steps.changed.outputs.ids != ''
+        run: |
+          export OUT_DIR="$PWD/out" GNUPGHOME_DIR="$PWD/.gnupg-ci"
+          ./scripts/gen-signing-key.sh >/dev/null
+          for id in ${{ steps.changed.outputs.ids }}; do
+            echo "::group::build $id"
+            ./scripts/build-app.sh "$id"
+            echo "::endgroup::"
+          done
+      - name: Bundle changed apps into installable .flatpak files
+        if: steps.changed.outputs.ids != ''
+        run: |
+          . scripts/lib/common.sh
+          load_config "$PWD"            # sets REPO_DIR=$PWD/out/repo, REGISTRY_DIR
+          mkdir -p out/bundles
+          for id in ${{ steps.changed.outputs.ids }}; do
+            load_app "$id"             # resolves APP_BRANCH the same way build-app.sh did
+            flatpak build-bundle \
+              --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo \
+              "$REPO_DIR" "out/bundles/$id.flatpak" "$id" "$APP_BRANCH"
+          done
+          ls -lah out/bundles
+      - name: Upload installable bundles
+        if: steps.changed.outputs.ids != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: flatpak-bundles-pr${{ github.event.pull_request.number }}
+          path: out/bundles/*.flatpak
+          retention-days: 14
+          if-no-files-found: error

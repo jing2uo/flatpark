@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.popcorntime.NativePopcorn</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0</project_license>
+  <name>Native Popcorn</name>
+  <summary>A modern GTK4 streaming client</summary>
+  <description>
+    <p>Native Popcorn is a native Popcorn Time client written in Python and GTK4.</p>
+  </description>
+  <screenshots>
+  <screenshot type="default">
+    <caption>Movies</caption>
+    <image>https://github.com/irfanalirazvi/native-popcorn/releases/download/0.1.0/movies.png</image>
+  </screenshot>
+  <screenshot type="default">
+    <caption>Series</caption>
+    <image>https://github.com/irfanalirazvi/native-popcorn/releases/download/0.1.0/series.png</image>
+  </screenshot>
+</screenshots>
+  <releases>
+    <release version="0.1.0" date="2026-06-22"/>
+  </releases>
+</component>

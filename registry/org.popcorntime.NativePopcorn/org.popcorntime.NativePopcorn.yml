@@ -1,0 +1,41 @@
+app-id: org.popcorntime.NativePopcorn
+runtime: org.gnome.Platform
+runtime-version: '50'
+sdk: org.gnome.Sdk
+command: start-native-popcorn
+finish-args:
+  - --share=network
+  - --share=ipc
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --device=dri
+  - --device=all
+  - --filesystem=xdg-config/native-popcorn:create
+modules:
+  - name: native-popcorn
+    buildsystem: simple
+    build-commands:
+      - install -D apply_extra /app/bin/apply_extra
+      - install -D start-native-popcorn /app/bin/start-native-popcorn
+    sources:
+      - type: script
+        dest-filename: apply_extra
+        commands:
+          - tar -xzf native-popcorn.tar.gz
+          - rm native-popcorn.tar.gz
+      - type: script
+        dest-filename: start-native-popcorn
+        commands:
+          - export PATH=/app/extra/bin:$PATH
+          - export LD_LIBRARY_PATH=/app/extra/lib:$LD_LIBRARY_PATH
+          - export PYTHONPATH=/app/extra/share/native-popcorn:$PYTHONPATH
+          - python3 /app/extra/share/native-popcorn/native_popcorn/main.py
+      # BEGIN MANAGED EXTRA-DATA
+      - type: extra-data
+        filename: native-popcorn.tar.gz
+        only-arches:
+          - x86_64
+        url: https://github.com/irfanalirazvi/native-popcorn/releases/download/0.1.0/native-popcorn.tar.gz
+        sha256: 49c500606c758eb821c6c450192119b4aea55f26cad5cd6c4e92f9d107fead0a
+        size: 0
+      # END MANAGED EXTRA-DATA

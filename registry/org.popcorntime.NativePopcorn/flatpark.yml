@@ -1,0 +1,17 @@
+id: org.popcorntime.NativePopcorn
+name: Native Popcorn
+summary: A native Popcorn Time client for Linux using GTK4.
+website: https://github.com/irfanalirazvi/native-popcorn
+source_url: https://github.com/irfanalirazvi/native-popcorn
+build:
+  manifest: org.popcorntime.NativePopcorn.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: AudioVideo
+  tags:
+    - Streaming
+    - Video
+    - Torrent
+update:
+  command: ./resolve-update.sh

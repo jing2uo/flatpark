@@ -11,8 +11,10 @@
   <url type="homepage">https://tabularis.dev</url>
   <url type="bugtracker">https://github.com/TabularisDB/tabularis/issues</url>
   <url type="vcs-browser">https://github.com/TabularisDB/tabularis</url>
+  <!-- Packaged and published with the upstream developers' permission:
+       https://github.com/TabularisDB/tabularis/issues/326 -->
   <description>
-    <p>This is a community package of Tabularis and is not affiliated with or endorsed by its developers.</p>
+    <p>This is a community package of Tabularis, maintained independently and published with the permission of its developers.</p>
     <p>Tabularis is an open-source database client for PostgreSQL, MySQL/MariaDB and SQLite, with SQL notebooks, visual EXPLAIN, and AI and MCP built in. It is extensible through plugins.</p>
     <p>Features:</p>
     <ul>

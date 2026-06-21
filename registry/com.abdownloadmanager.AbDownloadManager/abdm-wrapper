@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+
+# AB Download Manager is a jpackage app-image (Compose Desktop + a bundled JRE),
+# staged by apply_extra to /app/extra/ABDownloadManager. The native launcher
+# locates its JRE and jars relative to itself, and Skia/AWT pull X11, OpenGL,
+# fontconfig and libstdc++ from the runtime. Flatpak redirects $HOME into the
+# per-app data dir, so the app's ~/.abdm config stays inside the sandbox.
+exec /app/extra/ABDownloadManager/bin/ABDownloadManager "$@"

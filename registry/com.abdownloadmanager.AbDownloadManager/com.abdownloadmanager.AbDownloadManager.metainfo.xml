@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.abdownloadmanager.AbDownloadManager</id>
+  <name>AB Download Manager</name>
+  <summary>A download manager that speeds up your downloads</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>Apache-2.0</project_license>
+  <developer id="com.abdownloadmanager">
+    <name>Amir Hossein Abdolmotallebi</name>
+  </developer>
+  <url type="homepage">https://abdownloadmanager.com</url>
+  <url type="bugtracker">https://github.com/amir1376/ab-download-manager/issues</url>
+  <url type="vcs-browser">https://github.com/amir1376/ab-download-manager</url>
+  <url type="donation">https://github.com/amir1376/ab-download-manager/blob/master/DONATE.md</url>
+  <description>
+    <p>This is a community package of AB Download Manager, maintained independently.</p>
+    <p>AB Download Manager (ABDM) is a fast, modern download manager. It accelerates downloads by splitting them into parallel connections, lets you queue and schedule downloads, and organises them into categories.</p>
+    <p>Features:</p>
+    <ul>
+      <li>Multi-connection download acceleration</li>
+      <li>Pause, resume and queue management with scheduling</li>
+      <li>Speed limiting and download categories</li>
+      <li>Clipboard and link monitoring</li>
+    </ul>
+    <p>The browser-integration extension works inside the sandbox: it connects to the app's local listener over loopback, shared via the network permission. Downloads are saved to your Downloads folder by default; to save to another location, grant it with "flatpak override".</p>
+  </description>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Main window</caption>
+      <image>https://raw.githubusercontent.com/amir1376/ab-download-manager/master/assets/screenshots/app-home_light.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Adding a download</caption>
+      <image>https://raw.githubusercontent.com/amir1376/ab-download-manager/master/assets/screenshots/app-download_light.png</image>
+    </screenshot>
+  </screenshots>
+  <launchable type="desktop-id">com.abdownloadmanager.AbDownloadManager.desktop</launchable>
+  <categories>
+    <category>Network</category>
+    <category>FileTransfer</category>
+  </categories>
+  <keywords>
+    <keyword>download</keyword>
+    <keyword>manager</keyword>
+    <keyword>downloader</keyword>
+    <keyword>accelerator</keyword>
+    <keyword>http</keyword>
+  </keywords>
+  <recommends>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </recommends>
+  <content_rating type="oars-1.1" />
+  <provides>
+    <binary>abdm</binary>
+  </provides>
+  <releases>
+    <release version="1.9.1" date="2026-06-15" />
+  </releases>
+</component>

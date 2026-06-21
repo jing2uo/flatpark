@@ -1,0 +1,21 @@
+id: com.abdownloadmanager.AbDownloadManager
+name: AB Download Manager
+summary: A download manager that speeds up your downloads
+website: https://abdownloadmanager.com
+source_url: https://github.com/amir1376/ab-download-manager
+build:
+  manifest: com.abdownloadmanager.AbDownloadManager.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Network
+  tags:
+    - Download
+    - Network
+    - Utility
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: false
+  extra_data_first: true
+  dangerous_permissions: []

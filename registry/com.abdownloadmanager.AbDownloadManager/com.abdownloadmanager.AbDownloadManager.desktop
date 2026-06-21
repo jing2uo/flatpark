@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=AB Download Manager
+Comment=A download manager that speeds up your downloads
+Exec=abdm
+Icon=com.abdownloadmanager.AbDownloadManager
+Terminal=false
+Categories=Network;FileTransfer;Utility;
+StartupWMClass=ABDownloadManager
+Keywords=download;manager;downloader;accelerator;http;

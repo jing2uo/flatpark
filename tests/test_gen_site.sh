@@ -102,4 +102,11 @@ assert_contains "$about" "About FlatPark"
 # The global footer renders on every page — check it on the catalog index.
 assert_contains "$index" "/about/"
 assert_contains "$index" "community Flatpak hub"
+
+assert_file "$tmp/site/policies/index.html"
+assert_contains "$tmp/site/policies/index.html" "De-listing"
+assert_file "$tmp/site/trust/index.html"
+assert_contains "$tmp/site/trust/index.html" "extra-data"
+assert_contains "$index" "/policies/"
+assert_contains "$index" "/trust/"
 echo "test_gen_site: PASS"

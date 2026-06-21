@@ -14,6 +14,42 @@ const toArray = (x) => (x == null ? [] : Array.isArray(x) ? x : [x]);
 const textOf = (x) => (x == null ? '' : typeof x === 'object' ? String(x['#text'] ?? '') : String(x)).trim();
 
 const xml = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '@_', trimValues: true });
+// A second parser that preserves child order, so an AppStream <description>'s
+// <p> and <ul>/<ol> blocks keep the order they appear in the document.
+const xmlOrdered = new XMLParser({ ignoreAttributes: true, preserveOrder: true, trimValues: true });
+
+// Flatten preserveOrder text nodes (e.g. [{ '#text': 'hi' }]) into a string.
+const orderedText = (nodes) =>
+  toArray(nodes).map((n) => (n && typeof n === 'object' ? n['#text'] ?? '' : n)).join('').trim();
+
+// Parse an AppStream <description> into ordered blocks the detail page renders:
+// { type: 'p', text } for paragraphs and { type: 'list', items } for <ul>/<ol>.
+function descriptionBlocks(rawXml) {
+  let tree;
+  try {
+    tree = xmlOrdered.parse(rawXml);
+  } catch {
+    return [];
+  }
+  const comp = toArray(tree).find((n) => n && 'component' in n);
+  const descNode = comp && toArray(comp.component).find((n) => n && 'description' in n);
+  if (!descNode) return [];
+  const blocks = [];
+  for (const node of toArray(descNode.description)) {
+    if (!node || typeof node !== 'object') continue;
+    if ('p' in node) {
+      const text = orderedText(node.p);
+      if (text) blocks.push({ type: 'p', text });
+    } else if ('ul' in node || 'ol' in node) {
+      const items = toArray(node.ul || node.ol)
+        .filter((c) => c && 'li' in c)
+        .map((c) => orderedText(c.li))
+        .filter(Boolean);
+      if (items.length) blocks.push({ type: 'list', items });
+    }
+  }
+  return blocks;
+}
 
 function parseManifest(path) {
   const raw = readFileSync(path, 'utf8');
@@ -149,8 +185,9 @@ function enrichOne(file) {
     ];
     const metainfoPath = candidates.find((p) => p && existsSync(p));
     if (metainfoPath) {
-      const comp = xml.parse(readFileSync(metainfoPath, 'utf8')).component || {};
-      out.description = toArray(comp.description?.p).map(textOf).filter(Boolean);
+      const rawXml = readFileSync(metainfoPath, 'utf8');
+      const comp = xml.parse(rawXml).component || {};
+      out.description = descriptionBlocks(rawXml);
       out.screenshots = toArray(comp.screenshots?.screenshot).map((s) => {
         const imgs = toArray(s.image);
         const img = imgs.find((i) => (typeof i === 'object' ? i['@_type'] : 'source') === 'source') || imgs[0];

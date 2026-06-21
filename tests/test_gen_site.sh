@@ -30,7 +30,10 @@ cat > "$one_dir/io.flatpark.TestOne.metainfo.xml" <<'EOF'
   <summary>First test app</summary>
   <project_license>MIT</project_license>
   <developer id="io.flatpark"><name>FlatPark Test Dev</name></developer>
-  <description><p>A test application for FlatPark.</p></description>
+  <description>
+    <p>A test application for FlatPark.</p>
+    <ul><li>Bullet feature one</li><li>Bullet feature two</li></ul>
+  </description>
 </component>
 EOF
 cat > "$one_dir/flatpark.yml" <<'EOF'
@@ -88,6 +91,8 @@ assert_contains "$detail" "Permissions"
 assert_contains "$detail" "Network access"
 assert_contains "$detail" "FlatPark Test Dev"
 assert_contains "$detail" "A test application for FlatPark."
+# description <ul> list items render as <li> in the About section
+assert_contains "$detail" "<li>Bullet feature one</li>"
 assert_contains "$detail" "io.flatpark.TestOne.flatpakref"
 assert_contains "$detail" "/setup/"
 

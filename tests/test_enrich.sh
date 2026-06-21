@@ -34,7 +34,14 @@ cat > "$app/io.flatpark.TestOne.metainfo.xml" <<'EOF'
   <project_license>MIT</project_license>
   <developer id="io.flatpark"><name>FlatPark Test Dev</name></developer>
   <url type="homepage">https://example.org/</url>
-  <description><p>A test application for FlatPark.</p></description>
+  <description>
+    <p>A test application for FlatPark.</p>
+    <p>Features:</p>
+    <ul>
+      <li>Feature alpha</li>
+      <li>Feature beta</li>
+    </ul>
+  </description>
   <screenshots><screenshot type="default"><caption>Main</caption><image>https://example.org/shot.png</image></screenshot></screenshots>
   <releases><release version="1.0" date="2026-01-01" /></releases>
 </component>
@@ -68,6 +75,10 @@ assert_contains "$out" "\"label\": \"GPU acceleration\""
 # metainfo-derived fields
 assert_contains "$out" "\"FlatPark Test Dev\""
 assert_contains "$out" "A test application for FlatPark."
+# description is parsed into ordered blocks: paragraphs + list items
+assert_contains "$out" "\"type\": \"list\""
+assert_contains "$out" "Feature alpha"
+assert_contains "$out" "Feature beta"
 assert_contains "$out" "\"version\": \"1.0\""
 assert_contains "$out" "\"label\": \"MIT\""
 assert_contains "$out" "https://example.org/shot.png"

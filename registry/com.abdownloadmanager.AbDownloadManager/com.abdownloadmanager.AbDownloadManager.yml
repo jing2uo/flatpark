@@ -42,9 +42,9 @@ modules:
         filename: abdm.tar.gz
         only-arches:
           - x86_64
-        url: https://github.com/amir1376/ab-download-manager/releases/download/v1.9.1/ABDownloadManager_1.9.1_linux_x64.tar.gz
-        sha256: 7aab547c074156588d6f543b3d25cdc1368cd39facff83389950a1875296b31e
-        size: 91842109
+        url: https://github.com/amir1376/ab-download-manager/releases/download/v1.9.2/ABDownloadManager_1.9.2_linux_x64.tar.gz
+        sha256: f80bbb0db2e34649bbccb20fd1f9767c395de8eca70cb11f30f168350577e888
+        size: 91845867
       # END MANAGED EXTRA-DATA
       - type: file
         path: apply_extra.sh

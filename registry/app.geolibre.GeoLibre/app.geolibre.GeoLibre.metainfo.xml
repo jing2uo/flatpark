@@ -11,8 +11,10 @@
   <url type="homepage">https://geolibre.app</url>
   <url type="bugtracker">https://github.com/opengeos/GeoLibre/issues</url>
   <url type="vcs-browser">https://github.com/opengeos/GeoLibre</url>
+  <!-- Packaged and published with the upstream developers' permission:
+       https://github.com/opengeos/GeoLibre/issues/696 -->
   <description>
-    <p>This is a community package of GeoLibre, maintained independently.</p>
+    <p>This is a community package of GeoLibre, maintained independently and published with the permission of its developers.</p>
     <p>GeoLibre is a lightweight, cloud-native GIS platform for visualizing, exploring and analyzing geospatial data. The same app runs in the web browser, on the desktop, on mobile and inside Jupyter notebooks. The map view is powered by MapLibre, with deck.gl layers and in-browser DuckDB-WASM for fast SQL analysis of vector data.</p>
     <p>Features:</p>
     <ul>

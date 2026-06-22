@@ -1,0 +1,92 @@
+#!/bin/sh
+set -eu
+
+# Keep everything inside the per-app data dir; the real home is never touched
+# (no --filesystem=home in finish-args, and HOME is redirected here).
+export HOME="$XDG_DATA_HOME/home"
+mkdir -p "$HOME"
+
+# thinkorswim is a Java/Swing app launched via install4j; this Flatpak grants
+# X11 (not Wayland), so the bundled JRE's AWT uses xcb without extra hints.
+
+jre_home=/app/extra/jre
+export INSTALL4J_JAVA_HOME_OVERRIDE="$jre_home"
+export LD_LIBRARY_PATH="$jre_home/lib:$jre_home/lib/server${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
+# The installer derives the install dir from user.home and ignores a differing
+# -dir, so the app lands at $HOME/thinkorswim (HOME is redirected into the data
+# dir above). Point app_dir there and still pass -dir for forward-compat.
+app_dir="$HOME/thinkorswim"
+
+# First launch: install thinkorswim into the writable data dir using the bundled
+# JRE. install4j then manages its own jar downloads/updates there from Schwab's
+# config servers (the app has network); /app stays read-only.
+if [ ! -x "$app_dir/thinkorswim" ]; then
+    work="${XDG_CACHE_HOME:-$HOME/.cache}/thinkorswim-install"
+    rm -rf "$work"; mkdir -p "$work/bin" "$work/fc-cache" "$XDG_CACHE_HOME/install4j"
+    cp /app/extra/thinkorswim-installer.sh "$work/installer.sh"
+
+    # Pre-seed install4j's JRE cache so it accepts the bundled JRE instead of
+    # scanning the system (the sandbox has none) — without this it can't locate
+    # java and the installer fails to start. The version is read from the JRE's
+    # own release file so this keeps matching when the JRE is bumped.
+    jre_ver="$(sed -nE 's/^JAVA_VERSION="?([0-9]+)\.([0-9]+)\.([0-9]+).*/\1 \2 \3/p' "$jre_home/release" 2>/dev/null)"
+    # shellcheck disable=SC2086
+    set -- $jre_ver
+    v_major="${1:-21}"; v_minor="${2:-0}"; v_micro="${3:-0}"
+    java_mtime="$(date -r "$jre_home/bin/java" +%s 2>/dev/null || stat -c %Y "$jre_home/bin/java" 2>/dev/null || echo 0)"
+    printf 'JRE_VERSION\t%s\t%s\t%s\t%s\t0\nJRE_INFO\t%s\t1\t%s\t1\n' \
+        "$jre_home" "$v_major" "$v_minor" "$v_micro" "$jre_home" "$java_mtime" \
+        > "$XDG_CACHE_HOME/install4j/jre_version"
+
+    # The installer is a Java app; give fontconfig a writable cache dir.
+    cat > "$work/fonts.conf" <<EOF
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+<fontconfig>
+  <dir>/usr/share/fonts</dir>
+  <dir>/run/host/fonts</dir>
+  <cachedir>$work/fc-cache</cachedir>
+</fontconfig>
+EOF
+
+    # install4j's pre-install `df -k` space check can choke on the sandbox
+    # overlay fs (non-numeric output -> false "no space"); normalize that query.
+    cat > "$work/bin/df" <<'DF'
+#!/bin/sh
+set -eu
+real=/usr/bin/df; [ -x "$real" ] || real=/bin/df
+if [ "${1:-}" = "-k" ] && [ "$#" -ge 2 ]; then
+    for a in "$@"; do t="$a"; done
+    line="$("$real" -Pk "$t" 2>/dev/null | sed -n '2p')" || line=
+    set -- $line
+    if [ "$#" -ge 4 ]; then
+        case "$2$3$4" in *[!0-9]*) exec "$real" -k "$t";; esac
+        printf 'Filesystem 1K-blocks Used Available Use%% Mounted on\n'
+        printf 'flatpak %s %s %s 0%% %s\n' "$2" "$3" "$4" "${6:-$t}"
+        exit 0
+    fi
+    exec "$real" -k "$t"
+fi
+exec "$real" "$@"
+DF
+    chmod +x "$work/bin/df"
+
+    PATH="$work/bin:$PATH" \
+    FONTCONFIG_FILE="$work/fonts.conf" \
+    INSTALL4J_ADD_VM_PARAMS="-Duser.home=$HOME" \
+        sh "$work/installer.sh" -q -dir "$app_dir" -overwrite
+
+    # Run the installed launcher with our JRE (drop any baked-in java prefix).
+    sed -i 's|^INSTALL4J_JAVA_PREFIX=.*|INSTALL4J_JAVA_PREFIX=|' "$app_dir/thinkorswim" || true
+    rm -rf "$work"
+fi
+
+extra_vm_params="-Duser.home=$HOME"
+if [ "${INSTALL4J_ADD_VM_PARAMS:-}" ]; then
+    export INSTALL4J_ADD_VM_PARAMS="$INSTALL4J_ADD_VM_PARAMS $extra_vm_params"
+else
+    export INSTALL4J_ADD_VM_PARAMS="$extra_vm_params"
+fi
+
+exec "$app_dir/thinkorswim" "$@"

@@ -1,0 +1,21 @@
+id: com.schwab.thinkorswim
+name: thinkorswim
+summary: Charles Schwab advanced trading and analysis platform
+website: https://www.schwab.com/trading/thinkorswim
+build:
+  manifest: com.schwab.thinkorswim.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Finance
+  tags:
+    - Trading
+    - Markets
+    - Charts
+    - Options
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: true
+  extra_data_first: true
+  dangerous_permissions: []

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.schwab.thinkorswim</id>
+  <name>thinkorswim</name>
+  <summary>Charles Schwab advanced trading and analysis platform</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>LicenseRef-proprietary</project_license>
+  <developer id="com.schwab">
+    <name>Charles Schwab &amp; Co., Inc.</name>
+  </developer>
+  <url type="homepage">https://www.schwab.com/trading/thinkorswim</url>
+  <url type="help">https://www.schwab.com/trading/thinkorswim/desktop</url>
+  <description>
+    <p>This is a community package of thinkorswim and not officially supported by Charles Schwab &amp; Co., Inc.</p>
+    <p>thinkorswim is a desktop trading platform for Charles Schwab brokerage accounts, with charting, analysis, and order entry for stocks, options, and futures. A paperMoney simulated-trading mode is included.</p>
+  </description>
+  <launchable type="desktop-id">com.schwab.thinkorswim.desktop</launchable>
+  <categories>
+    <category>Finance</category>
+  </categories>
+  <content_rating type="oars-1.1">
+    <content_attribute id="money-purchasing">intense</content_attribute>
+  </content_rating>
+  <provides>
+    <binary>thinkorswim</binary>
+  </provides>
+  <releases>
+    <release version="2026.04.23" date="2026-04-23" />
+  </releases>
+</component>

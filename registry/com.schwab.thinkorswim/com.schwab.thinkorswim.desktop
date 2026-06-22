@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=thinkorswim
+Comment=Charles Schwab trading and analysis platform
+Exec=thinkorswim
+Icon=com.schwab.thinkorswim
+Terminal=false
+Categories=Office;Finance;
+StartupWMClass=java-lang-Thread

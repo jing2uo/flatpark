@@ -108,6 +108,7 @@ for app_id in "${apps[@]}"; do
     load_app "$app_id"
     icon="$(icon_url_for_app)"
     install_cmd="flatpak --user install $REMOTE_NAME $APP_ID"
+    packaging_url="${PACKAGING_REPO_URL%/}/tree/$PACKAGING_BRANCH/registry/$APP_ID"
     {
         printf '{\n'
         printf '  "id": "%s",\n' "$(json_escape "$APP_ID")"
@@ -127,6 +128,7 @@ for app_id in "${apps[@]}"; do
         printf '  "remoteCmd": "%s",\n' "$(json_escape "$remote_cmd")"
         printf '  "website": "%s",\n' "$(json_escape "$APP_WEBSITE")"
         printf '  "sourceUrl": "%s",\n' "$(json_escape "$APP_SOURCE_URL")"
+        printf '  "packagingUrl": "%s",\n' "$(json_escape "$packaging_url")"
         printf '  "_srcDir": "%s",\n' "$(json_escape "$APP_SRC")"
         printf '  "_manifest": "%s"\n' "$(json_escape "$MANIFEST")"
         printf '}\n'

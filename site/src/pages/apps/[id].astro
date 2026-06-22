@@ -24,7 +24,8 @@ const detailRows = [
   latest && { label: 'Version', value: `${latest.version}${latest.date ? ` · ${latest.date}` : ''}` },
   app.website && { label: 'Website', value: 'Homepage', href: app.website },
   app.urls?.help && { label: 'Support', value: 'Help & support', href: app.urls.help },
-  app.sourceUrl && { label: 'Source', value: 'Packaging repo', href: app.sourceUrl },
+  app.sourceUrl && { label: 'Source', value: app.name, href: app.sourceUrl },
+  app.packagingUrl && { label: 'Packaging', value: 'flatpark/registry', href: app.packagingUrl },
 ].filter(Boolean);
 
 const hasShots = (app.screenshots?.length ?? 0) > 0;

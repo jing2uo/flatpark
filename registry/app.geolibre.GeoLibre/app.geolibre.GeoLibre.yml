@@ -1,0 +1,49 @@
+id: app.geolibre.GeoLibre
+runtime: org.gnome.Platform
+runtime-version: "50"
+sdk: org.gnome.Sdk
+command: geolibre-desktop
+separate-locales: false
+build-options:
+  no-debuginfo: true
+finish-args:
+  # Tauri/WebKitGTK GIS app. The GNOME runtime supplies webkit2gtk-4.1, gtk-3,
+  # libsoup-3 and javascriptcoregtk-4.1 — every library the binary links, so
+  # nothing is bundled or built. Cloud-native: needs the network for basemaps,
+  # tiles and remote datasets; dri for hardware-accelerated WebKit rendering.
+  # Local files are opened through the file-chooser portal, so --filesystem=home
+  # is intentionally not granted.
+  - --share=ipc
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+modules:
+  - name: geolibre
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 apply_extra.sh /app/bin/apply_extra
+      - install -Dm755 geolibre-wrapper /app/bin/geolibre-desktop
+      - install -Dm644 app.geolibre.GeoLibre.desktop /app/share/applications/app.geolibre.GeoLibre.desktop
+      - install -Dm644 app.geolibre.GeoLibre.metainfo.xml /app/share/metainfo/app.geolibre.GeoLibre.metainfo.xml
+      - install -Dm644 app.geolibre.GeoLibre.png /app/share/icons/hicolor/512x512/apps/app.geolibre.GeoLibre.png
+    sources:
+      # BEGIN MANAGED EXTRA-DATA
+      - type: extra-data
+        filename: geolibre.deb
+        only-arches:
+          - x86_64
+        url: https://github.com/opengeos/GeoLibre/releases/download/v1.5.0/GeoLibre.Desktop_1.5.0_amd64.deb
+        sha256: d1591ab243795fd51bf4653b20adec9836a21dea2d44b8ea403f70fb3bed2595
+        size: 30164018
+      # END MANAGED EXTRA-DATA
+      - type: file
+        path: apply_extra.sh
+      - type: file
+        path: geolibre-wrapper
+      - type: file
+        path: app.geolibre.GeoLibre.desktop
+      - type: file
+        path: app.geolibre.GeoLibre.metainfo.xml
+      - type: file
+        path: app.geolibre.GeoLibre.png

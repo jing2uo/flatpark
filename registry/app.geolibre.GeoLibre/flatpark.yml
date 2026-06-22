@@ -1,0 +1,22 @@
+id: app.geolibre.GeoLibre
+name: GeoLibre
+summary: Lightweight cloud-native GIS for visualizing and analyzing geospatial data
+website: https://geolibre.app
+source_url: https://github.com/opengeos/GeoLibre
+build:
+  manifest: app.geolibre.GeoLibre.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Science
+  tags:
+    - GIS
+    - Maps
+    - Geospatial
+    - Science
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: false
+  extra_data_first: true
+  dangerous_permissions: []

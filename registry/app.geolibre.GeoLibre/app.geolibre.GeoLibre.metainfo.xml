@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>app.geolibre.GeoLibre</id>
+  <name>GeoLibre</name>
+  <summary>Lightweight cloud-native GIS for visualizing and analyzing geospatial data</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <developer id="app.geolibre">
+    <name>opengeos</name>
+  </developer>
+  <url type="homepage">https://geolibre.app</url>
+  <url type="bugtracker">https://github.com/opengeos/GeoLibre/issues</url>
+  <url type="vcs-browser">https://github.com/opengeos/GeoLibre</url>
+  <description>
+    <p>This is a community package of GeoLibre, maintained independently.</p>
+    <p>GeoLibre is a lightweight, cloud-native GIS platform for visualizing, exploring and analyzing geospatial data. The same app runs in the web browser, on the desktop, on mobile and inside Jupyter notebooks. The map view is powered by MapLibre, with deck.gl layers and in-browser DuckDB-WASM for fast SQL analysis of vector data.</p>
+    <p>Features:</p>
+    <ul>
+      <li>Interactive maps with vector and raster layers</li>
+      <li>In-browser SQL analysis of geospatial data via DuckDB-WASM</li>
+      <li>deck.gl visualization layers</li>
+      <li>Open common GIS formats (GeoJSON, GeoParquet, COG, PMTiles and more)</li>
+    </ul>
+    <p>Sandbox note: GeoLibre also ships an optional Python backend ("geolibre_server") for heavier server-side geoprocessing (raster/ML, WhiteboxTools, Apache Sedona) and the Jupyter integration. That backend needs additional Python geospatial dependencies that are not bundled, so those advanced server-side features are not available inside the sandbox. The core map viewer, data visualization and in-browser DuckDB analysis work normally.</p>
+  </description>
+  <screenshots>
+    <screenshot type="default">
+      <caption>GeoLibre visualizing geospatial data</caption>
+      <image>https://files.opengeos.org/GeoLibre-demo.webp</image>
+    </screenshot>
+  </screenshots>
+  <launchable type="desktop-id">app.geolibre.GeoLibre.desktop</launchable>
+  <categories>
+    <category>Science</category>
+    <category>Geoscience</category>
+  </categories>
+  <keywords>
+    <keyword>GIS</keyword>
+    <keyword>map</keyword>
+    <keyword>geospatial</keyword>
+    <keyword>raster</keyword>
+    <keyword>vector</keyword>
+    <keyword>MapLibre</keyword>
+    <keyword>DuckDB</keyword>
+  </keywords>
+  <requires>
+    <display_length compare="ge">768</display_length>
+  </requires>
+  <recommends>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </recommends>
+  <content_rating type="oars-1.1" />
+  <provides>
+    <binary>geolibre-desktop</binary>
+  </provides>
+  <releases>
+    <release version="1.5.0" date="2026-06-20" />
+  </releases>
+</component>

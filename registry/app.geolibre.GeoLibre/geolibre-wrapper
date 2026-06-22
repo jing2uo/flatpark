@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+
+# GeoLibre is a Tauri (WebKitGTK) app staged by apply_extra to /app/extra/usr.
+# It links only libraries in org.gnome.Platform (webkit2gtk-4.1, gtk-3, soup-3,
+# javascriptcoregtk-4.1). WebKitGTK's DMABUF renderer paints a blank window under
+# many drivers inside the Flatpak sandbox, so disable it. Flatpak redirects
+# $HOME, so the app's config and data stay inside the sandbox.
+export WEBKIT_DISABLE_DMABUF_RENDERER=1
+exec /app/extra/usr/bin/geolibre-desktop "$@"

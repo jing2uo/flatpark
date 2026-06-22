@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=GeoLibre
+Comment=Lightweight cloud-native GIS for visualizing and analyzing geospatial data
+Exec=geolibre-desktop
+Icon=app.geolibre.GeoLibre
+Terminal=false
+Categories=Science;Geoscience;
+StartupWMClass=geolibre-desktop
+Keywords=GIS;map;geospatial;geo;raster;vector;MapLibre;DuckDB;

@@ -1,0 +1,23 @@
+id: app.yaak.Yaak
+name: Yaak
+summary: Offline, Git-friendly API client for REST, GraphQL, gRPC and WebSocket
+website: https://yaak.app
+source_url: https://github.com/mountain-loop/yaak
+build:
+  manifest: app.yaak.Yaak.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Development
+  tags:
+    - API
+    - REST
+    - GraphQL
+    - gRPC
+    - HTTP
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: false
+  extra_data_first: true
+  dangerous_permissions: []

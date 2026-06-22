@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>app.yaak.Yaak</id>
+  <name>Yaak</name>
+  <summary>Offline, Git-friendly API client for REST, GraphQL, gRPC and WebSocket</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <developer id="app.yaak">
+    <name>Yaak</name>
+  </developer>
+  <url type="homepage">https://yaak.app</url>
+  <url type="bugtracker">https://yaak.app/feedback</url>
+  <url type="vcs-browser">https://github.com/mountain-loop/yaak</url>
+  <description>
+    <p>This is a community package of Yaak, maintained independently.</p>
+    <p>Yaak is a fast, privacy-first desktop API client for REST, GraphQL, Server-Sent Events, WebSocket and gRPC, built with Tauri, Rust and React. Data stays local, secrets are encrypted, and projects are stored as Git-friendly plain text.</p>
+    <p>Features:</p>
+    <ul>
+      <li>REST, GraphQL, SSE, WebSocket and gRPC support</li>
+      <li>Local-only data with zero telemetry and encrypted secrets</li>
+      <li>Git-friendly plain-text project storage</li>
+      <li>Environment variables, template functions and request chaining</li>
+      <li>OAuth 2.0, Bearer, Basic, API Key, AWS, JWT and NTLM authentication</li>
+      <li>Import from cURL, Postman, Insomnia and OpenAPI</li>
+      <li>Extensible plugin system</li>
+    </ul>
+    <p>Some advanced features require a paid Yaak plan; the application is otherwise free and open source under the MIT license.</p>
+  </description>
+  <launchable type="desktop-id">app.yaak.Yaak.desktop</launchable>
+  <branding>
+    <color type="primary" scheme_preference="light">#8b32ff</color>
+    <color type="primary" scheme_preference="dark">#c293ff</color>
+  </branding>
+  <categories>
+    <category>Development</category>
+  </categories>
+  <keywords>
+    <keyword>api</keyword>
+    <keyword>rest</keyword>
+    <keyword>graphql</keyword>
+    <keyword>grpc</keyword>
+    <keyword>http</keyword>
+    <keyword>websocket</keyword>
+    <keyword>client</keyword>
+  </keywords>
+  <content_rating type="oars-1.1" />
+  <recommends>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </recommends>
+  <provides>
+    <binary>yaak-app-client</binary>
+  </provides>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Crafting an API request</caption>
+      <image>https://assets.yaak.app/uploads/screenshot-BLG1w_2310x1326.png</image>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="2026.4.0" date="2026-05-20" />
+  </releases>
+</component>

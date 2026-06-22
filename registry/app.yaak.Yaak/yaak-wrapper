@@ -1,0 +1,17 @@
+#!/bin/sh
+set -eu
+
+# yaak-app-client is a single Tauri (WebKitGTK) binary staged by apply_extra to
+# /app/extra/yaak/bin, alongside its vendored resources at /app/extra/yaak/lib/
+# yaak (protoc, a Node runtime for the plugin system, and the bundled plugins).
+# Tauri's resource_dir resolves those relative to the executable
+# (<exe_dir>/../lib/yaak), so no env override is needed. The binary links only
+# against libraries in org.gnome.Platform (webkit2gtk-4.1, gtk-3, libsoup-3).
+# Flatpak redirects $HOME into the per-app data dir, so Yaak's local data and
+# encrypted secrets stay inside the sandbox.
+
+# WebKitGTK's DMABUF renderer paints a blank window under many drivers inside
+# the Flatpak sandbox; the compositing path is the reliable default here.
+export WEBKIT_DISABLE_DMABUF_RENDERER=1
+
+exec /app/extra/yaak/bin/yaak-app-client "$@"

@@ -1,0 +1,55 @@
+id: app.yaak.Yaak
+runtime: org.gnome.Platform
+runtime-version: "50"
+sdk: org.gnome.Sdk
+# command MUST NOT be `yaak`: on startup Yaak probes for its companion CLI by
+# running `yaak --version` on PATH (detect_cli_version). /app/bin is on PATH, so
+# a wrapper named `yaak` would be found and re-launched — and the GUI binary has
+# no real --version flag, so it boots another window that probes again, forever
+# (a window storm). Naming it after the real binary keeps `yaak` off PATH, so the
+# CLI probe correctly finds nothing.
+command: yaak-app-client
+separate-locales: false
+build-options:
+  no-debuginfo: true
+finish-args:
+  # Tauri/WebKitGTK API client: network is the core function (REST, GraphQL,
+  # gRPC, WebSocket, SSE); dri for hardware-accelerated WebKit rendering. Yaak
+  # encrypts its own data and does not link libsecret, so no Secret Service
+  # access is granted. No --filesystem=home: project files and Git-sync
+  # directories are reached through the file-chooser portal.
+  - --share=ipc
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  - --talk-name=org.freedesktop.Notifications
+modules:
+  - name: yaak
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 apply_extra.sh /app/bin/apply_extra
+      - install -Dm755 yaak-wrapper /app/bin/yaak-app-client
+      - install -Dm644 app.yaak.Yaak.desktop /app/share/applications/app.yaak.Yaak.desktop
+      - install -Dm644 app.yaak.Yaak.metainfo.xml /app/share/metainfo/app.yaak.Yaak.metainfo.xml
+      - install -Dm644 app.yaak.Yaak.png /app/share/icons/hicolor/256x256/apps/app.yaak.Yaak.png
+    sources:
+      # BEGIN MANAGED EXTRA-DATA
+      - type: extra-data
+        filename: yaak.deb
+        only-arches:
+          - x86_64
+        url: https://github.com/mountain-loop/yaak/releases/download/v2026.4.0/yaak_2026.4.0_amd64.deb
+        sha256: 96b746d76fddd63e68fe6a34e00fb9483ef485cc6f6a8c8945eb16b99e007f39
+        size: 80759638
+      # END MANAGED EXTRA-DATA
+      - type: file
+        path: apply_extra.sh
+      - type: file
+        path: yaak-wrapper
+      - type: file
+        path: app.yaak.Yaak.desktop
+      - type: file
+        path: app.yaak.Yaak.metainfo.xml
+      - type: file
+        path: app.yaak.Yaak.png

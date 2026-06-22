@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Yaak
+Comment=Play with APIs, intuitively
+Exec=yaak-app-client %U
+Icon=app.yaak.Yaak
+Terminal=false
+Categories=Development;
+StartupWMClass=yaak-app-client
+Keywords=api;rest;graphql;grpc;http;websocket;sse;client;

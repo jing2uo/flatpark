@@ -36,10 +36,11 @@ cat > "$app/io.flatpark.TestOne.metainfo.xml" <<'EOF'
   <url type="homepage">https://example.org/</url>
   <description>
     <p>A test application for FlatPark.</p>
+    <p>Run <code>test-one --help</code> for usage.</p>
     <p>Features:</p>
     <ul>
       <li>Feature alpha</li>
-      <li>Feature beta</li>
+      <li>Optional cap: <code>flatpak override --user --filesystem=home io.flatpark.TestOne</code></li>
     </ul>
   </description>
   <screenshots><screenshot type="default"><caption>Main</caption><image>https://example.org/shot.png</image></screenshot></screenshots>
@@ -78,7 +79,9 @@ assert_contains "$out" "A test application for FlatPark."
 # description is parsed into ordered blocks: paragraphs + list items
 assert_contains "$out" "\"type\": \"list\""
 assert_contains "$out" "Feature alpha"
-assert_contains "$out" "Feature beta"
+# inline <code> inside <p> and <li> must be preserved, with the surrounding text
+assert_contains "$out" "Run test-one --help for usage."
+assert_contains "$out" "Optional cap: flatpak override --user --filesystem=home io.flatpark.TestOne"
 assert_contains "$out" "\"version\": \"1.0\""
 assert_contains "$out" "\"label\": \"MIT\""
 assert_contains "$out" "https://example.org/shot.png"

@@ -16,11 +16,28 @@ const textOf = (x) => (x == null ? '' : typeof x === 'object' ? String(x['#text'
 const xml = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '@_', trimValues: true });
 // A second parser that preserves child order, so an AppStream <description>'s
 // <p> and <ul>/<ol> blocks keep the order they appear in the document.
-const xmlOrdered = new XMLParser({ ignoreAttributes: true, preserveOrder: true, trimValues: true });
+// trimValues stays off so the spaces around inline children (e.g. the text
+// before a <code>) survive; orderedText collapses whitespace runs at the end.
+const xmlOrdered = new XMLParser({ ignoreAttributes: true, preserveOrder: true, trimValues: false });
 
-// Flatten preserveOrder text nodes (e.g. [{ '#text': 'hi' }]) into a string.
+// Flatten preserveOrder nodes into a string, recursing into inline children so
+// the text inside <code>/<em>/... is kept (e.g. a <li>'s flatpak-override
+// command). Collapse whitespace runs introduced by source indentation.
 const orderedText = (nodes) =>
-  toArray(nodes).map((n) => (n && typeof n === 'object' ? n['#text'] ?? '' : n)).join('').trim();
+  toArray(nodes)
+    .map((n) => {
+      if (n == null) return '';
+      if (typeof n !== 'object') return String(n);
+      if ('#text' in n) return String(n['#text'] ?? '');
+      // preserveOrder element wrapper, e.g. { code: [ ...children ] } — recurse.
+      return Object.keys(n)
+        .filter((k) => k !== ':@')
+        .map((k) => orderedText(n[k]))
+        .join('');
+    })
+    .join('')
+    .replace(/\s+/g, ' ')
+    .trim();
 
 // Parse an AppStream <description> into ordered blocks the detail page renders:
 // { type: 'p', text } for paragraphs and { type: 'list', items } for <ul>/<ol>.

@@ -40,9 +40,9 @@ modules:
         filename: hmcl.jar
         only-arches:
           - x86_64
-        url: https://github.com/HMCL-dev/HMCL/releases/download/v3.14.1/HMCL-3.14.1.jar
-        sha256: 8fcf8f21b3724a5c042ca29db1841ee77fbec3dcee9ca68df5346a66af8ba582
-        size: 9786994
+        url: https://github.com/HMCL-dev/HMCL/releases/download/v3.15.1/HMCL-3.15.1.jar
+        sha256: 52feb0dd71324a8aac2829995668839067e67ab7ad1dfbe9c05998309cf49afe
+        size: 9837845
       - type: extra-data
         filename: jre.tar.gz
         only-arches:

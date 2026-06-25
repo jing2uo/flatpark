@@ -33,15 +33,33 @@ jobs:
           if git diff --quiet -- registry/; then
             echo "no pin changes"; exit 0
           fi
-          branch=auto/update-pins
+          date="$(date -u +%Y-%m-%d)"
+          branch="auto/update-pins-$date"
           git config user.name "flatpark-bot"
           git config user.email "bot@flatpark.org"
           git checkout -B "$branch"
           git add registry/
           git commit -m "chore(update): refresh extra-data pins (${changed:-apps})"
           git push -f origin "$branch"
-          body="$(printf 'Automated pin refresh for: %s\n\nMerging triggers a rebuild + publish of the changed app(s).' "${changed:-(see diff)}")"
-          if ! gh pr view "$branch" >/dev/null 2>&1; then
-            gh pr create --base main --head "$branch" \
-              --title "Update extra-data pins" --body "$body"
+
+          # One app id per line, as a markdown list
+          apps_md="$(for id in ${changed:-}; do printf -- '- `%s`\n' "$id"; done)"
+          [ -n "$apps_md" ] || apps_md='- (see diff)'
+          title="Update extra-data pins ($date)"
+          body="$(printf 'Automated extra-data pin refresh — %s\n\n**Updated apps:**\n\n%s\n\nMerging triggers a rebuild + publish of the changed app(s).' "$date" "$apps_md")"
+
+          # Create today's PR, or refresh it if this branch already opened one earlier today
+          if [ -z "$(gh pr list --head "$branch" --state open --json number -q '.[].number')" ]; then
+            gh pr create --base main --head "$branch" --title "$title" --body "$body"
+          else
+            gh pr edit "$branch" --title "$title" --body "$body"
           fi
+
+          # Supersede older open auto-update PRs (today's batch is recomputed against main,
+          # so it's a superset of any unmerged earlier one) — keep a single open PR.
+          new="$(gh pr list --head "$branch" --state open --json number -q '.[0].number')"
+          for n in $(gh pr list --state open --json number,headRefName \
+                       -q ".[] | select(.headRefName | startswith(\"auto/update-pins-\")) | select(.headRefName != \"$branch\") | .number"); do
+            echo "superseding older auto-update PR #$n"
+            gh pr close "$n" --comment "Superseded by #$new ($date pin refresh)." --delete-branch || true
+          done

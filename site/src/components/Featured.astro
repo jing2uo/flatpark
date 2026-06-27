@@ -30,14 +30,6 @@ const featured = (apps ?? []).filter((a) => a.featured);
             <div class="truncate text-xs text-muted">{app.section || app.category} · developer-approved</div>
           </div>
         </div>
-        {app.installCmd && (
-          <button
-            type="button"
-            class="mx-4 mb-4 block w-[calc(100%-2rem)] truncate rounded-lg bg-[#241f31] px-3 py-2.5 text-left font-mono text-xs text-[#e9eaed]"
-            data-copy={app.installCmd}
-            title="Copy install command"
-          >$ {app.installCmd}</button>
-        )}
       </div>
     ))}
 

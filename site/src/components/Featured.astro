@@ -19,7 +19,7 @@ const featured = (apps ?? []).filter((a) => a.featured);
     {featured.map((app, i) => (
       <div class={i === 0 ? '' : 'hidden'} data-fslide>
         {app.screenshots?.[0]?.url && (
-          <a href={`/apps/${app.id}/`} class="block h-44 overflow-hidden bg-[#0d0e12]">
+          <a href={`/apps/${app.id}/`} class="block h-64 overflow-hidden bg-[#0d0e12]">
             <img src={app.screenshots[0].url} alt="" loading="lazy" class="h-full w-full object-cover" />
           </a>
         )}

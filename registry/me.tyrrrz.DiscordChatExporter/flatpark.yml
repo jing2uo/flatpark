@@ -1,0 +1,23 @@
+id: me.tyrrrz.DiscordChatExporter
+name: DiscordChatExporter
+summary: Export Discord chat logs to a file
+website: https://github.com/Tyrrrz/DiscordChatExporter
+source_url: https://github.com/Tyrrrz/DiscordChatExporter
+build:
+  manifest: me.tyrrrz.DiscordChatExporter.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Utility
+  tags:
+    - Discord
+    - Export
+    - Backup
+    - Chat
+    - Utility
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: false
+  extra_data_first: true
+  dangerous_permissions: []

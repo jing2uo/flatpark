@@ -1,0 +1,21 @@
+#!/bin/sh
+set -eu
+
+# DiscordChatExporter is a self-contained .NET / Avalonia apphost staged by
+# apply_extra to /app/extra/dce. The launcher locates its bundled CoreCLR, the
+# managed assemblies and SkiaSharp relative to itself; X11, libGL, fontconfig,
+# libstdc++ and ICU come from org.freedesktop.Platform.
+#
+# By default the app writes Settings.dat next to its own binary — which is the
+# read-only extra-data dir, so it crashes on startup. Upstream lets us redirect
+# it: point DISCORDCHATEXPORTER_SETTINGS_PATH at the writable per-app config dir
+# (a trailing slash makes the app append Settings.dat). Flatpak persists
+# XDG_CONFIG_HOME across updates, so the token and settings survive.
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}"
+mkdir -p "$config_dir"
+export DISCORDCHATEXPORTER_SETTINGS_PATH="$config_dir/"
+# The in-app auto-updater would download into the read-only /app dir and is
+# redundant — FlatPak tracks new upstream releases via extra-data.
+export DISCORDCHATEXPORTER_ALLOW_AUTO_UPDATE=false
+
+exec /app/extra/dce/DiscordChatExporter "$@"

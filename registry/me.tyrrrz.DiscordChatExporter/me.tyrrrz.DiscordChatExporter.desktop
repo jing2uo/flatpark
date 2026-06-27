@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=DiscordChatExporter
+Comment=Export Discord chat logs to a file
+Exec=discordchatexporter
+Icon=me.tyrrrz.DiscordChatExporter
+Terminal=false
+Categories=Utility;Network;
+StartupWMClass=DiscordChatExporter
+StartupNotify=true
+Keywords=discord;chat;export;backup;logs;

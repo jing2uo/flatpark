@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>me.tyrrrz.DiscordChatExporter</id>
+  <name>DiscordChatExporter</name>
+  <summary>Export Discord chat logs to a file</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <developer id="me.tyrrrz">
+    <name>Oleksii Holub</name>
+  </developer>
+  <url type="homepage">https://github.com/Tyrrrz/DiscordChatExporter</url>
+  <url type="bugtracker">https://github.com/Tyrrrz/DiscordChatExporter/issues</url>
+  <url type="vcs-browser">https://github.com/Tyrrrz/DiscordChatExporter</url>
+  <description>
+    <p>This is a community package of DiscordChatExporter, maintained independently and unaffiliated with the upstream project or Discord.</p>
+    <p>DiscordChatExporter lets you export the message history of any Discord channel you have access to into a file. It supports several formats — HTML (dark/light), plain text, JSON and CSV — and can include attachments, embeds, reactions and Markdown formatting.</p>
+    <p>You authenticate with your own Discord token; the app only reads channels your account can already see. Exported files and downloaded assets are written to ~/Downloads by default — to save elsewhere, grant the directory with "flatpak override".</p>
+  </description>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Selecting channels to export</caption>
+      <image>https://raw.githubusercontent.com/Tyrrrz/DiscordChatExporter/05f8df51e9edaeed41b44bd3b4fb0dc2402502e7/.assets/list.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Exported HTML transcript</caption>
+      <image>https://raw.githubusercontent.com/Tyrrrz/DiscordChatExporter/05f8df51e9edaeed41b44bd3b4fb0dc2402502e7/.assets/output.png</image>
+    </screenshot>
+  </screenshots>
+  <launchable type="desktop-id">me.tyrrrz.DiscordChatExporter.desktop</launchable>
+  <categories>
+    <category>Utility</category>
+    <category>Network</category>
+  </categories>
+  <keywords>
+    <keyword>discord</keyword>
+    <keyword>chat</keyword>
+    <keyword>export</keyword>
+    <keyword>backup</keyword>
+  </keywords>
+  <recommends>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </recommends>
+  <content_rating type="oars-1.1" />
+  <provides>
+    <binary>discordchatexporter</binary>
+  </provides>
+  <releases>
+    <release version="2.47.3" date="2026-06-26" />
+  </releases>
+</component>

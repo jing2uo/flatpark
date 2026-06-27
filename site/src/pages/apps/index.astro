@@ -1,0 +1,68 @@
+---
+import Base from '../../layouts/Base.astro';
+import Topbar from '../../components/Topbar.astro';
+import AppCard from '../../components/AppCard.astro';
+import { loadApps, loadCatalog } from '../../lib/data.mjs';
+
+const { repo } = loadCatalog();
+const apps = loadApps();
+const ordered = [...apps].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+
+// Curated sections present in the catalog, with counts, for the sidebar.
+const counts = {};
+for (const a of apps) {
+  const s = a.section || 'Utilities';
+  counts[s] = (counts[s] || 0) + 1;
+}
+const sections = Object.entries(counts).sort((a, b) => a[0].localeCompare(b[0]));
+---
+
+<Base title={`Browse apps — ${repo.title}`} description={`Browse all ${apps.length} apps on ${repo.title} by category.`}>
+  <Topbar repo={repo} />
+  <main class="mx-auto max-w-6xl px-5 py-8">
+    <div class="grid gap-8 lg:grid-cols-[220px_1fr]">
+      <!-- category sidebar -->
+      <aside class="lg:sticky lg:top-20 lg:self-start">
+        <p class="px-3 pb-2 text-[11px] font-extrabold tracking-widest text-muted uppercase">Browse</p>
+        <nav class="flex flex-wrap gap-2 lg:flex-col lg:gap-0.5" data-sections>
+          <button class="seg-side is-active" data-section-filter="">
+            <span>All</span><b>{apps.length}</b>
+          </button>
+          {sections.map(([name, n]) => (
+            <button class="seg-side" data-section-filter={name}>
+              <span>{name}</span><b>{n}</b>
+            </button>
+          ))}
+        </nav>
+      </aside>
+
+      <!-- catalog -->
+      <div>
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h1 class="text-xl font-extrabold tracking-tight">All apps</h1>
+          <select
+            data-sort
+            aria-label="Sort apps"
+            class="h-9 rounded-lg border border-line bg-surface px-3 text-sm font-semibold outline-none focus:border-brand"
+          >
+            <option value="featured">Sort: Featured</option>
+            <option value="name">Sort: Name (A–Z)</option>
+            <option value="updated">Sort: Recently updated</option>
+          </select>
+        </div>
+
+        <div data-grid class="mt-6 grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
+          {ordered.map((app) => <AppCard app={app} />)}
+        </div>
+        <div
+          class="mt-6 rounded-2xl border border-dashed border-line p-12 text-center text-muted"
+          data-empty
+          hidden
+        >
+          <h2 class="font-bold text-ink">No matching apps</h2>
+          <p>Try a different search or category.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</Base>

@@ -3,9 +3,41 @@
 // flatpark.yml. Best-effort: a missing or malformed source is skipped, never
 // fatal, so the build always proceeds.
 import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
+import { execSync } from 'node:child_process';
 import { join } from 'node:path';
 import YAML from 'yaml';
 import { XMLParser } from 'fast-xml-parser';
+
+// Curated top-level sections. Raw AppStream/descriptor categories map into this
+// fixed set so the catalog filter stays small no matter how many raw categories
+// appear; anything unmapped falls back to Utilities.
+const SECTION_MAP = {
+  Development: 'Development', IDE: 'Development', Building: 'Development',
+  Finance: 'Finance',
+  Network: 'Communication', Communication: 'Communication', Chat: 'Communication',
+  InstantMessaging: 'Communication', Email: 'Communication',
+  Science: 'Science', Education: 'Science', Geoscience: 'Science',
+  Office: 'Office', Spreadsheet: 'Office',
+  Graphics: 'Graphics & Design', Photography: 'Graphics & Design',
+  AudioVideo: 'Audio & Video', Audio: 'Audio & Video', Video: 'Audio & Video', Player: 'Audio & Video',
+  Game: 'Games',
+  System: 'System', Settings: 'System', Security: 'System',
+  Utility: 'Utilities', Utilities: 'Utilities',
+};
+const sectionFor = (cat) => SECTION_MAP[cat] || 'Utilities';
+
+// Last time we touched this app's package, for the "Recently updated" sort.
+// Git commit time of the registry dir is universal (no upstream fetch); fall
+// back to the latest release date, then empty. Best-effort like everything here.
+function gitUpdated(srcDir) {
+  if (!srcDir || !existsSync(srcDir)) return '';
+  try {
+    return execSync('git log -1 --format=%cI -- .', { cwd: srcDir, stdio: ['ignore', 'pipe', 'ignore'] })
+      .toString().trim();
+  } catch {
+    return '';
+  }
+}
 
 const dataDir = process.env.FLATPARK_DATA_DIR || 'public';
 const appsDir = join(dataDir, 'apps');
@@ -241,6 +273,7 @@ function enrichOne(file) {
       if (fy.website) out.website = fy.website;
       if (fy.policy?.proprietary) out.proprietary = true;
       if (fy.build?.mode) out.buildMode = fy.build.mode;
+      out.featured = !!fy.catalog?.featured; // opt-in, developer-approved only
     }
   } catch (e) {
     console.warn(`[enrich] ${base.id}: flatpark.yml parse failed: ${e.message}`);
@@ -248,6 +281,11 @@ function enrichOne(file) {
 
   if (!out.website) out.website = out.urls.homepage || '';
   if (out.license?.label === 'Proprietary') out.proprietary = true;
+
+  // Catalog facets for sort + filter (homepage / browse page).
+  out.section = sectionFor(out.category);
+  out.featured = out.featured || false;
+  out.updated = gitUpdated(srcDir) || out.releases?.[0]?.date || '';
 
   writeFileSync(path, JSON.stringify(out, null, 2) + '\n');
   return out.id;

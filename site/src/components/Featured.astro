@@ -1,0 +1,52 @@
+---
+// Editor's pick carousel for the homepage hero — screenshot-led so it reads as a
+// showcase, not another grid card. Only developer-approved apps (catalog.featured)
+// appear; renders nothing when none are featured.
+const { apps } = Astro.props;
+const featured = (apps ?? []).filter((a) => a.featured);
+---
+
+{featured.length > 0 && (
+  <div
+    class="overflow-hidden rounded-2xl border border-line bg-surface shadow-xl"
+    data-fcarousel
+  >
+    <div class="flex items-center justify-between border-b border-line px-4 py-3">
+      <span class="text-[11px] font-extrabold tracking-widest text-brand uppercase">★ Editor's pick</span>
+      <span class="text-xs font-semibold text-muted" data-fcount>1 / {featured.length}</span>
+    </div>
+
+    {featured.map((app, i) => (
+      <div class={i === 0 ? '' : 'hidden'} data-fslide>
+        {app.screenshots?.[0]?.url && (
+          <a href={`/apps/${app.id}/`} class="block h-44 overflow-hidden bg-[#0d0e12]">
+            <img src={app.screenshots[0].url} alt="" loading="lazy" class="h-full w-full object-cover" />
+          </a>
+        )}
+        <div class="flex items-center gap-3 p-4">
+          {app.icon && <img src={app.icon} alt="" width="46" height="46" class="h-[46px] w-[46px] shrink-0 rounded-xl border border-line bg-canvas object-contain p-1.5" />}
+          <div class="min-w-0">
+            <a href={`/apps/${app.id}/`} class="block truncate text-base font-extrabold hover:text-brand">{app.name}</a>
+            <div class="truncate text-xs text-muted">{app.section || app.category} · developer-approved</div>
+          </div>
+        </div>
+        {app.installCmd && (
+          <button
+            type="button"
+            class="mx-4 mb-4 block w-[calc(100%-2rem)] truncate rounded-lg bg-[#241f31] px-3 py-2.5 text-left font-mono text-xs text-[#e9eaed]"
+            data-copy={app.installCmd}
+            title="Copy install command"
+          >$ {app.installCmd}</button>
+        )}
+      </div>
+    ))}
+
+    {featured.length > 1 && (
+      <div class="flex justify-center gap-1.5 pb-4" data-fdots>
+        {featured.map((_, i) => (
+          <span class={`h-1.5 rounded-full transition-all ${i === 0 ? 'w-4 bg-brand' : 'w-1.5 bg-line'}`} data-fdot></span>
+        ))}
+      </div>
+    )}
+  </div>
+)}

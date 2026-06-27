@@ -1,27 +1,72 @@
 ---
 import Base from '../layouts/Base.astro';
 import Topbar from '../components/Topbar.astro';
-import Hero from '../components/Hero.astro';
+import Featured from '../components/Featured.astro';
 import AppCard from '../components/AppCard.astro';
-import { loadCatalog } from '../lib/data.mjs';
+import { loadApps, loadCatalog } from '../lib/data.mjs';
 
-const { repo, apps } = loadCatalog();
+const { repo } = loadCatalog();
+const apps = loadApps();
+// Default order: featured first (loadApps already sorts by name within that).
+const ordered = [...apps].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
 ---
 
 <Base
   title={repo.title}
-  description="FlatPark is a community Flatpak hub for Linux apps that aren't on Flathub — official downloads repackaged as signed, sandboxed, one-line installs."
+  description="FlatPark is a community hub for official Linux desktop apps, packaged as signed, sandboxed Flatpaks and installed with one command."
 >
   <Topbar repo={repo} />
   <main>
-    <Hero count={apps.length} />
+    <!-- hero (copy left, editor's pick right) -->
+    <section class="mx-auto max-w-6xl px-5 pt-10 pb-4">
+      <div class="grid items-center gap-8 lg:grid-cols-[1fr_minmax(0,400px)]">
+        <div>
+          <span class="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/10 px-3 py-1.5 text-sm font-semibold text-brand">
+            ⬡ A signed Flatpak remote
+          </span>
+          <h1 class="mt-4 text-4xl font-extrabold tracking-tight md:text-5xl">
+            Your apps. <span class="text-brand">Sandboxed.</span> Signed.
+          </h1>
+          <p class="mt-4 max-w-md text-lg text-muted">
+            A community hub for official Linux desktop apps — packaged as signed,
+            sandboxed Flatpaks and installed with a single command.
+          </p>
+          <div class="mt-6 flex flex-wrap gap-3">
+            <a href="#apps" class="inline-flex h-11 items-center rounded-full bg-brand px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-dark">
+              Browse {apps.length} apps
+            </a>
+            <a href="/setup/" class="inline-flex h-11 items-center rounded-full border border-line bg-surface px-6 text-sm font-semibold transition hover:border-brand">
+              Setup guide
+            </a>
+          </div>
+        </div>
+        <Featured apps={apps} />
+      </div>
+    </section>
 
+    <!-- catalog -->
     <section id="apps" class="mx-auto max-w-6xl px-5 pb-12">
-      <div class="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-4 border-t border-line pt-8">
-        {apps.map((app) => <AppCard app={app} />)}
+      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-6">
+        <h2 class="text-lg font-bold">All apps</h2>
+        <div class="flex items-center gap-3">
+          <a href="/apps/" class="text-sm font-semibold text-brand hover:underline">Browse by category →</a>
+          <select
+            data-sort
+            aria-label="Sort apps"
+            class="h-9 rounded-lg border border-line bg-surface px-3 text-sm font-semibold outline-none focus:border-brand"
+          >
+            <option value="featured">Sort: Featured</option>
+            <option value="name">Sort: Name (A–Z)</option>
+            <option value="updated">Sort: Recently updated</option>
+          </select>
+        </div>
+      </div>
+
+      <div data-grid class="mt-6 grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-4">
+        {ordered.map((app) => <AppCard app={app} />)}
       </div>
       <div
-        class="rounded-2xl border border-dashed border-line p-12 text-center text-muted"
+        class="mt-6 rounded-2xl border border-dashed border-line p-12 text-center text-muted"
         data-empty
         hidden
       >

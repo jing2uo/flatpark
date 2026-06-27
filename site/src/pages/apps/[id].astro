@@ -29,12 +29,28 @@ const detailRows = [
 ].filter(Boolean);
 
 const hasShots = (app.screenshots?.length ?? 0) > 0;
+
+const pageUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : Astro.url.pathname;
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: app.name,
+  description: app.summary,
+  applicationCategory: app.section || app.category,
+  operatingSystem: 'Linux',
+  url: pageUrl,
+  ...(app.icon && Astro.site ? { image: new URL(app.icon, Astro.site).href } : {}),
+  ...(latest?.version ? { softwareVersion: latest.version } : {}),
+  ...(app.developer ? { author: { '@type': 'Organization', name: app.developer } } : {}),
+};
 ---
 
 <Base
   title={`${app.name} — ${repo.title}`}
   description={`${app.summary} — install ${app.name} as a signed Flatpak from ${repo.title}.`}
+  image={app.icon}
 >
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(ld)} />
   <Topbar repo={repo} />
   <main>
     <div class="mx-auto max-w-5xl px-5 pt-6 text-sm text-muted">
@@ -60,7 +76,17 @@ const hasShots = (app.screenshots?.length ?? 0) > 0;
           )
         }
         <div class="min-w-0 flex-1">
-          <h1 class="text-3xl font-extrabold tracking-tight">{app.name}</h1>
+          <div class="flex flex-wrap items-center gap-2.5">
+            <h1 class="text-3xl font-extrabold tracking-tight">{app.name}</h1>
+            {app.featured && (
+              <span class="inline-flex items-center gap-1.5 rounded-full border border-brand/20 bg-brand/5 px-2.5 py-1 text-xs font-semibold text-brand" title="Published with the developer's approval">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" class="shrink-0" aria-hidden="true">
+                  <path d="M12 1l9 4v6c0 5-3.8 9.7-9 11-5.2-1.3-9-6-9-11V5l9-4z"></path>
+                </svg>
+                Developer-approved
+              </span>
+            )}
+          </div>
           <p class="mt-1 text-sm text-muted">
             {app.developer || 'Community package'}
             {app.proprietary ? <span class="ml-2 chip">Proprietary</span> : null}

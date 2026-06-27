@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+/* Self-hosted Inter (variable, latin) — the type identity actually ships now
+   instead of silently falling back to system fonts. */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/inter-latin-variable.woff2") format("woff2");
+}
+
 /* FlatPark theme tokens — Flathub-style light palette with GNOME blue. */
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
@@ -55,6 +65,20 @@ body {
 
 .seg.is-active {
   @apply bg-canvas text-ink;
+}
+
+/* Browse-page category sidebar buttons. */
+.seg-side {
+  @apply flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm font-semibold text-ink/80 hover:bg-canvas;
+}
+.seg-side b {
+  @apply text-xs font-bold text-muted;
+}
+.seg-side.is-active {
+  @apply bg-brand text-white;
+}
+.seg-side.is-active b {
+  @apply text-white/80;
 }
 
 /* Hero folds away on first scroll to reveal the catalog. The 1fr -> 0fr grid

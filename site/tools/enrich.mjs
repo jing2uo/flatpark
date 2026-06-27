@@ -321,7 +321,8 @@ async function enrichOne(file) {
   // Catalog facets for sort + filter (homepage / browse page).
   out.section = sectionFor(out.category);
   out.featured = out.featured || false;
-  out.updated = gitUpdated(srcDir) || out.releases?.[0]?.date || '';
+  // Prefer upstream release date; fall back to registry commit time.
+  out.updated = out.releases?.[0]?.date || gitUpdated(srcDir) || '';
 
   writeFileSync(path, JSON.stringify(out, null, 2) + '\n');
   return out.id;

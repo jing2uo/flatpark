@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Markra
+Comment=Local-first, AI-native Markdown editor
+Exec=markra %U
+Icon=app.markra.Markra
+Terminal=false
+Categories=Office;WordProcessor;
+StartupWMClass=markra
+MimeType=text/markdown;
+Keywords=markdown;editor;notes;ai;writing;

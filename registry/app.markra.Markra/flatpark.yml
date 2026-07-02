@@ -1,0 +1,23 @@
+id: app.markra.Markra
+name: Markra
+summary: Local-first, AI-native Markdown editor
+website: https://markra.app
+source_url: https://github.com/markrahq/markra
+build:
+  manifest: app.markra.Markra.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Office
+  tags:
+    - Markdown
+    - Editor
+    - Notes
+    - AI
+    - Tauri
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: false
+  extra_data_first: true
+  dangerous_permissions: []

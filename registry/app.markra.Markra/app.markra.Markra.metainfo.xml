@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>app.markra.Markra</id>
+  <name>Markra</name>
+  <summary>Local-first, AI-native Markdown editor</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>AGPL-3.0-only</project_license>
+  <developer id="app.markra">
+    <name>Markra</name>
+  </developer>
+  <url type="homepage">https://markra.app</url>
+  <url type="bugtracker">https://github.com/markrahq/markra/issues</url>
+  <url type="vcs-browser">https://github.com/markrahq/markra</url>
+  <description>
+    <p>This is a community package of Markra, maintained independently.</p>
+    <p>Markra is a local-first, open-source Markdown editor that brings AI into the writing flow. It offers WYSIWYG and source editing while keeping your documents as plain .md files on disk, built with Tauri, Rust and React.</p>
+    <p>Notes on this package:</p>
+    <ul>
+      <li>New documents and settings live inside the app's sandboxed HOME.</li>
+      <li>Files opened or saved elsewhere go through the file-chooser portal.</li>
+      <li>To open or keep a notes folder that lives outside the sandbox, grant access with: flatpak override --user --filesystem=home app.markra.Markra</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">app.markra.Markra.desktop</launchable>
+  <categories>
+    <category>Office</category>
+  </categories>
+  <keywords>
+    <keyword>markdown</keyword>
+    <keyword>editor</keyword>
+    <keyword>notes</keyword>
+    <keyword>ai</keyword>
+    <keyword>writing</keyword>
+  </keywords>
+  <content_rating type="oars-1.1" />
+  <recommends>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </recommends>
+  <provides>
+    <binary>markra</binary>
+  </provides>
+  <releases>
+    <release version="1.0.0" date="2026-07-02" />
+  </releases>
+</component>

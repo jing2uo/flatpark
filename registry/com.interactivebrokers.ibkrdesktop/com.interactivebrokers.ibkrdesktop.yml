@@ -46,9 +46,9 @@ modules:
         filename: ntws-installer.sh
         only-arches:
           - x86_64
-        url: https://download2.interactivebrokers.com/installers/ntws/latest-standalone/ntws-latest-standalone-linux-x64.sh?build=3.3j20260625205650
-        sha256: 153326296cfad9d6048b2919af7d9f3642cf791ffcb8995a3edf56d1ad7ddcc1
-        size: 197155142
+        url: https://download2.interactivebrokers.com/installers/ntws/latest-standalone/ntws-latest-standalone-linux-x64.sh?build=3.3k20260703141422
+        sha256: 19e24767821d36dbd01e942ba2af80f2d77e73959dc3e1b7ca07ac3ce962e52d
+        size: 197140845
       - type: extra-data
         filename: zulu-jre.tar.gz
         only-arches:

@@ -53,6 +53,7 @@
     <binary>electerm</binary>
   </provides>
   <releases>
+    <release version="3.15.100" date="2026-07-03" />
     <release version="3.15.90" date="2026-06-29" />
     <release version="3.15.86" date="2026-06-26" />
     <release version="3.15.76" date="2026-06-24" />

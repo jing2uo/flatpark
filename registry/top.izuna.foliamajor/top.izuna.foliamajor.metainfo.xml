@@ -56,6 +56,7 @@
     <binary>folia</binary>
   </provides>
   <releases>
+    <release version="0.5.21" date="2026-07-03" />
     <release version="0.5.19" date="2026-07-02" />
     <release version="0.5.17" date="2026-07-01" />
   </releases>

@@ -145,9 +145,20 @@ function parseManifest(path) {
 
 function parseLicense(raw) {
   if (!raw) return null;
-  const m = /^LicenseRef-([^=]+)(?:=(.+))?$/.exec(raw);
-  if (m) return { label: m[1] === 'proprietary' ? 'Proprietary' : m[1], url: m[2] || null };
-  return { label: raw, url: null };
+  // Pull the optional document URL out of a `LicenseRef-<id>=<url>` token. It
+  // can stand alone or sit inside a compound SPDX expression (e.g.
+  // "MIT AND LicenseRef-proprietary=https://.../LICENSE"); left in the label it
+  // is unbreakably long and stretches the app-page layout.
+  let url = null;
+  const cleaned = raw.replace(/LicenseRef-([^=\s]+)=(\S+)/g, (_, id, u) => {
+    url = u;
+    return `LicenseRef-${id}`;
+  });
+  // A bare LicenseRef on its own -> friendly label (drives the Proprietary flag).
+  const bare = /^LicenseRef-([^=\s]+)$/.exec(cleaned);
+  if (bare) return { label: bare[1] === 'proprietary' ? 'Proprietary' : bare[1], url };
+  // Plain or compound SPDX expression: prettify the proprietary ref inline.
+  return { label: cleaned.replace(/LicenseRef-proprietary\b/g, 'Proprietary'), url };
 }
 
 // Map a single Flatpak finish-arg to a human label + risk level + group.

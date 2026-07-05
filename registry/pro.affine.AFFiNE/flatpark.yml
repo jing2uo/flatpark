@@ -1,0 +1,23 @@
+id: pro.affine.AFFiNE
+name: AFFiNE
+summary: Workspace with docs, whiteboards and databases
+website: https://affine.pro
+source_url: https://github.com/toeverything/AFFiNE
+build:
+  manifest: pro.affine.AFFiNE.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Office
+  tags:
+    - Notes
+    - Whiteboard
+    - KnowledgeBase
+    - Markdown
+    - Electron
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: false
+  extra_data_first: true
+  dangerous_permissions: []

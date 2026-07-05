@@ -1,0 +1,69 @@
+id: pro.affine.AFFiNE
+runtime: org.freedesktop.Platform
+runtime-version: "25.08"
+sdk: org.freedesktop.Sdk
+# Electron app: use the Electron base app, which ships zypak. zypak redirects
+# Chromium's SUID sandbox onto the Flatpak sandbox so the app keeps an internal
+# sandbox (the wrapper runs it via zypak-wrapper) instead of --no-sandbox. The
+# base is a prebuilt ref merged into the app at build time; the app stays
+# self-contained.
+base: org.electronjs.Electron2.BaseApp
+base-version: "25.08"
+command: affine
+separate-locales: false
+build-options:
+  no-debuginfo: true
+finish-args:
+  # Electron (Chromium) knowledge-base app. The prebuilt build bundles Chromium
+  # and its own ffmpeg/ANGLE/Vulkan; the GTK3, NSS, CUPS, ATK, ALSA, dbus, gbm
+  # and X11 stacks it links come from the runtime (org.freedesktop.Platform
+  # 25.08 ships them — verified against the binary's NEEDED set, 0 missing).
+  - --share=ipc
+  # Local-first, but syncs to AFFiNE Cloud / self-hosted servers and uses AI.
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  # GPU-accelerated edgeless whiteboard / canvas (Chromium compositing).
+  - --device=dri
+  # Play audio/video embedded in documents.
+  - --socket=pulseaudio
+  # Desktop notifications.
+  - --talk-name=org.freedesktop.Notifications
+  # Encrypt the stored account token (Electron safeStorage) via the Secret
+  # Service when a keyring is present.
+  - --talk-name=org.freedesktop.secrets
+  # Strip a leaked ELECTRON_RUN_AS_NODE from the sandbox env so the binary — and
+  # zypak's spawned child/zygote processes, which the wrapper's own `unset`
+  # can't reach — always start as the GUI app rather than as plain Node.
+  - --unset-env=ELECTRON_RUN_AS_NODE
+  # File import/export (attach images, export docs/PDF) goes through the desktop
+  # portal, so no broad --filesystem grant is needed by default.
+modules:
+  - name: affine
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 apply_extra.sh /app/bin/apply_extra
+      - install -Dm755 affine-wrapper /app/bin/affine
+      - install -Dm644 pro.affine.AFFiNE.desktop /app/share/applications/pro.affine.AFFiNE.desktop
+      - install -Dm644 pro.affine.AFFiNE.metainfo.xml /app/share/metainfo/pro.affine.AFFiNE.metainfo.xml
+      - install -Dm644 pro.affine.AFFiNE.png /app/share/icons/hicolor/512x512/apps/pro.affine.AFFiNE.png
+    sources:
+      # BEGIN MANAGED EXTRA-DATA
+      - type: extra-data
+        filename: affine.deb
+        only-arches:
+          - x86_64
+        url: https://github.com/toeverything/AFFiNE/releases/download/v0.26.3/affine-0.26.3-stable-linux-x64.deb
+        sha256: 50f42705188bad3ad9acd9ab5d3c0456e328d859190ae09bee2b4f6d22827183
+        size: 155999344
+      # END MANAGED EXTRA-DATA
+      - type: file
+        path: apply_extra.sh
+      - type: file
+        path: affine-wrapper
+      - type: file
+        path: pro.affine.AFFiNE.desktop
+      - type: file
+        path: pro.affine.AFFiNE.metainfo.xml
+      - type: file
+        path: pro.affine.AFFiNE.png

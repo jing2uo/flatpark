@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=AFFiNE
+GenericName=Knowledge Base
+Comment=Write, draw and plan all at once
+Exec=affine %U
+Icon=pro.affine.AFFiNE
+Terminal=false
+StartupNotify=true
+StartupWMClass=AFFiNE
+Categories=Office;
+MimeType=x-scheme-handler/affine;
+Keywords=notes;whiteboard;canvas;workspace;markdown;knowledgebase;

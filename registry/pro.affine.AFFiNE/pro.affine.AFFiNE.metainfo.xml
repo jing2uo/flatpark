@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>pro.affine.AFFiNE</id>
+  <name>AFFiNE</name>
+  <summary>Workspace with docs, whiteboards and databases</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT AND LicenseRef-proprietary=https://github.com/toeverything/AFFiNE/blob/canary/LICENSE</project_license>
+  <developer id="pro.affine">
+    <name>AFFiNE (TOEVERYTHING PTE. LTD.)</name>
+  </developer>
+  <url type="homepage">https://affine.pro</url>
+  <url type="bugtracker">https://github.com/toeverything/AFFiNE/issues</url>
+  <url type="help">https://github.com/toeverything/AFFiNE/discussions</url>
+  <url type="vcs-browser">https://github.com/toeverything/AFFiNE</url>
+  <description>
+    <p>This is a community package of AFFiNE, maintained independently and unaffiliated with AFFiNE or TOEVERYTHING PTE. LTD. It repackages the official upstream Linux build unmodified.</p>
+    <p>AFFiNE is a local-first, open-source workspace that fully merges docs, whiteboards and databases — a single hyper-fused editor for writing, drawing and planning, with an AI partner. It is an alternative to tools like Notion and Miro.</p>
+    <ul>
+      <li>Write your way to better productivity — build content up from blocks.</li>
+      <li>Draw and visualise on an infinite edgeless whiteboard.</li>
+      <li>Plan, track and organise with databases and multiple views.</li>
+      <li>Local-first: your workspace stays on your machine, with optional sync to AFFiNE Cloud or a self-hosted server.</li>
+    </ul>
+    <p>Permissions: this package keeps a tight sandbox by default — network, display, GPU, audio and notifications. Importing and exporting files goes through the desktop portal, so no broad filesystem access is granted; the workspace lives inside the sandbox at ~/.config/AFFiNE.</p>
+  </description>
+  <content_rating type="oars-1.1"/>
+  <categories>
+    <category>Office</category>
+  </categories>
+  <keywords>
+    <keyword>notes</keyword>
+    <keyword>whiteboard</keyword>
+    <keyword>canvas</keyword>
+    <keyword>workspace</keyword>
+    <keyword>markdown</keyword>
+  </keywords>
+  <branding>
+    <color type="primary">#1e96eb</color>
+  </branding>
+  <recommends>
+    <display_length compare="ge">800</display_length>
+    <control>keyboard</control>
+    <control>pointing</control>
+    <control>touch</control>
+  </recommends>
+  <provides>
+    <binary>affine</binary>
+    <mediatype>x-scheme-handler/affine</mediatype>
+  </provides>
+  <launchable type="desktop-id">pro.affine.AFFiNE.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://affine.pro/overview/Write.jpg</image>
+      <caption>Block-based document editing</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://affine.pro/overview/Draw.jpg</image>
+      <caption>Edgeless whiteboard and visualisation</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://affine.pro/overview/Plan.jpg</image>
+      <caption>Planning and task management with databases</caption>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="0.26.3" date="2026-02-25">
+      <url>https://github.com/toeverything/AFFiNE/releases/tag/v0.26.3</url>
+    </release>
+  </releases>
+</component>

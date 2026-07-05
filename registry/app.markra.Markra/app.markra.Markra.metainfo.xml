@@ -22,6 +22,24 @@
     </ul>
   </description>
   <launchable type="desktop-id">app.markra.Markra.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://markra.app/assets/screenshots/showcase/editor-workspace.png</image>
+      <caption>WYSIWYG editing with a local file workspace</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://markra.app/assets/screenshots/showcase/inline-ai-command.png</image>
+      <caption>Inline AI commands while you write</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://markra.app/assets/screenshots/showcase/ai-agent-panel.png</image>
+      <caption>AI agent side panel</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://markra.app/assets/screenshots/showcase/ai-edit-preview.png</image>
+      <caption>Preview AI edits before applying them</caption>
+    </screenshot>
+  </screenshots>
   <categories>
     <category>Office</category>
   </categories>

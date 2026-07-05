@@ -105,8 +105,42 @@ const orderedText = (nodes) =>
     .replace(/\s+/g, ' ')
     .trim();
 
+// Like orderedText, but keeps inline <code> segments as distinct runs so the
+// detail page can render commands (e.g. a flatpak-override) as code instead of
+// letting them blend into the prose. Returns an array of runs, each either
+// { text } or { code }; other inline tags (<em>, ...) flatten into the text.
+const orderedRuns = (nodes) => {
+  const runs = [];
+  const pushText = (t) => {
+    const prev = runs[runs.length - 1];
+    if (prev && 'text' in prev) prev.text += t;
+    else runs.push({ text: t });
+  };
+  const walk = (list) => {
+    for (const n of toArray(list)) {
+      if (n == null) continue;
+      if (typeof n !== 'object') { pushText(String(n)); continue; }
+      if ('#text' in n) { pushText(String(n['#text'] ?? '')); continue; }
+      for (const k of Object.keys(n)) {
+        if (k === ':@') continue;
+        if (k === 'code') runs.push({ code: orderedText(n[k]) });
+        else walk(n[k]);
+      }
+    }
+  };
+  walk(nodes);
+  // Collapse the whitespace runs source indentation introduces, then trim the
+  // outer edges — mirroring orderedText, but per run so inter-run spacing lives.
+  for (const r of runs) if ('text' in r) r.text = r.text.replace(/\s+/g, ' ');
+  if (runs[0] && 'text' in runs[0]) runs[0].text = runs[0].text.replace(/^\s+/, '');
+  const last = runs[runs.length - 1];
+  if (last && 'text' in last) last.text = last.text.replace(/\s+$/, '');
+  return runs.filter((r) => 'code' in r || r.text !== '');
+};
+
 // Parse an AppStream <description> into ordered blocks the detail page renders:
-// { type: 'p', text } for paragraphs and { type: 'list', items } for <ul>/<ol>.
+// { type: 'p', runs } for paragraphs and { type: 'list', items } for <ul>/<ol>,
+// where each item is itself an array of runs. See orderedRuns for the run shape.
 function descriptionBlocks(rawXml) {
   let tree;
   try {
@@ -121,13 +155,13 @@ function descriptionBlocks(rawXml) {
   for (const node of toArray(descNode.description)) {
     if (!node || typeof node !== 'object') continue;
     if ('p' in node) {
-      const text = orderedText(node.p);
-      if (text) blocks.push({ type: 'p', text });
+      const runs = orderedRuns(node.p);
+      if (runs.length) blocks.push({ type: 'p', runs });
     } else if ('ul' in node || 'ol' in node) {
       const items = toArray(node.ul || node.ol)
         .filter((c) => c && 'li' in c)
-        .map((c) => orderedText(c.li))
-        .filter(Boolean);
+        .map((c) => orderedRuns(c.li))
+        .filter((runs) => runs.length);
       if (items.length) blocks.push({ type: 'list', items });
     }
   }

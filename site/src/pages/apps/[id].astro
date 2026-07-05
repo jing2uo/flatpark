@@ -30,6 +30,12 @@ const detailRows = [
 
 const hasShots = (app.screenshots?.length ?? 0) > 0;
 
+// Inline <code> runs inside the About prose (e.g. a flatpak-override command).
+// The About text sits on the canvas background, so the chip uses surface + a
+// border to read as a distinct code token, and breaks rather than overflowing.
+const codeRun =
+  'rounded-md border border-line bg-surface px-1.5 py-0.5 font-mono text-[13px] text-ink break-words';
+
 const pageUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : Astro.url.pathname;
 const ld = {
   '@context': 'https://schema.org',
@@ -167,10 +173,12 @@ const ld = {
                 app.description.map((block) =>
                   block.type === 'list' ? (
                     <ul class="list-disc pl-5">
-                      {block.items.map((item) => <li>{item}</li>)}
+                      {block.items.map((item) => (
+                        <li>{item.map((run) => ('code' in run ? <code class={codeRun}>{run.code}</code> : run.text))}</li>
+                      ))}
                     </ul>
                   ) : (
-                    <p>{block.text}</p>
+                    <p>{block.runs.map((run) => ('code' in run ? <code class={codeRun}>{run.code}</code> : run.text))}</p>
                   ),
                 )
               ) : (

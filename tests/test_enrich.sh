@@ -79,9 +79,13 @@ assert_contains "$out" "A test application for FlatPark."
 # description is parsed into ordered blocks: paragraphs + list items
 assert_contains "$out" "\"type\": \"list\""
 assert_contains "$out" "Feature alpha"
-# inline <code> inside <p> and <li> must be preserved, with the surrounding text
-assert_contains "$out" "Run test-one --help for usage."
-assert_contains "$out" "Optional cap: flatpak override --user --filesystem=home io.flatpark.TestOne"
+# inline <code> inside <p> and <li> is kept as a distinct run (rendered as code),
+# with the surrounding prose preserved as its own text runs around it
+assert_contains "$out" "\"code\": \"test-one --help\""
+assert_contains "$out" "\"text\": \"Run \""
+assert_contains "$out" "\"text\": \" for usage.\""
+assert_contains "$out" "\"code\": \"flatpak override --user --filesystem=home io.flatpark.TestOne\""
+assert_contains "$out" "\"text\": \"Optional cap: \""
 assert_contains "$out" "\"version\": \"1.0\""
 assert_contains "$out" "\"label\": \"MIT\""
 assert_contains "$out" "https://example.org/shot.png"

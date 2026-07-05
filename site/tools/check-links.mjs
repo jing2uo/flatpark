@@ -11,6 +11,13 @@ const asJson = process.argv.includes('--json');
 const CONCURRENCY = Number(process.env.LINK_CHECK_CONCURRENCY || 8);
 const TIMEOUT = Number(process.env.LINK_CHECK_TIMEOUT_MS || 10000);
 
+// Errors that prove the host is live and reachable in a real browser, but that
+// Node's stricter fetch/OpenSSL policy refuses. These reach TLS handshake with a
+// running server (a down host fails earlier with ENOTFOUND/ECONNREFUSED/timeout),
+// so they are warnings, not broken links. Legacy renegotiation is the known case
+// (some vendor sites, e.g. gtht.com, still require it; browsers allow it).
+const SOFT_OK_CODES = new Set(['ERR_SSL_UNSAFE_LEGACY_RENEGOTIATION_DISABLED']);
+
 function collect() {
   const urls = [];
   if (!existsSync(appsDir)) return urls;
@@ -56,7 +63,9 @@ async function check(entry) {
     try { await res.body?.cancel(); } catch {}
     return out;
   } catch (e) {
-    return { ...entry, status: 0, ok: false, error: e.name === 'AbortError' ? 'timeout' : (e.cause?.code || e.message) };
+    const error = e.name === 'AbortError' ? 'timeout' : (e.cause?.code || e.message);
+    if (SOFT_OK_CODES.has(error)) return { ...entry, status: error, ok: true, warn: true };
+    return { ...entry, status: 0, ok: false, error };
   }
 }
 
@@ -77,11 +86,16 @@ async function pool(items, n, fn) {
 const entries = collect();
 const results = await pool(entries, CONCURRENCY, check);
 const broken = results.filter((r) => !r.ok);
+const warned = results.filter((r) => r.warn);
 
 if (asJson) {
-  console.log(JSON.stringify({ checked: results.length, broken: broken.length, results }, null, 2));
+  console.log(JSON.stringify({ checked: results.length, broken: broken.length, warned: warned.length, results }, null, 2));
 } else {
   console.log(`[check-links] checked ${results.length} link(s)`);
+  if (warned.length > 0) {
+    console.log(`[check-links] ${warned.length} reachable but skipped (client TLS policy, OK in browsers):`);
+    for (const w of warned) console.log(`  ~ ${w.app}  [${w.type}]  ${w.status}  ${w.url}`);
+  }
   if (broken.length === 0) {
     console.log('[check-links] all links OK');
   } else {

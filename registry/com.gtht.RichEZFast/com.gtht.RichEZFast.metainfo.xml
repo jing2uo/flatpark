@@ -16,6 +16,16 @@
   <categories>
     <category>Finance</category>
   </categories>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/jing2uo/flatpark/main/registry/com.gtht.RichEZFast/screenshot-markets.webp</image>
+      <caption>Full-market quotes and monitoring</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/jing2uo/flatpark/main/registry/com.gtht.RichEZFast/screenshot-overview.webp</image>
+      <caption>Real-time market intelligence and intelligent trading</caption>
+    </screenshot>
+  </screenshots>
   <releases>
     <release version="4.21.5.1030" date="2026-01-14" />
   </releases>

@@ -53,7 +53,7 @@
   <launchable type="desktop-id">org.tabby.Tabby.desktop</launchable>
   <screenshots>
     <screenshot type="default">
-      <image>https://user-images.githubusercontent.com/161476/200423885-7aba2202-fea7-4409-95b9-3a062ce902c7.png</image>
+      <image>https://tabby.sh/b3698dea6520b70d4c4b.png</image>
       <caption>Tabby with split terminal panes</caption>
     </screenshot>
   </screenshots>

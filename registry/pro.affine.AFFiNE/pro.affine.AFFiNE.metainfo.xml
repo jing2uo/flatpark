@@ -10,7 +10,7 @@
   </developer>
   <url type="homepage">https://affine.pro</url>
   <url type="bugtracker">https://github.com/toeverything/AFFiNE/issues</url>
-  <url type="help">https://docs.affine.pro/</url>
+  <url type="help">https://github.com/toeverything/AFFiNE/discussions</url>
   <url type="vcs-browser">https://github.com/toeverything/AFFiNE</url>
   <description>
     <p>This is a community package of AFFiNE, maintained independently and unaffiliated with AFFiNE or TOEVERYTHING PTE. LTD. It repackages the official upstream Linux build unmodified.</p>

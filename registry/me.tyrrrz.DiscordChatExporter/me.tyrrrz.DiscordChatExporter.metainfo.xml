@@ -11,8 +11,10 @@
   <url type="homepage">https://github.com/Tyrrrz/DiscordChatExporter</url>
   <url type="bugtracker">https://github.com/Tyrrrz/DiscordChatExporter/issues</url>
   <url type="vcs-browser">https://github.com/Tyrrrz/DiscordChatExporter</url>
+  <!-- Packaged and published with the upstream developer's permission:
+       https://github.com/Tyrrrz/DiscordChatExporter/discussions/1562#discussioncomment-17532679 -->
   <description>
-    <p>This is a community package of DiscordChatExporter, maintained independently and unaffiliated with the upstream project or Discord.</p>
+    <p>This is a community package of DiscordChatExporter, maintained independently and published with the permission of its developer; unaffiliated with Discord.</p>
     <p>DiscordChatExporter lets you export the message history of any Discord channel you have access to into a file. It supports several formats — HTML (dark/light), plain text, JSON and CSV — and can include attachments, embeds, reactions and Markdown formatting.</p>
     <p>You authenticate with your own Discord token; the app only reads channels your account can already see. Exported files and downloaded assets are written to ~/Downloads by default — to save elsewhere, grant the directory with "flatpak override".</p>
   </description>

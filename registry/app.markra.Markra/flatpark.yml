@@ -9,6 +9,7 @@ build:
   mode: extra-data
 catalog:
   category: Office
+  featured: true
   tags:
     - Markdown
     - Editor

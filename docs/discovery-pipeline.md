@@ -1,5 +1,10 @@
 # FlatPark app discovery & auto-packaging pipeline
 
+> Part of the end-to-end spec in [`packaging-playbook.md`](packaging-playbook.md) — this file
+> is the **discovery / crawl deep-dive** (its §1–§2). For branch/commit/PR format and the
+> upstream-outreach protocol (authorization, invite-testing, the no-inaccurate-claims rule),
+> the playbook is authoritative.
+
 A repeatable pipeline — meant to run on a **periodic cadence** and to become
 **progressively automated** — for **discovering apps worth listing on FlatPark**
 (good apps Flathub doesn't carry) and **packaging them**. Re-run the §1–§2 crawls
@@ -77,21 +82,25 @@ the go/no-go decision and the upstream comment in §5.
   (`appstreamcli compose` must Succeed); install from the signed local repo
   (exercises `apply_extra`); `LD_TRACE_LOADED_OBJECTS=1` → 0 "not found". **The
   build shell is headless** — the GUI render must be confirmed on a real session.
-- **Ship:** commit `add: <Name> (<app-id>)` (no `registry` scope) + `Co-Authored-By`
-  trailer; **rebase onto `origin/main`**; push. Then **draft the PR (house-style
+- **Ship:** branch `add/<app-id>`; commit `feat(<short>): add <Name> <one-liner> (<app-id>)`
+  (Conventional Commits — see [playbook §5](packaging-playbook.md#5-branch--commit-format)) +
+  `Co-Authored-By` trailer; **rebase onto `origin/main`**; push. Then **draft the PR (house-style
   "Packaging notes" — numbered sections + collapsible files + validation table)
   and STOP — present it; open it (`gh pr create`) only after approval** (review
   gate). Screenshots hotlinked from upstream (no R2); a GIF/webp is fine
   (appstreamcli accepts it; Flathub wouldn't).
 
 ## 5. Engage upstream
-- Reuse what §2 found (demand + the maintainer's stated concerns).
-- **Draft** a **friendly, non-spammy** comment: community package using *their
-  official binary* (unmodified, unaffiliated); install commands + app-page link;
-  **address the concerns they already raised**; offer a PR adding Flatpak docs to
-  their README; `@`-mention the maintainer at the ask. **STOP — present the draft;
-  post only after approval** (review gate; never auto-post). Don't re-post if
-  they've said no.
+See [playbook §7](packaging-playbook.md#7-engage-upstream) for the full protocol, voice, and
+comment template. In brief:
+- Only **after the package is live + smoke-tested**. Reuse what §2 found (demand + concerns).
+- **Describe only what our package does** — never claim upstream is broken / needs a workaround
+  / that we "fix" their bug (verify any comparison against current upstream first). Hard rule.
+- The ask has three parts: **invite testing** (own coverage is partial, welcome issues/PRs);
+  **request authorization** → on a yes, add the blue **"developer-approved" shield** + homepage
+  feature; **offer the exit** → de-list on request. `@`-mention the maintainer.
+- **STOP — present the draft; post only after approval** (review gate; never auto-post). Don't
+  re-post if they've said no.
 
 ## 6. Cadence & automation
 - **Periodic re-crawl** (§1–§2): re-run the two source crawls + per-candidate

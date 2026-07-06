@@ -1,0 +1,51 @@
+#!/bin/bash
+set -euo pipefail
+
+# The desktop can invoke the wrapper with a very small PATH. The wrapper itself
+# needs basic runtime tools before it can spawn the host CLI.
+export PATH="/app/bin:/usr/bin:/bin:${PATH:-}"
+
+spawn_args=()
+
+add_env_args() {
+  local value="${DEVPOD_ADDITIONAL_ENV_VARS:-}"
+  local entry extra_path=""
+  IFS=',' read -ra entries <<< "$value"
+  for entry in "${entries[@]}"; do
+    if [ -n "$entry" ]; then
+      case "$entry" in
+        PATH=*) extra_path="${entry#PATH=}" ;;
+        *) spawn_args+=("--env=$entry") ;;
+      esac
+    fi
+  done
+
+  # The desktop may ask us to forward a sandbox-shaped PATH to the host CLI.
+  # Keep any forwarded entries, but always prepend ordinary host system paths so
+  # child tools spawned by devpod-cli can find basics like `sh`.
+  local host_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$HOME/.local/bin:$HOME/bin"
+  if [ -n "$extra_path" ]; then
+    host_path="$host_path:$extra_path"
+  fi
+  spawn_args+=("--env=PATH=$host_path")
+}
+
+# Outside the sandbox, behave like a small launcher for the Flatpak-provided CLI.
+if [ -z "${FLATPAK_ID:-}" ]; then
+  flatpak run --arch=x86_64 --command=devpod-cli sh.loft.devpod "$@"
+  exit "$?"
+fi
+
+data_home="${XDG_DATA_HOME:-$HOME/.local/share}"
+host_cli="$data_home/devpod-cli"
+bundled_cli="/app/extra/devpod/devpod-bin"
+mkdir -p "$data_home"
+
+if [ ! -e "$host_cli" ] || ! /usr/bin/cmp --silent "$bundled_cli" "$host_cli"; then
+  /usr/bin/rm -f "$host_cli"
+  /usr/bin/cp "$bundled_cli" "$host_cli"
+  /usr/bin/chmod +x "$host_cli"
+fi
+
+add_env_args
+exec /usr/bin/flatpak-spawn "${spawn_args[@]}" --host "$host_cli" "$@"

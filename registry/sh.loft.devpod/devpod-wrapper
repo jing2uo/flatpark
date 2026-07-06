@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+
+# DevPod is a Tauri/WebKitGTK desktop staged by apply_extra to /app/extra/devpod.
+# The desktop calls devpod-cli for workspace operations; /app/bin contains a CLI
+# shim that copies the upstream CLI and runs it on the host via flatpak-spawn.
+
+export WEBKIT_DISABLE_DMABUF_RENDERER=1
+
+exec "/app/extra/devpod/DevPod Desktop" "$@"

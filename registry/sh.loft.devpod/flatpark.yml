@@ -1,0 +1,25 @@
+id: sh.loft.devpod
+name: DevPod
+summary: Codespaces-style development environments on any infrastructure
+website: https://devpod.sh
+source_url: https://github.com/loft-sh/devpod
+build:
+  manifest: sh.loft.devpod.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Development
+  tags:
+    - Development
+    - Containers
+    - Kubernetes
+    - Docker
+    - IDE
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: false
+  extra_data_first: true
+  dangerous_permissions:
+    - --filesystem=home
+    - --talk-name=org.freedesktop.Flatpak

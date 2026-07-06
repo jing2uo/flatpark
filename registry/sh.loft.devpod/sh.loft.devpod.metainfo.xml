@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>sh.loft.devpod</id>
+  <name>DevPod</name>
+  <summary>Codespaces-style development environments on any infrastructure</summary>
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>MPL-2.0</project_license>
+  <developer id="sh.loft">
+    <name>Loft Labs</name>
+  </developer>
+  <url type="homepage">https://devpod.sh</url>
+  <url type="bugtracker">https://github.com/loft-sh/devpod/issues</url>
+  <url type="vcs-browser">https://github.com/loft-sh/devpod</url>
+  <description>
+    <p>This is a community package of DevPod, maintained independently and unaffiliated with Loft Labs. It repackages the official upstream Linux prerelease build unmodified.</p>
+    <p>DevPod creates reproducible development environments from devcontainer definitions and can run them on local Docker, Kubernetes, SSH hosts, cloud providers, or other configured infrastructure.</p>
+    <ul>
+      <li>Launch workspaces from Git repositories or local projects.</li>
+      <li>Use existing IDEs and browser-based IDE flows.</li>
+      <li>Connect to Docker, Kubernetes, SSH and cloud provider backends.</li>
+      <li>Keep workspace definitions in source control.</li>
+    </ul>
+    <p>Permissions: DevPod needs broad host integration to do its core job. This package grants home-directory access, SSH and GPG agent sockets, and Flatpak host spawning so the DevPod CLI can run against the user's real Docker, Kubernetes, SSH and IDE environment. This follows the upstream Flathub package's model, but with a newer GNOME runtime and a newer upstream prerelease.</p>
+  </description>
+  <content_rating type="oars-1.1"/>
+  <categories>
+    <category>Development</category>
+  </categories>
+  <keywords>
+    <keyword>devcontainer</keyword>
+    <keyword>docker</keyword>
+    <keyword>kubernetes</keyword>
+    <keyword>ssh</keyword>
+    <keyword>ide</keyword>
+  </keywords>
+  <supports>
+    <control>keyboard</control>
+    <control>pointing</control>
+    <control>touch</control>
+  </supports>
+  <launchable type="desktop-id">sh.loft.devpod.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://devpod.sh/docs/media/devpod-architecture-2.png</image>
+      <caption>DevPod architecture</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://devpod.sh/docs/media/add-provider-2.png</image>
+      <caption>Adding a provider</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://devpod.sh/docs/media/create-workspace-vscode-browser.png</image>
+      <caption>Using VS Code in the browser</caption>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release type="development" version="0.7.0-alpha.34" date="2025-06-23">
+      <url>https://github.com/loft-sh/devpod/releases/tag/v0.7.0-alpha.34</url>
+    </release>
+  </releases>
+</component>

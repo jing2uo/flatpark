@@ -1,0 +1,141 @@
+id: sh.loft.devpod
+runtime: org.gnome.Platform
+runtime-version: "50"
+sdk: org.gnome.Sdk
+command: sh.loft.devpod
+separate-locales: false
+build-options:
+  no-debuginfo: true
+finish-args:
+  # Tauri/WebKitGTK desktop client for creating development environments on the
+  # user's actual Docker, Kubernetes, SSH and IDE setup. DevPod's model depends
+  # on invoking its CLI on the host, so this intentionally mirrors the upstream
+  # Flathub package's host-spawn design instead of presenting a sandbox-only
+  # shell that cannot manage real workspaces.
+  - --share=ipc
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  - --socket=ssh-auth
+  - --socket=gpg-agent
+  - --filesystem=home
+  - --filesystem=xdg-run/keyring
+  - --talk-name=org.freedesktop.Flatpak
+  - --talk-name=org.kde.StatusNotifierWatcher
+  - --filesystem=xdg-run/tray-icon:create
+modules:
+  # DevPod's Tauri tray support needs libayatana-appindicator3.so.1, which the
+  # GNOME runtime does not ship. This is the same Ayatana stack used by the
+  # Flathub manifest, with sources pinned to immutable commits.
+  - name: intltool
+    cleanup:
+      - "*"
+    sources:
+      - type: archive
+        url: https://launchpad.net/intltool/trunk/0.51.0/+download/intltool-0.51.0.tar.gz
+        sha256: 67c74d94196b153b774ab9f89b2fa6c6ba79352407037c8c14d5aeb334e959cd
+      - type: patch
+        path: intltool-perl5.26-regex-fixes.patch
+  - name: libdbusmenu
+    buildsystem: autotools
+    build-options:
+      cflags: -Wno-error
+    cleanup:
+      - "*.la"
+      - /include
+      - /lib/pkgconfig
+      - /libexec
+      - /share/doc
+      - /share/gtk-doc
+    config-opts:
+      - --with-gtk=3
+      - --disable-dumper
+      - --disable-static
+      - --disable-tests
+      - --disable-gtk-doc
+      - --enable-introspection=no
+      - --disable-vala
+    sources:
+      - type: archive
+        url: https://launchpad.net/libdbusmenu/16.04/16.04.0/+download/libdbusmenu-16.04.0.tar.gz
+        sha256: b9cc4a2acd74509435892823607d966d424bd9ad5d0b00938f27240a1bfa878a
+      - type: patch
+        paths:
+          - 0001-Fix-HAVE_VALGRIND-AM_CONDITIONAL.patch
+  - name: ayatana-ido
+    buildsystem: cmake-ninja
+    cleanup:
+      - /include
+      - /lib/pkgconfig
+    config-opts:
+      - -DENABLE_INTROSPECTION=OFF
+      - -DCMAKE_INSTALL_LIBDIR=lib
+    sources:
+      - type: git
+        url: https://github.com/AyatanaIndicators/ayatana-ido.git
+        tag: "0.10.4"
+        commit: f968079b09e2310fefc3fc307359025f1c74b3eb
+      - type: patch
+        paths:
+          - 0001-Make-introspection-configurable.patch
+  - name: libayatana-indicator
+    buildsystem: cmake-ninja
+    cleanup:
+      - /include
+      - /lib/pkgconfig
+      - /libexec
+      - /share
+    config-opts:
+      - -DCMAKE_INSTALL_LIBDIR=lib
+    sources:
+      - type: git
+        url: https://github.com/AyatanaIndicators/libayatana-indicator.git
+        tag: "0.9.4"
+        commit: 611bb384b73fa6311777ba4c41381a06f5b99dad
+  - name: libayatana-appindicator
+    buildsystem: cmake-ninja
+    cleanup:
+      - /include
+      - /lib/pkgconfig
+    config-opts:
+      - -DENABLE_BINDINGS_MONO=NO
+      - -DENABLE_BINDINGS_VALA=NO
+      - -DENABLE_GTKDOC=NO
+      - -DCMAKE_INSTALL_LIBDIR=lib
+    sources:
+      - type: git
+        url: https://github.com/AyatanaIndicators/libayatana-appindicator.git
+        tag: "0.5.94"
+        commit: 31e8bb083b307e1cc96af4874a94707727bd1e79
+  - name: devpod
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 apply_extra.sh /app/bin/apply_extra
+      - install -Dm755 devpod-wrapper /app/bin/sh.loft.devpod
+      - install -Dm755 devpod-cli-wrapper /app/bin/devpod-cli
+      - install -Dm644 sh.loft.devpod.desktop /app/share/applications/sh.loft.devpod.desktop
+      - install -Dm644 sh.loft.devpod.metainfo.xml /app/share/metainfo/sh.loft.devpod.metainfo.xml
+      - install -Dm644 sh.loft.devpod.png /app/share/icons/hicolor/256x256/apps/sh.loft.devpod.png
+    sources:
+      # BEGIN MANAGED EXTRA-DATA
+      - type: extra-data
+        filename: devpod.deb
+        only-arches:
+          - x86_64
+        url: https://github.com/loft-sh/devpod/releases/download/v0.7.0-alpha.34/DevPod_0.7.0-134_amd64.deb
+        sha256: 798c1bfe225a19e88ddb726c5889d484f543889e5155a173c0a6ac194c038181
+        size: 43825782
+      # END MANAGED EXTRA-DATA
+      - type: file
+        path: apply_extra.sh
+      - type: file
+        path: devpod-wrapper
+      - type: file
+        path: devpod-cli-wrapper
+      - type: file
+        path: sh.loft.devpod.desktop
+      - type: file
+        path: sh.loft.devpod.metainfo.xml
+      - type: file
+        path: sh.loft.devpod.png

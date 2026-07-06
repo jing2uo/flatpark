@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=DevPod
+Comment=Spin up dev environments in any infrastructure
+Exec=sh.loft.devpod
+Icon=sh.loft.devpod
+Terminal=false
+Categories=Development;

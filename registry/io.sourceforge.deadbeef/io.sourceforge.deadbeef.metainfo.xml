@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.sourceforge.deadbeef</id>
+  <name>DeaDBeeF</name>
+  <summary>Modular audio player with broad format support</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-2.0-only</project_license>
+  <developer id="io.github.DeaDBeeF-Player">
+    <name>Oleksiy Yakovenko and contributors</name>
+  </developer>
+  <url type="homepage">https://deadbeef.sourceforge.io/</url>
+  <url type="bugtracker">https://github.com/DeaDBeeF-Player/deadbeef/issues</url>
+  <url type="vcs-browser">https://github.com/DeaDBeeF-Player/deadbeef</url>
+  <description>
+    <p>This is a community package of DeaDBeeF, maintained independently and unaffiliated with the DeaDBeeF project. It repackages the official upstream Linux portable build unmodified.</p>
+    <p>DeaDBeeF is a modular audio player for Linux and other desktop systems. It supports common local audio formats, playlists, cue sheets, album artwork, ReplayGain, network streams, media library browsing, MPRIS integration and a plugin-based GTK interface.</p>
+    <p>Permissions: this package grants display, audio, network access, notifications, MPRIS, DeaDBeeF's runtime socket and your Music directory. Broader file access is not granted by default; enable it only if your music library lives elsewhere:</p>
+    <ul>
+      <li>Full local library access: <code>flatpak override --user --filesystem=home io.sourceforge.deadbeef</code></li>
+      <li>GVfs-mounted locations: <code>flatpak override --user --filesystem=xdg-run/gvfs io.sourceforge.deadbeef</code></li>
+    </ul>
+  </description>
+  <screenshots>
+    <screenshot type="default">
+      <caption>DeaDBeeF on Linux</caption>
+      <image>https://deadbeef.sourceforge.io/gallery/linux/b/Screenshot_2021-11-17_22-24-22.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Customizable playlist layout</caption>
+      <image>https://deadbeef.sourceforge.io/gallery/linux/b/Screenshot_2021-11-17_23-07-14.png</image>
+    </screenshot>
+  </screenshots>
+  <launchable type="desktop-id">io.sourceforge.deadbeef.desktop</launchable>
+  <categories>
+    <category>AudioVideo</category>
+    <category>Audio</category>
+    <category>Player</category>
+    <category>Music</category>
+  </categories>
+  <keywords>
+    <keyword>music</keyword>
+    <keyword>audio</keyword>
+    <keyword>player</keyword>
+    <keyword>mp3</keyword>
+    <keyword>flac</keyword>
+    <keyword>ogg</keyword>
+    <keyword>opus</keyword>
+    <keyword>cue</keyword>
+  </keywords>
+  <recommends>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </recommends>
+  <content_rating type="oars-1.1" />
+  <provides>
+    <binary>deadbeef</binary>
+  </provides>
+  <releases>
+    <release version="1.10.3" date="2026-06-10">
+      <description>
+        <p>Updates the bundled mpg123 dependency to 1.33.6.</p>
+      </description>
+    </release>
+  </releases>
+</component>

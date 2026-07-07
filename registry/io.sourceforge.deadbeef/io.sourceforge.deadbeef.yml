@@ -1,0 +1,55 @@
+id: io.sourceforge.deadbeef
+runtime: org.gnome.Platform
+runtime-version: "50"
+sdk: org.gnome.Sdk
+command: deadbeef
+separate-locales: false
+build-options:
+  no-debuginfo: true
+finish-args:
+  # Official portable GTK build. It stores user state under XDG paths, while the
+  # bundled plugins and libraries stay in /app/extra/deadbeef. Network is needed
+  # for streams, artwork, lyrics and Last.fm; xdg-music keeps normal local music
+  # library use working without granting the whole home directory.
+  - --share=ipc
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --socket=pulseaudio
+  - --filesystem=xdg-music
+  - --filesystem=xdg-run/deadbeef:create
+  - --filesystem=xdg-run/pipewire-0:ro
+  # The upstream GTK3 plugin's GtkApplication id is hard-coded to this legacy
+  # name, even though the Flatpak app id follows the sourceforge.io domain.
+  - --own-name=music.deadbeef.player
+  - --own-name=org.mpris.MediaPlayer2.DeaDBeeF
+  - --talk-name=org.freedesktop.Notifications
+modules:
+  - name: deadbeef
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 apply_extra.sh /app/bin/apply_extra
+      - install -Dm755 deadbeef-wrapper /app/bin/deadbeef
+      - install -Dm644 io.sourceforge.deadbeef.desktop /app/share/applications/io.sourceforge.deadbeef.desktop
+      - install -Dm644 io.sourceforge.deadbeef.metainfo.xml /app/share/metainfo/io.sourceforge.deadbeef.metainfo.xml
+      - install -Dm644 io.sourceforge.deadbeef.png /app/share/icons/hicolor/256x256/apps/io.sourceforge.deadbeef.png
+    sources:
+      # BEGIN MANAGED EXTRA-DATA
+      - type: extra-data
+        filename: deadbeef-static.tar.bz2
+        only-arches:
+          - x86_64
+        url: https://sourceforge.net/projects/deadbeef/files/Builds/1.10.3/linux/deadbeef-static_1.10.3-1_x86_64.tar.bz2/download
+        sha256: a5c42c4e445ec91c4a64e07791122c11c006cbb13230faed8e75e99b1ad35d4e
+        size: 9290315
+      # END MANAGED EXTRA-DATA
+      - type: file
+        path: apply_extra.sh
+      - type: file
+        path: deadbeef-wrapper
+      - type: file
+        path: io.sourceforge.deadbeef.desktop
+      - type: file
+        path: io.sourceforge.deadbeef.metainfo.xml
+      - type: file
+        path: io.sourceforge.deadbeef.png

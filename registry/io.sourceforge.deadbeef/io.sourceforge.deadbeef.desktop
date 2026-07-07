@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=DeaDBeeF
+Comment=Modular audio player with broad format support
+Exec=deadbeef %F
+Icon=io.sourceforge.deadbeef
+Terminal=false
+Categories=AudioVideo;Audio;Player;Music;GTK;
+StartupNotify=true
+Keywords=music;audio;player;mp3;flac;ogg;opus;cue;
+MimeType=audio/aac;audio/flac;audio/mpeg;audio/mp4;audio/ogg;audio/opus;audio/vnd.wave;audio/x-aiff;audio/x-ape;audio/x-flac;audio/x-m4a;audio/x-mpegurl;audio/x-ms-wma;audio/x-wav;audio/x-wavpack;application/ogg;application/x-cue;

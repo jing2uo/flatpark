@@ -1,0 +1,22 @@
+id: io.sourceforge.deadbeef
+name: DeaDBeeF
+summary: Modular audio player with broad format support
+website: https://deadbeef.sourceforge.io/
+source_url: https://github.com/DeaDBeeF-Player/deadbeef
+build:
+  manifest: io.sourceforge.deadbeef.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Music
+  tags:
+    - Music
+    - Audio
+    - Player
+    - GTK
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: false
+  extra_data_first: true
+  dangerous_permissions: []

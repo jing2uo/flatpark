@@ -1,0 +1,12 @@
+#!/bin/sh
+set -eu
+
+APP=/app/extra/deadbeef
+
+# Keep plugin and artwork/resource discovery pointed at the official portable
+# tree. User config, playlists and state remain in the sandboxed XDG locations.
+export DEADBEEF_PLUGIN_DIR="$APP/plugins"
+export LD_LIBRARY_PATH="$APP/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
+cd "$APP"
+exec "$APP/deadbeef" "$@"

@@ -1,0 +1,15 @@
+#!/bin/sh
+set -eu
+
+# Claude Desktop is staged by apply_extra to /app/extra/claude-desktop. Run it
+# through zypak-wrapper (from org.electronjs.Electron2.BaseApp): zypak redirects
+# Chromium's SUID sandbox onto the Flatpak sandbox, so the app keeps an internal
+# sandbox without requiring the Debian package's chrome-sandbox postinst.
+#
+# The official Debian launcher has several Linux-session workarounds for native
+# packages. In Flatpak, display, credential storage and the Chromium sandbox are
+# handled by portals/zypak and the manifest permissions; keep this wrapper thin
+# so the upstream application tree remains unmodified.
+unset ELECTRON_RUN_AS_NODE
+cd /app/extra/claude-desktop
+exec zypak-wrapper ./claude-desktop --ozone-platform-hint=auto "$@"

@@ -1,0 +1,76 @@
+id: com.anthropic.ClaudeDesktop
+runtime: org.freedesktop.Platform
+runtime-version: "25.08"
+sdk: org.freedesktop.Sdk
+# Electron app: use the Electron base app, which ships zypak. zypak redirects
+# Chromium's SUID sandbox onto the Flatpak sandbox so the app keeps an internal
+# sandbox (the wrapper runs it via zypak-wrapper) instead of --no-sandbox. The
+# base is a prebuilt ref merged into the app at build time; the official
+# upstream application tree is fetched as extra-data and left unmodified.
+base: org.electronjs.Electron2.BaseApp
+base-version: "25.08"
+command: claude-desktop
+separate-locales: false
+build-options:
+  no-debuginfo: true
+finish-args:
+  # Electron desktop app for Claude. The official Debian package bundles the
+  # Chromium/Electron application tree; the GTK3, NSS, ATK, DRM/GBM and X11
+  # stacks it links come from the Freedesktop runtime.
+  - --share=ipc
+  # Claude account sign-in, chat, sync and desktop services.
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  # Chromium compositing and live previews.
+  - --device=dri
+  # Audio output for media embedded in conversations or previews.
+  - --socket=pulseaudio
+  # Desktop notifications.
+  - --talk-name=org.freedesktop.Notifications
+  # Encrypt stored login credentials with the session keyring when present.
+  - --talk-name=org.freedesktop.secrets
+  # Strip a leaked ELECTRON_RUN_AS_NODE from the sandbox env so the binary — and
+  # zypak's spawned child/zygote processes, which the wrapper's own `unset`
+  # can't reach — always start as the GUI app rather than as plain Node.
+  - --unset-env=ELECTRON_RUN_AS_NODE
+  # Deliberately not granted by default:
+  #   --filesystem=home            -> broad project/workspace access for Code
+  #   --device=all or host devices -> Cowork's KVM/vsock stack
+  # The core desktop app starts with its data under Flatpak's redirected HOME.
+modules:
+  - name: claude-desktop
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 apply_extra.sh /app/bin/apply_extra
+      - install -Dm755 claude-desktop-wrapper /app/bin/claude-desktop
+      - install -Dm644 com.anthropic.ClaudeDesktop.desktop /app/share/applications/com.anthropic.ClaudeDesktop.desktop
+      - install -Dm644 com.anthropic.ClaudeDesktop.metainfo.xml /app/share/metainfo/com.anthropic.ClaudeDesktop.metainfo.xml
+      - install -Dm644 com.anthropic.ClaudeDesktop.png /app/share/icons/hicolor/256x256/apps/com.anthropic.ClaudeDesktop.png
+    sources:
+      # BEGIN MANAGED EXTRA-DATA
+      - type: extra-data
+        filename: claude-desktop-amd64.deb
+        only-arches:
+          - x86_64
+        url: https://downloads.claude.ai/claude-desktop/apt/stable/pool/main/c/claude-desktop/claude-desktop_1.18286.0_amd64.deb
+        sha256: 8f314ad1a80aab52711a8eaabc06aae48fb341f0adea4a0d7264db5cab9d0536
+        size: 144639156
+      - type: extra-data
+        filename: claude-desktop-arm64.deb
+        only-arches:
+          - aarch64
+        url: https://downloads.claude.ai/claude-desktop/apt/stable/pool/main/c/claude-desktop/claude-desktop_1.18286.0_arm64.deb
+        sha256: 4820b989a9e4333956b6cbeaee2732dd2b49904fba540b472963c8003c8086c7
+        size: 136852412
+      # END MANAGED EXTRA-DATA
+      - type: file
+        path: apply_extra.sh
+      - type: file
+        path: claude-desktop-wrapper
+      - type: file
+        path: com.anthropic.ClaudeDesktop.desktop
+      - type: file
+        path: com.anthropic.ClaudeDesktop.metainfo.xml
+      - type: file
+        path: com.anthropic.ClaudeDesktop.png

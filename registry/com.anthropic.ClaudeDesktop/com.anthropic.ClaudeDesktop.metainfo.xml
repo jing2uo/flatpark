@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.anthropic.ClaudeDesktop</id>
+  <name>Claude</name>
+  <summary>Desktop app for Claude</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>LicenseRef-proprietary=https://claude.ai/legal/consumer-terms</project_license>
+  <developer id="com.anthropic">
+    <name>Anthropic</name>
+  </developer>
+  <url type="homepage">https://claude.ai</url>
+  <url type="help">https://support.claude.com/</url>
+  <url type="vcs-browser">https://code.claude.com/docs/en/desktop-linux</url>
+  <description>
+    <p>This is a community package of Claude Desktop, maintained independently and unaffiliated with Anthropic. It repackages Anthropic's official Linux Debian package unmodified.</p>
+    <p>Claude Desktop provides the Claude chat experience together with desktop integrations for coding workflows on supported Linux systems.</p>
+    <ul>
+      <li>Chat with Claude from a native desktop window.</li>
+      <li>Use Claude coding workflows from the Desktop experience.</li>
+      <li>Review changes, terminal output and previews in one app.</li>
+    </ul>
+    <p>Permissions: this package grants network, display, GPU, audio, notifications and keyring access for the core desktop app. It does not grant broad home-directory or host-device access by default; Code project access and Cowork's KVM/QEMU-based environment may require additional user-granted overrides and are not yet verified in this Flatpak package.</p>
+  </description>
+  <content_rating type="oars-1.1"/>
+  <categories>
+    <category>Development</category>
+    <category>Office</category>
+    <category>Utility</category>
+  </categories>
+  <keywords>
+    <keyword>ai</keyword>
+    <keyword>assistant</keyword>
+    <keyword>chat</keyword>
+    <keyword>code</keyword>
+    <keyword>coding</keyword>
+    <keyword>claude</keyword>
+  </keywords>
+  <branding>
+    <color type="primary">#d4a27f</color>
+  </branding>
+  <recommends>
+    <display_length compare="ge">800</display_length>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </recommends>
+  <provides>
+    <binary>claude-desktop</binary>
+    <mediatype>x-scheme-handler/claude</mediatype>
+  </provides>
+  <launchable type="desktop-id">com.anthropic.ClaudeDesktop.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://claude.ai/images/claude_ogimage.png</image>
+      <caption>Claude desktop chat experience</caption>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="1.18286.0" date="2026-07-04">
+      <url>https://code.claude.com/docs/en/desktop-linux</url>
+    </release>
+  </releases>
+</component>

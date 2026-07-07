@@ -1,0 +1,23 @@
+id: com.anthropic.ClaudeDesktop
+name: Claude
+summary: Desktop app for Claude
+website: https://claude.ai
+source_url: https://code.claude.com/docs/en/desktop-linux
+build:
+  manifest: com.anthropic.ClaudeDesktop.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Development
+  tags:
+    - AI
+    - Chat
+    - Coding
+    - Productivity
+    - Electron
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: true
+  extra_data_first: true
+  dangerous_permissions: []

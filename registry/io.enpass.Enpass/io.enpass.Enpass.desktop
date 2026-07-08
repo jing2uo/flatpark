@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Enpass
+Comment=Password manager
+Exec=enpass %U
+Icon=io.enpass.Enpass
+Terminal=false
+Categories=Utility;Security;
+StartupNotify=true
+MimeType=application/enpass;

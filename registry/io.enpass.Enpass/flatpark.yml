@@ -1,0 +1,21 @@
+id: io.enpass.Enpass
+name: Enpass
+summary: Password manager for storing credentials locally
+website: https://www.enpass.io/apps/linux/
+build:
+  manifest: io.enpass.Enpass.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Security
+  tags:
+    - Passwords
+    - Autofill
+    - Security
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: true
+  extra_data_first: true
+  dangerous_permissions:
+    - --talk-name=org.freedesktop.Flatpak

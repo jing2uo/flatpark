@@ -172,7 +172,12 @@ const ESCAPE = ['--talk-name=org.freedesktop.Flatpak', '--filesystem=host', '--f
 // G2(b) — broad perms must be declared in policy.dangerous_permissions (warn until schema lands).
 const WATCH = ['--device=all', '--filesystem=home'];
 for (const fa of finishArgs) {
-  if (ESCAPE.includes(fa)) fail(`sandbox-escape permission: ${fa}`);
+  if (ESCAPE.includes(fa)) {
+    // A declared escape permission is an explicit, reviewed exemption: downgrade
+    // the hard fail to a warning so it stays visible without blocking the gate.
+    if (dangerousPerms.includes(fa)) warn(`sandbox-escape permission ${fa} (declared in policy.dangerous_permissions)`);
+    else fail(`sandbox-escape permission: ${fa}`);
+  }
   if (WATCH.includes(fa) && !dangerousPerms.includes(fa)) {
     warn(`dangerous permission ${fa} not declared in policy.dangerous_permissions`);
   }

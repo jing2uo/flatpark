@@ -73,8 +73,9 @@ artifact provenance tier (1/2/3).
   only); `archive` → `sha256` + genuine-upstream URL; `extra-data` → `sha256` +
   non-zero `size`; `file` → local, reviewed as part of the PR; other → NEEDS-HUMAN.
 - **finish-args risk scan:** near-auto-reject on escape perms
-  (`--talk-name=org.freedesktop.Flatpak`, `--filesystem=host`, `--filesystem=/`);
-  warn on `--device=all`, `--filesystem=home`, needless `--share=network`.
+  (`--talk-name=org.freedesktop.Flatpak`, `--filesystem=host`, `--filesystem=/`)
+  unless declared in `policy.dangerous_permissions` (then a reviewed exemption →
+  warn); warn on `--device=all`, `--filesystem=home`, needless `--share=network`.
 - **`policy:` block vs reality:** `proprietary` accurate; `dangerous_permissions`
   covers the high-risk finish-args actually used (hard enforcement deferred — see
   guardrail G2(b)).

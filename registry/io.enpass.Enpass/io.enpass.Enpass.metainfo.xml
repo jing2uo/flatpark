@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.enpass.Enpass</id>
+  <name>Enpass</name>
+  <summary>Password manager for storing credentials locally</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>LicenseRef-proprietary=https://www.enpass.io/terms-of-use/</project_license>
+  <developer_name>Enpass Technologies Inc.</developer_name>
+  <url type="homepage">https://www.enpass.io/</url>
+  <url type="help">https://support.enpass.io/</url>
+  <url type="bugtracker">https://discussion.enpass.io/</url>
+  <launchable type="desktop-id">io.enpass.Enpass.desktop</launchable>
+  <categories>
+    <category>Utility</category>
+    <category>Security</category>
+  </categories>
+  <description>
+    <p>
+      NOTE: This wrapper is not verified by, affiliated with, or supported by Enpass Technologies Inc.
+    </p>
+    <p>
+      Enpass stores passwords and other credentials locally, supports password generation, autofill through browser extensions, and optional sync across devices.
+    </p>
+    <p>
+      Browser extension support in this build includes host-tool shims for debugging Enpass browser validation inside Flatpak.
+    </p>
+  </description>
+  <releases>
+    <release version="6.11.13.1957" date="2026-03-10"/>
+  </releases>
+  <content_rating type="oars-1.1"/>
+</component>

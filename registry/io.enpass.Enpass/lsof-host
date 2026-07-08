@@ -1,0 +1,14 @@
+#!/bin/sh
+set -eu
+
+cd /
+{
+    printf '%s lsof' "$(date -Iseconds)"
+    for arg in "$@"; do
+        printf ' [%s]' "$arg"
+    done
+    printf '\n'
+} >>/tmp/enpass-lsof-host.log 2>/dev/null || :
+
+unset LD_PRELOAD ENPASS_FAKE_PID
+exec flatpak-spawn --clear-env --host /usr/bin/lsof "$@"

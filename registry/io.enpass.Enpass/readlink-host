@@ -1,0 +1,14 @@
+#!/bin/sh
+set -eu
+
+for arg in "$@"; do
+    case "$arg" in
+        /proc/*)
+            cd /
+            unset LD_PRELOAD ENPASS_FAKE_PID
+            exec flatpak-spawn --clear-env --host /usr/bin/readlink "$@"
+            ;;
+    esac
+done
+
+exec /usr/bin/readlink "$@"

@@ -1,0 +1,22 @@
+id: com.rowboatlabs.Rowboat
+name: Rowboat
+summary: Open-source AI coworker with memory
+website: https://www.rowboatlabs.com
+source_url: https://github.com/rowboatlabs/rowboat
+build:
+  manifest: com.rowboatlabs.Rowboat.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Development
+  tags:
+    - AI
+    - Agents
+    - Productivity
+    - Electron
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: false
+  extra_data_first: true
+  dangerous_permissions: []

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.rowboatlabs.Rowboat</id>
+  <name>Rowboat</name>
+  <summary>Open-source AI coworker with memory</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>Apache-2.0</project_license>
+  <developer id="com.rowboatlabs">
+    <name>Rowboat Labs</name>
+  </developer>
+  <url type="homepage">https://www.rowboatlabs.com</url>
+  <url type="bugtracker">https://github.com/rowboatlabs/rowboat/issues</url>
+  <url type="vcs-browser">https://github.com/rowboatlabs/rowboat</url>
+  <description>
+    <p>This is a community package of Rowboat, maintained independently. It repackages Rowboat Labs' official Linux Debian package unmodified.</p>
+    <p>Rowboat is an open-source AI coworker that keeps long-lived memory on your machine as plain Markdown. It builds and runs multi-agent workflows so you can delegate work rather than issue one-off prompts.</p>
+    <ul>
+      <li>Chat with an AI coworker that remembers context across sessions.</li>
+      <li>Bring your own LLM — hosted providers with your API keys, or a local model via Ollama or LM Studio.</li>
+      <li>Connect Google (Gmail, Calendar, Drive), voice, web search, and external tools over the Model Context Protocol.</li>
+      <li>Notes and memory live locally as plain Markdown files under ~/.rowboat.</li>
+    </ul>
+    <p>Permissions: this package grants network, display, GPU, audio (playback and microphone), notifications, keyring, and read/write access to its own data directory (~/.rowboat) so your notes stay editable with your own tools. It does not grant broad home-directory or host access; running local MCP servers or reading files elsewhere needs a user-granted filesystem override.</p>
+  </description>
+  <content_rating type="oars-1.1"/>
+  <categories>
+    <category>Development</category>
+    <category>Utility</category>
+  </categories>
+  <keywords>
+    <keyword>ai</keyword>
+    <keyword>agents</keyword>
+    <keyword>assistant</keyword>
+    <keyword>llm</keyword>
+    <keyword>automation</keyword>
+  </keywords>
+  <recommends>
+    <display_length compare="ge">800</display_length>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </recommends>
+  <provides>
+    <binary>rowboat</binary>
+    <mediatype>x-scheme-handler/rowboat</mediatype>
+  </provides>
+  <launchable type="desktop-id">com.rowboatlabs.Rowboat.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/rowboatlabs/rowboat/main/assets/ui_revamp_screenshot.png</image>
+      <caption>The Rowboat AI coworker desktop interface</caption>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="0.7.1" date="2026-07-07">
+      <url>https://github.com/rowboatlabs/rowboat/releases/tag/v0.7.1</url>
+    </release>
+  </releases>
+</component>

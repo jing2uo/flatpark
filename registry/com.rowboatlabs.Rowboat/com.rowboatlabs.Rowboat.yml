@@ -1,0 +1,79 @@
+id: com.rowboatlabs.Rowboat
+runtime: org.freedesktop.Platform
+runtime-version: "25.08"
+sdk: org.freedesktop.Sdk
+# Electron app: use the Electron base app, which ships zypak. zypak redirects
+# Chromium's SUID sandbox onto the Flatpak sandbox so the app keeps an internal
+# sandbox (the wrapper runs it via zypak-wrapper) instead of --no-sandbox. The
+# base is a prebuilt ref merged into the app at build time; the official
+# upstream application tree is fetched as extra-data and left unmodified.
+base: org.electronjs.Electron2.BaseApp
+base-version: "25.08"
+command: rowboat
+separate-locales: false
+build-options:
+  no-debuginfo: true
+finish-args:
+  # Electron desktop app. The official Debian package bundles the
+  # Chromium/Electron application tree; the GTK3, NSS, ATK, DRM/GBM and X11
+  # stacks it links come from the Freedesktop runtime.
+  - --share=ipc
+  # Talk to LLM providers (hosted APIs or a local Ollama/LM Studio endpoint),
+  # Google services, voice services and MCP servers over the network.
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  # Chromium compositing.
+  - --device=dri
+  # Audio output (voice replies) and microphone capture (voice input).
+  - --socket=pulseaudio
+  # Rowboat keeps all its state — notes, memory, agents, knowledge, skills and
+  # config — as plain files under ~/.rowboat (via os.homedir()), by design so
+  # users can edit, version and back it up with their own tools. Grant that one
+  # app-owned dotdir in the real home (not broad --filesystem=home) so the data
+  # is user-accessible and shared with the native build, instead of hidden in
+  # the sandbox's private dir. ":create" makes the directory on first run when
+  # it doesn't exist yet — without it a fresh install would write into the
+  # ephemeral home overlay and lose data until the dir was created by hand.
+  - --filesystem=~/.rowboat:create
+  # Desktop notifications.
+  - --talk-name=org.freedesktop.Notifications
+  # Encrypt stored credentials with the session keyring when present.
+  - --talk-name=org.freedesktop.secrets
+  # Strip a leaked ELECTRON_RUN_AS_NODE from the sandbox env so the binary — and
+  # zypak's spawned child/zygote processes, which the wrapper's own `unset`
+  # can't reach — always start as the GUI app rather than as plain Node.
+  - --unset-env=ELECTRON_RUN_AS_NODE
+  # Deliberately not granted by default: broad --filesystem grants. The app
+  # keeps its notes, config (~/.rowboat) and Markdown store under Flatpak's
+  # redirected HOME. Running local MCP servers or reading files outside the
+  # sandbox needs a user-granted filesystem override.
+modules:
+  - name: rowboat
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 apply_extra.sh /app/bin/apply_extra
+      - install -Dm755 rowboat-wrapper /app/bin/rowboat
+      - install -Dm644 com.rowboatlabs.Rowboat.desktop /app/share/applications/com.rowboatlabs.Rowboat.desktop
+      - install -Dm644 com.rowboatlabs.Rowboat.metainfo.xml /app/share/metainfo/com.rowboatlabs.Rowboat.metainfo.xml
+      - install -Dm644 com.rowboatlabs.Rowboat.png /app/share/icons/hicolor/256x256/apps/com.rowboatlabs.Rowboat.png
+    sources:
+      # BEGIN MANAGED EXTRA-DATA
+      - type: extra-data
+        filename: rowboat-amd64.deb
+        only-arches:
+          - x86_64
+        url: https://github.com/rowboatlabs/rowboat/releases/download/v0.7.1/rowboat-linux_0.7.1_amd64.deb
+        sha256: 72f565d1f92bc1366a37899f4573e9778c8a60cba000b07fcf29419d50663014
+        size: 105446054
+      # END MANAGED EXTRA-DATA
+      - type: file
+        path: apply_extra.sh
+      - type: file
+        path: rowboat-wrapper
+      - type: file
+        path: com.rowboatlabs.Rowboat.desktop
+      - type: file
+        path: com.rowboatlabs.Rowboat.metainfo.xml
+      - type: file
+        path: com.rowboatlabs.Rowboat.png

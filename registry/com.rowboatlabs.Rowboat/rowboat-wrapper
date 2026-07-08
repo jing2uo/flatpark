@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+
+# Rowboat is staged by apply_extra to /app/extra/rowboat. Run it through
+# zypak-wrapper (from org.electronjs.Electron2.BaseApp): zypak redirects
+# Chromium's SUID sandbox onto the Flatpak sandbox, so the app keeps an internal
+# sandbox without requiring the Debian package's chrome-sandbox setuid bit.
+# Keep this wrapper thin so the upstream application tree stays unmodified.
+unset ELECTRON_RUN_AS_NODE
+cd /app/extra/rowboat
+exec zypak-wrapper ./rowboat --ozone-platform-hint=auto "$@"

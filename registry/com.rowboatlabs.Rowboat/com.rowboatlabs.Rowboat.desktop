@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Rowboat
+Comment=Open-source AI coworker with memory
+GenericName=AI Coworker
+Keywords=AI;Agents;Assistant;LLM;Automation;
+Exec=rowboat %U
+Icon=com.rowboatlabs.Rowboat
+Type=Application
+Terminal=false
+StartupNotify=true
+StartupWMClass=Rowboat
+Categories=Development;Utility;
+MimeType=x-scheme-handler/rowboat;

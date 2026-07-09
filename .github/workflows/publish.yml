@@ -51,10 +51,10 @@ jobs:
       RCLONE_CONFIG_R2_ACL: private
       RCLONE_CONFIG_R2_NO_CHECK_BUCKET: "true"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: npm
@@ -82,7 +82,7 @@ jobs:
       # *.commit) is NOT an alternative: build-update-repo regenerates the
       # merged appstream branch and hard-fails without the full object store.
       - name: Restore repo cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: out/repo
           key: flatpak-repo-${{ github.sha }}
@@ -148,7 +148,7 @@ jobs:
       # escape hatch (upstream replaced an image at the same URL): delete the
       # flatpark-screenshots-* caches in the Actions UI to force a re-pull.
       - name: Restore screenshot cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: site/public/screenshots
           key: flatpark-screenshots-${{ hashFiles('registry/**') }}

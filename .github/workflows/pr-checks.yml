@@ -14,10 +14,10 @@ jobs:
   lint-and-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0   # the dead-link check diffs against the PR base
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: npm
@@ -70,7 +70,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Gate infra / resolver / update.command changes
@@ -112,7 +112,7 @@ jobs:
   build-changed:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       # Decide first, install after: a PR with no build-relevant app changes
@@ -124,7 +124,7 @@ jobs:
           ids="$(./scripts/changed-apps.sh "$base" HEAD | tr '\n' ' ')"
           echo "ids=$ids" >> "$GITHUB_OUTPUT"
           echo "changed apps: ${ids:-<none>}"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         if: steps.changed.outputs.ids != ''
         with:
           node-version: 22
@@ -161,7 +161,7 @@ jobs:
           ls -lah out/bundles
       - name: Upload installable bundles
         if: steps.changed.outputs.ids != ''
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: flatpak-bundles-pr${{ github.event.pull_request.number }}
           path: out/bundles/*.flatpak

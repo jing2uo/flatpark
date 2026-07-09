@@ -50,7 +50,7 @@ quality — not on how they were written.
 ## Review
 
 Every submission is reviewed (AI-assisted) against a published
-[review runbook](https://github.com/jing2uo/flatpark/blob/main/docs/pr-review.md).
+[review runbook](https://github.com/flatpark/flatpark/blob/main/docs/pr-review.md).
 The trust question is **where the bytes you run come from**, not the license:
 
 - FlatPark either verifies source-built packages against their public source, or

@@ -63,7 +63,7 @@ assert_contains "$one" "\"installCmd\": \"flatpak install flatpark io.flatpark.T
 assert_contains "$one" "\"_manifest\": \"$one_dir/test-one.yml\""
 assert_contains "$one" "\"_srcDir\": \"$one_dir\""
 # Packaging recipe link is auto-derived from PACKAGING_REPO_URL/BRANCH + app id.
-assert_contains "$one" "\"packagingUrl\": \"https://github.com/jing2uo/flatpark/tree/main/registry/io.flatpark.TestOne\""
+assert_contains "$one" "\"packagingUrl\": \"https://github.com/flatpark/flatpark/tree/main/registry/io.flatpark.TestOne\""
 # It is a per-app detail field, not a card field — it must not leak into catalog.json.
 if grep -q "packagingUrl" "$catalog"; then echo "FAIL: catalog carries packagingUrl"; exit 1; fi
 

@@ -15,7 +15,7 @@ const groups = order
   .filter((g) => g.items.length);
 
 // External links appended to a group (GitHub lives under Community).
-const externals = { Community: [{ href: 'https://github.com/jing2uo/flatpark', label: 'GitHub' }] };
+const externals = { Community: [{ href: 'https://github.com/flatpark/flatpark', label: 'GitHub' }] };
 for (const g of groups) if (externals[g.name]) g.items.push(...externals[g.name]);
 ---
 

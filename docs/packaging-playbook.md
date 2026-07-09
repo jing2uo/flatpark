@@ -203,7 +203,7 @@ Warm, professional, first-person; no slang, no emoji. The proven shape (HiresTI,
 DiscordChatExporter, Yaak):
 
 ```
-Hi @<maintainer> — thanks for <App>, it's great. I maintain **[FlatPark](https://github.com/jing2uo/flatpark)**,
+Hi @<maintainer> — thanks for <App>, it's great. I maintain **[FlatPark](https://github.com/flatpark/flatpark)**,
 a small hub that offers Flatpak installs for apps that aren't on Flathub, and I've packaged <App> there.
 
 It uses Flatpak **extra-data**, so it downloads your **official <artifact> release** unmodified at

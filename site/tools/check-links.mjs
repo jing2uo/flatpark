@@ -18,6 +18,43 @@ const TIMEOUT = Number(process.env.LINK_CHECK_TIMEOUT_MS || 10000);
 // (some vendor sites, e.g. gtht.com, still require it; browsers allow it).
 const SOFT_OK_CODES = new Set(['ERR_SSL_UNSAFE_LEGACY_RENEGOTIATION_DISABLED']);
 
+// Transport-level failures that say nothing about whether the URL exists: a
+// connect timeout or a reset is a property of the path between this runner and
+// the host, and the same URL routinely answers from another region. Retried
+// with backoff before they are believed.
+// UND_ERR_SOCKET is how undici surfaces a peer that closed the connection.
+const NET_ERRORS = new Set([
+  'timeout',
+  'ETIMEDOUT',
+  'ECONNRESET',
+  'EAI_AGAIN',
+  'UND_ERR_SOCKET',
+  'UND_ERR_CONNECT_TIMEOUT',
+]);
+const RETRIES = Number(process.env.LINK_CHECK_RETRIES || 2);
+
+// Hosts whose links are verified by hand and must not fail the build on a
+// NET_ERRORS code. gtht.com (RichEZFast's homepage and download page) answers
+// in a browser but is not consistently routable from GitHub's runners, and it
+// already needs the legacy-renegotiation exemption above. Only transport errors
+// are waived — an HTTP 404 or 500 from these hosts is still a broken link.
+// LINK_CHECK_SOFT_OK_HOSTS appends to the list (used by the tests).
+const SOFT_OK_HOSTS = new Set([
+  'gtht.com',
+  'www.gtht.com',
+  ...(process.env.LINK_CHECK_SOFT_OK_HOSTS || '').split(',').filter(Boolean),
+]);
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+function hostOf(url) {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return '';
+  }
+}
+
 function collect() {
   const urls = [];
   if (!existsSync(appsDir)) return urls;
@@ -51,7 +88,7 @@ async function request(method, url) {
   }
 }
 
-async function check(entry) {
+async function probe(entry) {
   try {
     // Prefer HEAD; many servers reject/ignore it (or block hotlinking), so on
     // any HEAD failure or 403/405/501 fall back to GET before declaring it dead.
@@ -79,6 +116,18 @@ async function check(entry) {
     if (SOFT_OK_CODES.has(error)) return { ...entry, status: error, ok: true, warn: true };
     return { ...entry, status: 0, ok: false, error };
   }
+}
+
+async function check(entry) {
+  let res = await probe(entry);
+  for (let i = 1; i <= RETRIES && !res.ok && NET_ERRORS.has(res.error); i++) {
+    await sleep(500 * 2 ** (i - 1));
+    res = await probe(entry);
+  }
+  if (!res.ok && NET_ERRORS.has(res.error) && SOFT_OK_HOSTS.has(hostOf(entry.url))) {
+    return { ...entry, status: res.error, ok: true, warn: true };
+  }
+  return res;
 }
 
 async function pool(items, n, fn) {

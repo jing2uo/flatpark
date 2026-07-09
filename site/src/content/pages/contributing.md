@@ -17,12 +17,12 @@ from is. Three packages in the registry are worth reading before you write your
 own:
 
 - **Electron** —
-  [`pro.affine.AFFiNE`](https://github.com/jing2uo/flatpark/tree/main/registry/pro.affine.AFFiNE)
-  and [`org.electerm.Electerm`](https://github.com/jing2uo/flatpark/tree/main/registry/org.electerm.Electerm):
+  [`pro.affine.AFFiNE`](https://github.com/flatpark/flatpark/tree/main/registry/pro.affine.AFFiNE)
+  and [`org.electerm.Electerm`](https://github.com/flatpark/flatpark/tree/main/registry/org.electerm.Electerm):
   the Electron base app plus `zypak-wrapper`, so Chromium keeps its internal
   sandbox.
 - **Tauri / WebKitGTK** —
-  [`com.ccswitch.desktop`](https://github.com/jing2uo/flatpark/tree/main/registry/com.ccswitch.desktop):
+  [`com.ccswitch.desktop`](https://github.com/flatpark/flatpark/tree/main/registry/com.ccswitch.desktop):
   the fullest Tauri example. Its wrapper exports
   `WEBKIT_DISABLE_DMABUF_RENDERER=1` (without it WebKitGTK paints a blank
   window under many drivers), and it gets a working system tray by building the
@@ -32,7 +32,7 @@ own:
   Its `finish-args` are also a good model for scoping: it grants the individual
   CLI config paths it manages rather than `--filesystem=home`.
 - **Host-dependent behavior, payload untouched** —
-  [`io.enpass.Enpass`](https://github.com/jing2uo/flatpark/tree/main/registry/io.enpass.Enpass):
+  [`io.enpass.Enpass`](https://github.com/flatpark/flatpark/tree/main/registry/io.enpass.Enpass):
   Enpass validates the browser behind its extension's localhost connection by
   running `lsof` and reading `/proc`, which can't work from inside the sandbox.
   Rather than patch the vendor binary, the package puts small `lsof`/`readlink`/
@@ -210,7 +210,7 @@ directory — leave it out of `finish-args` and instead document the `flatpak
 override` command that turns it on, so each user decides for themselves. Put that
 documentation in the app's `metainfo.xml` description (it renders on the app's
 page), and explain in the PR body why the capability exists at all. See
-[`org.electerm.Electerm`](https://github.com/jing2uo/flatpark/tree/main/registry/org.electerm.Electerm)
+[`org.electerm.Electerm`](https://github.com/flatpark/flatpark/tree/main/registry/org.electerm.Electerm)
 for the pattern:
 
 ```xml
@@ -233,7 +233,7 @@ review rather than an automatic pass (Enpass is the one package that has).
 ## What we review (and what gets a PR rejected)
 
 Every PR is checked against the full
-[review runbook](https://github.com/jing2uo/flatpark/blob/main/docs/pr-review.md).
+[review runbook](https://github.com/flatpark/flatpark/blob/main/docs/pr-review.md).
 To pre-empt the common rejections, make sure your submission:
 
 - **Has actually been installed and run** — before opening the PR, build it,

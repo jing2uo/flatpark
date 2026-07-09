@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Orca
+Comment=AI orchestrator for running coding agents side by side
+Exec=orca %U
+Terminal=false
+Type=Application
+Icon=com.stablyai.orca
+StartupWMClass=orca
+Categories=Development;IDE;
+Keywords=AI;agent;agents;IDE;terminal;worktree;codex;claude;

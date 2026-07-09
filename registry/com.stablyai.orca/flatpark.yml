@@ -1,0 +1,23 @@
+id: com.stablyai.orca
+name: Orca
+summary: AI orchestrator for running coding agents side by side
+website: https://onorca.dev/
+source_url: https://github.com/stablyai/orca
+build:
+  manifest: com.stablyai.orca.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Development
+  tags:
+    - AI
+    - Agents
+    - IDE
+    - Terminal
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: false
+  extra_data_first: true
+  dangerous_permissions:
+    - --talk-name=org.freedesktop.Flatpak

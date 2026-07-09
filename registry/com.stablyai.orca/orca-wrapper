@@ -1,0 +1,17 @@
+#!/bin/sh
+set -eu
+
+# Orca is an Electron app staged by apply_extra to /app/extra/Orca. Run it
+# through zypak-wrapper from org.electronjs.Electron2.BaseApp so Chromium keeps
+# its internal sandbox inside Flatpak. A generated host-bin directory is
+# appended to PATH so commands not provided by the sandbox can be forwarded
+# through flatpak-spawn --host.
+
+unset ELECTRON_RUN_AS_NODE
+host_bin="$(/app/lib/orca/orca-setup-host-bin || true)"
+if [ -n "$host_bin" ] && [ -d "$host_bin" ]; then
+  export PATH="/app/bin:$PATH:$host_bin"
+else
+  export PATH="/app/bin:$PATH"
+fi
+exec zypak-wrapper /app/extra/Orca/orca-ide --ozone-platform-hint=auto "$@"

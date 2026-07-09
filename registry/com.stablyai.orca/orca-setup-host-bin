@@ -1,0 +1,59 @@
+#!/bin/sh
+set -eu
+
+bridge="/app/lib/orca/orca-host-shim"
+runtime_dir="${XDG_RUNTIME_DIR:-/tmp}"
+host_bin="$runtime_dir/orca-host-bin"
+tmp_dir="$runtime_dir/orca-host-bin.$$"
+
+list_commands='
+path_value="$1"
+IFS=:
+for dir in $path_value; do
+  [ -d "$dir" ] || continue
+  find "$dir" -maxdepth 1 \( -type f -o -type l \) -perm /111 -printf "%f\n" 2>/dev/null || true
+done
+'
+
+host_script='
+PATH="${PATH:-}:/usr/local/bin:/usr/bin:/bin:/snap/bin:$HOME/.local/bin:$HOME/bin"
+export PATH
+
+sh -c "$1" orca-host-path "$PATH" || true
+
+case "${SHELL:-}" in
+  */bash|*/zsh|*/ksh)
+    shell_path="$("$SHELL" -ic '"'"'printf "%s\n" "$PATH"'"'"' 2>/dev/null | sed -n "/\//h; \${g;p;}" || true)"
+    if [ -n "$shell_path" ]; then
+      sh -c "$1" orca-host-shell-path "$shell_path" || true
+    fi
+    ;;
+esac
+'
+
+rm -rf "$tmp_dir"
+mkdir -p "$tmp_dir"
+
+flatpak-spawn --host sh -c "$host_script" orca-host-list "$list_commands" 2>/dev/null \
+  | sort -u \
+  | while IFS= read -r name; do
+      case "$name" in
+        ""|.|..|*/*|*' '*|*'	'*|*:*|*';'*|*"'"*|*'"'*|*'\'*|*'`'*|*'$'*|*'('*|*')'*|*'{'*|*'}'*|*'['*|*']'*|*'<'*|*'>'*|*'|'*|*'&'*)
+          continue
+          ;;
+      esac
+      ln -s "$bridge" "$tmp_dir/$name" 2>/dev/null || true
+    done
+
+# Orca uses glab for GitLab. Keep gitlab as a convenience alias for users and
+# for scripts that name the provider rather than the CLI binary.
+ln -s "$bridge" "$tmp_dir/gitlab" 2>/dev/null || true
+
+rm -rf "$host_bin.old"
+if [ -d "$host_bin" ]; then
+  mv "$host_bin" "$host_bin.old" 2>/dev/null || rm -rf "$host_bin"
+fi
+mv "$tmp_dir" "$host_bin"
+rm -rf "$host_bin.old"
+
+printf '%s\n' "$host_bin"

@@ -1,0 +1,83 @@
+#!/bin/sh
+set -eu
+
+cmd="$(basename "$0")"
+
+case "$cmd" in
+  ""|.|..|*/*|*' '*|*'	'*|*:*|*';'*|*"'"*|*'"'*|*'\'*|*'`'*|*'$'*|*'('*|*')'*|*'{'*|*'}'*|*'['*|*']'*|*'<'*|*'>'*|*'|'*|*'&'*)
+    echo "unsupported Orca host command shim: $cmd" >&2
+    exit 127
+    ;;
+esac
+
+# Resolve on the host. Orca does not bundle or authenticate these CLIs; users
+# install the commands they want on the host and authorize them there. Prefer
+# predictable PATH lookup, then fall back to the user's shell only to discover
+# an absolute command path for shell-managed installs. The actual command is
+# exec'd directly so shell startup output does not pollute stdout.
+host_script='
+cmd="$1"
+shift
+
+if [ "$cmd" = "gitlab" ]; then
+  cmd="glab"
+fi
+
+PATH="${PATH:-}:/usr/local/bin:/usr/bin:/bin:/snap/bin:$HOME/.local/bin:$HOME/bin"
+export PATH
+
+case "${SHELL:-}" in
+  */bash|*/zsh|*/ksh)
+    shell_path="$("$SHELL" -ic '"'"'printf "%s\n" "$PATH"'"'"' 2>/dev/null | sed -n "/\//h; \${g;p;}" || true)"
+    if [ -n "$shell_path" ]; then
+      PATH="$PATH:$shell_path"
+      export PATH
+    fi
+    ;;
+esac
+
+resolved="$(command -v "$cmd" 2>/dev/null || true)"
+
+if [ -z "$resolved" ]; then
+  case "${SHELL:-}" in
+    */bash|*/zsh|*/ksh)
+      resolved="$("$SHELL" -ic '"'"'command -v "$1"'"'"' orca-host-shell "$cmd" 2>/dev/null | sed -n "1p" || true)"
+      ;;
+  esac
+fi
+
+if [ -n "$resolved" ] && [ -x "$resolved" ]; then
+  exec "$resolved" "$@"
+fi
+
+echo "Orca Flatpak host bridge could not find host command: $cmd" >&2
+echo "Install and authorize it on the host, then expose it through PATH or your login shell." >&2
+exit 127
+'
+
+use_directory=1
+
+case "${PWD:-}" in
+  /run/user/*/doc/*|/run/flatpak/doc/*)
+    use_directory=0
+    ;;
+esac
+
+case "$cmd" in
+  git)
+    if [ "${1:-}" = "--version" ] || [ "$#" -eq 0 ]; then
+      use_directory=0
+    fi
+    ;;
+  gh|glab|gitlab)
+    if [ "${1:-}" = "--version" ] || { [ "${1:-}" = "auth" ] && [ "${2:-}" = "status" ]; }; then
+      use_directory=0
+    fi
+    ;;
+esac
+
+if [ "$use_directory" = 1 ] && [ -d "$PWD" ]; then
+  exec flatpak-spawn --host --directory="$PWD" sh -c "$host_script" orca-host-shim "$cmd" "$@"
+fi
+
+exec flatpak-spawn --host sh -c "$host_script" orca-host-shim "$cmd" "$@"

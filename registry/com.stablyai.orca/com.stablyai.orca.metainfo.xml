@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.stablyai.orca</id>
+  <name>Orca</name>
+  <summary>AI orchestrator for running coding agents side by side</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <developer id="com.stablyai">
+    <name>stablyai</name>
+  </developer>
+  <url type="homepage">https://onorca.dev/</url>
+  <url type="bugtracker">https://github.com/stablyai/orca/issues</url>
+  <url type="vcs-browser">https://github.com/stablyai/orca</url>
+  <description>
+    <p>This is a community package of Orca, maintained independently. It repackages the official upstream Linux build unmodified.</p>
+    <p>Orca runs coding agents side by side in terminal panes and worktrees, tracks their status in one workspace, and integrates with GitHub, Linear, SSH hosts, and the Orca mobile companion.</p>
+    <p>Permissions: by default this package grants display, network, notifications, secret storage, audio, and a host command bridge. At startup, Orca creates a runtime PATH directory for commands already installed on the host, including Git, GitHub CLI (<code>gh</code>), GitLab CLI (<code>glab</code>), Node/npm/npx, Codex, Claude Code, OpenCode, Cursor Agent, Gemini, and other user-installed CLIs. Each command forwards through Flatpak's host-spawn portal and runs on the host. FlatPark does not install or authenticate those tools; install the CLIs you want on the host and sign in there first. Commands can be visible through host-spawn's default PATH or through your login shell, including shell-managed toolchains such as mise. For GitHub features, install GitHub CLI on the host and run <code>gh auth login</code>; for GitLab features, install GitLab CLI on the host and run <code>glab auth login</code> before using them from Orca.</p>
+    <p>A few broad capabilities are not granted by default; enable only the ones you need with "flatpak override":</p>
+    <ul>
+      <li>Open existing projects anywhere in your home directory: <code>flatpak override --user --filesystem=home com.stablyai.orca</code></li>
+      <li>Reuse host SSH configuration and keys for Git/SSH workflows: <code>flatpak override --user --filesystem=~/.ssh:ro com.stablyai.orca</code></li>
+      <li>Expose local devices for advanced computer-use workflows: <code>flatpak override --user --device=all com.stablyai.orca</code></li>
+    </ul>
+  </description>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Orca running agents in parallel worktrees</caption>
+      <image>https://raw.githubusercontent.com/stablyai/orca/main/docs/assets/readme-hero.jpg</image>
+    </screenshot>
+  </screenshots>
+  <launchable type="desktop-id">com.stablyai.orca.desktop</launchable>
+  <categories>
+    <category>Development</category>
+    <category>IDE</category>
+  </categories>
+  <keywords>
+    <keyword>AI</keyword>
+    <keyword>agents</keyword>
+    <keyword>IDE</keyword>
+    <keyword>terminal</keyword>
+    <keyword>worktree</keyword>
+    <keyword>Codex</keyword>
+    <keyword>Claude</keyword>
+  </keywords>
+  <recommends>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </recommends>
+  <content_rating type="oars-1.1" />
+  <provides>
+    <binary>orca</binary>
+  </provides>
+  <releases>
+    <release version="1.4.128" date="2026-07-08" />
+  </releases>
+</component>

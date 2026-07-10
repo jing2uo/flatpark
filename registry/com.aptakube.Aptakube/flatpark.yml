@@ -1,0 +1,24 @@
+id: com.aptakube.Aptakube
+name: Aptakube
+summary: Modern, lightweight and multi-cluster Kubernetes management UI
+website: https://aptakube.com
+source_url: https://github.com/aptakube/aptakube
+build:
+  manifest: com.aptakube.Aptakube.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Development
+  featured: false
+  tags:
+    - Kubernetes
+    - Cluster
+    - DevOps
+    - Containers
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: true
+  extra_data_first: true
+  dangerous_permissions:
+    - --talk-name=org.freedesktop.Flatpak

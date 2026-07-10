@@ -1,0 +1,87 @@
+id: com.aptakube.Aptakube
+runtime: org.gnome.Platform
+runtime-version: "50"
+sdk: org.gnome.Sdk
+command: aptakube
+separate-locales: false
+build-options:
+  no-debuginfo: true
+finish-args:
+  # Tauri v2 / WebKitGTK Kubernetes client. dri for WebKit compositing.
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  # Network is the core function: Aptakube speaks the Kubernetes API directly
+  # (kube-rs), so every cluster it manages is reached over the network.
+  - --share=network
+  # Kubeconfig. Read *and* write: switching the active context rewrites
+  # current-context. Scoped to ~/.kube — NOT --filesystem=home — so the rest of
+  # $HOME stays private. Clusters whose kubeconfig references certificates or
+  # token files outside this directory need an extra `flatpak override`, which
+  # the metainfo documents.
+  - --filesystem=~/.kube
+  # DANGEROUS, and declared as such in flatpark.yml. This is what lets the
+  # /app/bin shims call out to the host, and it is effectively a sandbox escape:
+  # anything Aptakube can run through a shim, it can run as you, outside the
+  # sandbox. It buys two things that cannot work any other way:
+  #
+  #   * Managed-cloud authentication. An EKS/GKE/AKS kubeconfig authenticates by
+  #     executing a credential helper (`aws`, `gke-gcloud-auth-plugin`,
+  #     `kubelogin`, …) that holds the user's cloud credentials. Those binaries
+  #     are host software; a sandboxed Aptakube cannot authenticate to the
+  #     clusters most of its users have without running them.
+  #   * "Open Shell", which launches a terminal emulator — a host application.
+  #
+  # Without this, Aptakube still works for kubeconfigs carrying their own
+  # certificates or tokens (k3s, kind, minikube, self-managed, service-account
+  # tokens), and nothing else. See host-shim for what is forwarded and why.
+  - --talk-name=org.freedesktop.Flatpak
+modules:
+  - name: aptakube
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 apply_extra.sh /app/bin/apply_extra
+      - install -Dm755 aptakube-wrapper /app/bin/aptakube
+      # kubeconfig exec-credential plugins, resolved by Aptakube through PATH.
+      - install -Dm755 host-shim /app/bin/aws
+      - install -Dm755 host-shim /app/bin/aws-iam-authenticator
+      - install -Dm755 host-shim /app/bin/az
+      - install -Dm755 host-shim /app/bin/doctl
+      - install -Dm755 host-shim /app/bin/gcloud
+      - install -Dm755 host-shim /app/bin/gke-gcloud-auth-plugin
+      - install -Dm755 host-shim /app/bin/kubectl
+      - install -Dm755 host-shim /app/bin/kubelogin
+      # Terminal emulators, in the order Aptakube probes for them ("Open Shell").
+      - install -Dm755 host-shim /app/bin/warp-terminal
+      - install -Dm755 host-shim /app/bin/gnome-terminal
+      - install -Dm755 host-shim /app/bin/ptyxis
+      - install -Dm755 host-shim /app/bin/konsole
+      - install -Dm755 host-shim /app/bin/kitty
+      - install -Dm755 host-shim /app/bin/ghostty
+      - install -Dm755 host-shim /app/bin/alacritty
+      - install -Dm644 com.aptakube.Aptakube.desktop /app/share/applications/com.aptakube.Aptakube.desktop
+      - install -Dm644 com.aptakube.Aptakube.metainfo.xml /app/share/metainfo/com.aptakube.Aptakube.metainfo.xml
+      - install -Dm644 com.aptakube.Aptakube.png /app/share/icons/hicolor/256x256/apps/com.aptakube.Aptakube.png
+    sources:
+      # BEGIN MANAGED EXTRA-DATA
+      - type: extra-data
+        filename: aptakube.deb
+        only-arches:
+          - x86_64
+        url: https://github.com/aptakube/aptakube/releases/download/1.18.4/aptakube_1.18.4_amd64.deb
+        sha256: d51c81516a8f4a6530cee8138af54abdc46bbf68ccee3fc22f529c4bea91213f
+        size: 15465134
+      # END MANAGED EXTRA-DATA
+      - type: file
+        path: apply_extra.sh
+      - type: file
+        path: aptakube-wrapper
+      - type: file
+        path: host-shim
+      - type: file
+        path: com.aptakube.Aptakube.desktop
+      - type: file
+        path: com.aptakube.Aptakube.metainfo.xml
+      - type: file
+        path: com.aptakube.Aptakube.png

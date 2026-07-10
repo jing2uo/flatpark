@@ -1,7 +1,7 @@
 id: io.github.todevelopers.GseProfiler
 name: GSE Profiler
 summary: Debug, profile and manage GNOME Shell extensions
-website: https://github.com/todevelopers/gseprofiler
+website: https://todevelopers.github.io/flatpaks/gseprofiler/
 source_url: https://github.com/todevelopers/gseprofiler
 build:
   manifest: io.github.todevelopers.GseProfiler.yml

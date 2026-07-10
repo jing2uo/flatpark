@@ -1,0 +1,150 @@
+id: com.aeroftp.AeroFTP
+runtime: org.gnome.Platform
+runtime-version: "50"
+sdk: org.gnome.Sdk
+command: aeroftp
+separate-locales: false
+build-options:
+  no-debuginfo: true
+finish-args:
+  # Tauri v2 / WebKitGTK multi-protocol file client.
+  # dri for hardware-accelerated WebKit rendering.
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  # Network is the core function: FTP/FTPS/SFTP/WebDAV/S3 and cloud providers.
+  - --share=network
+  # The built-in media player previews audio and video from a remote server.
+  - --socket=pulseaudio
+  # System tray (Tauri tray-icon).
+  - --talk-name=org.kde.StatusNotifierWatcher
+  - --filesystem=xdg-run/tray-icon:create
+  # Saved server passwords, when the user chooses the system keyring over
+  # AeroFTP's own encrypted vault.
+  - --talk-name=org.freedesktop.secrets
+  # No --filesystem. AeroFTP's local pane therefore browses the sandbox home
+  # (~/.var/app/com.aeroftp.AeroFTP) rather than the real one, and transfers to
+  # or from anywhere else go through the file-chooser portal, which the app opens
+  # with GtkFileChooserNative. Users who want the local pane pointed at their
+  # real home — the way upstream's own manifest ships it — opt in with a
+  # `flatpak override`, documented in the metainfo.
+modules:
+  # The Tauri tray-icon dlopen-s libayatana-appindicator at startup and PANICS if
+  # it is missing — and the GNOME runtime does not ship it, so the app cannot
+  # even start without it. Build the Ayatana stack from the Flathub-maintained
+  # shared-modules recipe (flathub/shared-modules/libayatana-appindicator), which
+  # carries the build-fix patches the modern toolchain needs (intltool perl5.26,
+  # libdbusmenu valgrind, ayatana-ido introspection). Git sources are pinned to
+  # immutable commits.
+  - name: intltool
+    cleanup:
+      - "*"
+    sources:
+      - type: archive
+        url: https://launchpad.net/intltool/trunk/0.51.0/+download/intltool-0.51.0.tar.gz
+        sha256: 67c74d94196b153b774ab9f89b2fa6c6ba79352407037c8c14d5aeb334e959cd
+      - type: patch
+        path: intltool-perl5.26-regex-fixes.patch
+  - name: libdbusmenu
+    buildsystem: autotools
+    build-options:
+      cflags: -Wno-error
+    cleanup:
+      - "*.la"
+      - /include
+      - /lib/pkgconfig
+      - /libexec
+      - /share/doc
+      - /share/gtk-doc
+    config-opts:
+      - --with-gtk=3
+      - --disable-dumper
+      - --disable-static
+      - --disable-tests
+      - --disable-gtk-doc
+      - --enable-introspection=no
+      - --disable-vala
+    sources:
+      - type: archive
+        url: https://launchpad.net/libdbusmenu/16.04/16.04.0/+download/libdbusmenu-16.04.0.tar.gz
+        sha256: b9cc4a2acd74509435892823607d966d424bd9ad5d0b00938f27240a1bfa878a
+      - type: patch
+        paths:
+          - 0001-Fix-HAVE_VALGRIND-AM_CONDITIONAL.patch
+  - name: ayatana-ido
+    buildsystem: cmake-ninja
+    cleanup:
+      - /include
+      - /lib/pkgconfig
+    config-opts:
+      - -DENABLE_INTROSPECTION=OFF
+      # Force /app/lib (not lib64): newer cmake defaults LIBDIR to lib64 on
+      # x86_64, but pkg-config only searches /app/lib/pkgconfig, so the next
+      # module would not find this one's .pc. Keep the whole stack in /app/lib.
+      - -DCMAKE_INSTALL_LIBDIR=lib
+    sources:
+      - type: git
+        url: https://github.com/AyatanaIndicators/ayatana-ido.git
+        tag: "0.10.4"
+        commit: f968079b09e2310fefc3fc307359025f1c74b3eb
+      - type: patch
+        paths:
+          - 0001-Make-introspection-configurable.patch
+  - name: libayatana-indicator
+    buildsystem: cmake-ninja
+    cleanup:
+      - /include
+      - /lib/pkgconfig
+      - /libexec
+      - /share
+    config-opts:
+      - -DCMAKE_INSTALL_LIBDIR=lib
+    sources:
+      - type: git
+        url: https://github.com/AyatanaIndicators/libayatana-indicator.git
+        tag: "0.9.4"
+        commit: 611bb384b73fa6311777ba4c41381a06f5b99dad
+  - name: libayatana-appindicator
+    buildsystem: cmake-ninja
+    cleanup:
+      - /include
+      - /lib/pkgconfig
+    config-opts:
+      - -DENABLE_BINDINGS_MONO=NO
+      - -DENABLE_BINDINGS_VALA=NO
+      - -DENABLE_GTKDOC=NO
+      - -DCMAKE_INSTALL_LIBDIR=lib
+    sources:
+      - type: git
+        url: https://github.com/AyatanaIndicators/libayatana-appindicator.git
+        tag: "0.5.94"
+        commit: 31e8bb083b307e1cc96af4874a94707727bd1e79
+  - name: aeroftp
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 apply_extra.sh /app/bin/apply_extra
+      - install -Dm755 aeroftp-wrapper /app/bin/aeroftp
+      - install -Dm644 com.aeroftp.AeroFTP.desktop /app/share/applications/com.aeroftp.AeroFTP.desktop
+      - install -Dm644 com.aeroftp.AeroFTP.metainfo.xml /app/share/metainfo/com.aeroftp.AeroFTP.metainfo.xml
+      - install -Dm644 com.aeroftp.AeroFTP.png /app/share/icons/hicolor/256x256/apps/com.aeroftp.AeroFTP.png
+    sources:
+      # BEGIN MANAGED EXTRA-DATA
+      - type: extra-data
+        filename: aeroftp.deb
+        only-arches:
+          - x86_64
+        url: https://github.com/axpdev-lab/aeroftp/releases/download/v4.1.2/AeroFTP_4.1.2_amd64.deb
+        sha256: ba664a3d17d8278b41febf16ddd2a634136595eeb546a279433c9acc0cbed45e
+        size: 72709336
+      # END MANAGED EXTRA-DATA
+      - type: file
+        path: apply_extra.sh
+      - type: file
+        path: aeroftp-wrapper
+      - type: file
+        path: com.aeroftp.AeroFTP.desktop
+      - type: file
+        path: com.aeroftp.AeroFTP.metainfo.xml
+      - type: file
+        path: com.aeroftp.AeroFTP.png

@@ -1,0 +1,24 @@
+id: com.aeroftp.AeroFTP
+name: AeroFTP
+summary: Multi-protocol file client for FTP, FTPS, SFTP, WebDAV, S3 and cloud storage
+website: https://www.aeroftp.app
+source_url: https://github.com/axpdev-lab/aeroftp
+build:
+  manifest: com.aeroftp.AeroFTP.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Network
+  featured: false
+  tags:
+    - FTP
+    - SFTP
+    - WebDAV
+    - S3
+    - Cloud
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: false
+  extra_data_first: true
+  dangerous_permissions: []

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.aeroftp.AeroFTP</id>
+  <name>AeroFTP</name>
+  <summary>Multi-protocol file client for FTP, SFTP, WebDAV, S3 and cloud storage</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <developer id="com.aeroftp">
+    <name>Ale (axpdev)</name>
+  </developer>
+  <url type="homepage">https://www.aeroftp.app</url>
+  <url type="bugtracker">https://github.com/axpdev-lab/aeroftp/issues</url>
+  <url type="vcs-browser">https://github.com/axpdev-lab/aeroftp</url>
+  <description>
+    <p>This is a community package of AeroFTP, maintained independently and unaffiliated with the AeroFTP project. It repackages the official upstream Linux build unmodified.</p>
+    <p>AeroFTP is a cross-platform desktop client for transferring files over FTP, FTPS, SFTP, WebDAV, S3-compatible storage, GitHub and cloud providers, with a two-pane browser, an encrypted local vault for credentials, and a built-in media preview.</p>
+    <ul>
+      <li>Connect over FTP, FTPS, SFTP, WebDAV and S3-compatible storage.</li>
+      <li>Two-pane transfers with a queue, and previews for text, images and media.</li>
+      <li>Credentials stored in a local AES-256-GCM vault, or in the system keyring.</li>
+      <li>Export connection profiles to rclone, WinSCP and FileZilla formats.</li>
+    </ul>
+    <p>Permissions: this package keeps a tight sandbox by default — display, GPU, audio, network, a tray icon, and access to the system keyring for saved passwords. No filesystem access is pre-granted, which has one consequence you should know about before installing: AeroFTP's local pane browses the sandbox home under ~/.var/app/com.aeroftp.AeroFTP, not your real home directory. Transfers to and from anywhere else go through the desktop portal's file chooser.</p>
+    <p>To point the local pane at your real home directory — the way upstream's own build behaves — run <code>flatpak override --user --filesystem=home com.aeroftp.AeroFTP</code>. Narrower grants work too, for example <code>--filesystem=~/Documents</code>. For removable media, add <code>--filesystem=/run/media</code>. Note that the in-app updater cannot work here: it installs a .deb or .rpm through pkexec, which a read-only Flatpak install does not allow. Updates arrive through Flatpak instead.</p>
+  </description>
+  <content_rating type="oars-1.1"/>
+  <categories>
+    <category>Network</category>
+    <category>FileTransfer</category>
+    <category>Utility</category>
+  </categories>
+  <keywords>
+    <keyword>FTP</keyword>
+    <keyword>SFTP</keyword>
+    <keyword>WebDAV</keyword>
+    <keyword>S3</keyword>
+    <keyword>cloud</keyword>
+  </keywords>
+  <recommends>
+    <display_length compare="ge">800</display_length>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </recommends>
+  <provides>
+    <binary>aeroftp</binary>
+  </provides>
+  <launchable type="desktop-id">com.aeroftp.AeroFTP.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://www.aeroftp.app/upload/thumbs/1200x800_section_69be0f2cb6c6c7.04322949.webp</image>
+      <caption>The two-pane browser with the settings dialog open</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://www.aeroftp.app/upload/thumbs/1200x800_section_69be12ffbdfda5.10356649.webp</image>
+      <caption>Transferring files between a remote server and the local pane</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://www.aeroftp.app/upload/thumbs/1200x800_section_69be1485241407.60654927.webp</image>
+      <caption>Managing saved connections</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://www.aeroftp.app/upload/thumbs/1200x800_section_6a089e0d649390.56611098.webp</image>
+      <caption>AeroFTP in use</caption>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="4.1.2" date="2026-07-05">
+      <url>https://github.com/axpdev-lab/aeroftp/releases/tag/v4.1.2</url>
+    </release>
+  </releases>
+</component>

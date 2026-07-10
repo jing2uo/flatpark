@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=AeroFTP
+Comment=Modern Multi-Protocol File Client with Encryption and Cloud Storage
+Exec=aeroftp %U
+Icon=com.aeroftp.AeroFTP
+Terminal=false
+Categories=Network;FileTransfer;Utility;
+StartupWMClass=aeroftp
+Keywords=FTP;FTPS;SFTP;WebDAV;S3;cloud;transfer;

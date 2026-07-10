@@ -1,0 +1,18 @@
+#!/bin/sh
+set -eu
+
+# /app/extra/aeroftp/bin/aeroftp is a small Rust launcher staged by apply_extra;
+# it locates the application relative to its own executable (<exe_dir>/../lib/
+# aeroftp) and execs aeroftp.bin, the Tauri (WebKitGTK) GUI. aeroftp.bin links
+# only against libraries in org.gnome.Platform (webkit2gtk-4.1, gtk-3,
+# libsoup-3, cairo, dbus) and dlopens libayatana-appindicator3 for its tray
+# icon; that stack is built by the manifest into /app/lib, already on the
+# runtime's search path. Flatpak redirects the XDG base dirs into the per-app
+# data dir, so the connection profiles and the encrypted vault stay inside the
+# sandbox.
+
+# WebKitGTK's DMABUF renderer paints a blank window under many drivers inside
+# the Flatpak sandbox; the compositing path is the reliable default here.
+export WEBKIT_DISABLE_DMABUF_RENDERER=1
+
+exec /app/extra/aeroftp/bin/aeroftp "$@"

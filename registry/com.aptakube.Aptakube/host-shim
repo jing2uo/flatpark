@@ -1,0 +1,49 @@
+#!/bin/sh
+set -eu
+
+# One shim, installed into /app/bin under every name Aptakube looks for on PATH.
+# It forwards the call to the identically-named program on the host.
+#
+# Two features of Aptakube reach outside the sandbox, and neither can be served
+# from inside it:
+#
+#   * kubeconfig exec-credential plugins. A kubeconfig for EKS, GKE or AKS
+#     authenticates by running a helper (`aws`, `gke-gcloud-auth-plugin`,
+#     `kubelogin`, …) that prints an ExecCredential; the helper holds the user's
+#     cloud credentials and lives on the host. Aptakube resolves it through PATH,
+#     which is why a same-named shim intercepts it.
+#   * "Open Shell". Aptakube writes a small script into its data dir and launches
+#     a terminal emulator with it. The terminal is a host application.
+#
+# Only the names in the manifest's install list are shimmed. Anything else a
+# kubeconfig names as its exec command will not be found — see the metainfo,
+# which tells users how to report that so the list can grow.
+#
+# `flatpak-spawn --host <name>` resolves <name> against the PATH of the host's
+# D-Bus session-activation environment, which routinely lacks the directories
+# people actually install cloud CLIs into: ~/.local/bin, /usr/local/bin,
+# Homebrew, and version-manager shim dirs. Resolving there would find /usr/bin
+# tools and miss everything else, so the lookup runs inside a host `sh` with PATH
+# widened first. $HOME expands on the host, to the host's home.
+#
+# LD_PRELOAD / LD_LIBRARY_PATH / PYTHON* are cleared: they point at paths that
+# exist only inside this sandbox, and leaking them into a host process breaks it.
+# (Aptakube already clears these itself when it spawns a terminal; the auth
+# plugins get the same treatment here.) The rest of the environment is forwarded
+# on purpose — a kubeconfig passes settings such as AWS_PROFILE to its exec
+# plugin through the environment, so `--clear-env` would break the very thing
+# this shim exists to enable.
+
+unset LD_PRELOAD LD_LIBRARY_PATH PYTHONHOME PYTHONPATH
+
+# APTAKUBE_HOST_PATH lets a user point the shim at an unusual install location
+# without rebuilding: flatpak override --user --env=APTAKUBE_HOST_PATH=...
+host_path_extra="${APTAKUBE_HOST_PATH:-}"
+
+exec flatpak-spawn --host /bin/sh -c '
+    extra=$1; shift
+    cmd=$1; shift
+    PATH="${extra:+$extra:}$HOME/.local/bin:$HOME/bin:/usr/local/bin:/usr/local/sbin:/opt/homebrew/bin:/home/linuxbrew/.linuxbrew/bin:$PATH"
+    export PATH
+    exec "$cmd" "$@"
+' sh "$host_path_extra" "$(basename "$0")" "$@"

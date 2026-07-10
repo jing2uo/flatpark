@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Aptakube
+Comment=Modern, lightweight and multi-cluster Kubernetes management UI
+Exec=aptakube
+Icon=com.aptakube.Aptakube
+Terminal=false
+Categories=Development;Utility;
+StartupWMClass=aptakube
+Keywords=kubernetes;k8s;cluster;kubectl;devops;

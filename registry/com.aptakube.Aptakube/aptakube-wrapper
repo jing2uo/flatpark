@@ -1,0 +1,22 @@
+#!/bin/sh
+set -eu
+
+# aptakube is a single Tauri v2 (Rust + WebKitGTK) binary staged by apply_extra
+# to /app/extra/aptakube/bin. Talking to a cluster is native: it speaks the
+# Kubernetes API directly through kube-rs, with no kubectl involved. It links
+# only against libraries in org.gnome.Platform (webkit2gtk-4.1, gtk-3,
+# libsoup-3, cairo, dbus) and has no tray icon.
+
+# /app/bin holds the host-tool shims (see host-shim). It must precede the
+# runtime's own /usr/bin so that a kubeconfig's exec-credential plugin and the
+# terminal emulator used by "Open Shell" resolve to the shim rather than to
+# nothing. Aptakube itself also prepends the usual host locations
+# (/usr/local/bin, /home/linuxbrew/.linuxbrew/bin, …) when it searches for a
+# plugin; inside the sandbox those are empty, so PATH order is what matters.
+export PATH="/app/bin:/usr/bin"
+
+# WebKitGTK's DMABUF renderer paints a blank window under many drivers inside
+# the Flatpak sandbox; the compositing path is the reliable default here.
+export WEBKIT_DISABLE_DMABUF_RENDERER=1
+
+exec /app/extra/aptakube/bin/aptakube "$@"

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.aptakube.Aptakube</id>
+  <name>Aptakube</name>
+  <summary>Modern, lightweight and multi-cluster Kubernetes management UI</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>LicenseRef-proprietary</project_license>
+  <developer id="com.aptakube">
+    <name>Aptakube</name>
+  </developer>
+  <url type="homepage">https://aptakube.com</url>
+  <url type="bugtracker">https://github.com/aptakube/aptakube/issues</url>
+  <description>
+    <p>This is a community package of Aptakube, maintained independently and unaffiliated with the Aptakube project. It repackages the official upstream Linux build unmodified. Aptakube is proprietary software; using it means accepting the vendor's own licence terms.</p>
+    <p>Aptakube is a desktop client for Kubernetes. You can connect to multiple clusters, manage workloads, view logs, compare resources, and a lot more. It talks to the Kubernetes API directly, so no kubectl installation is required for browsing or managing resources.</p>
+    <p>Permissions: this package grants display, GPU, network (every cluster is reached over the network), and read-write access to ~/.kube, because switching the active context rewrites your kubeconfig. No other part of your home directory is exposed. If your kubeconfig points at certificates or token files kept elsewhere, grant that path with <code>flatpak override --user --filesystem=~/path/to/certs com.aptakube.Aptakube</code>.</p>
+    <p>Host access: this package can run programs on your computer outside the sandbox, and you should understand that before installing it. Two Aptakube features require it. Managed-cloud clusters (EKS, GKE, AKS) authenticate by executing a credential helper named in your kubeconfig — aws, gke-gcloud-auth-plugin, kubelogin and similar — which lives on your system, holds your cloud credentials, and cannot run inside the sandbox. "Open Shell" likewise launches your terminal emulator, which is a host application. This package therefore ships small shims that forward those specific commands to the host. The practical consequence is that Aptakube's sandbox is not a security boundary against Aptakube itself: whatever it invokes through a shim runs with your normal user privileges.</p>
+    <p>Only a fixed list of commands is forwarded: aws, aws-iam-authenticator, az, doctl, gcloud, gke-gcloud-auth-plugin, kubectl and kubelogin for authentication, and warp-terminal, gnome-terminal, ptyxis, konsole, kitty, ghostty and alacritty for Open Shell. A kubeconfig naming any other exec plugin will report that the command was not found; please open an issue against the FlatPark packaging so the list can be extended. If you only use clusters whose kubeconfig carries its own certificate or token — k3s, kind, minikube, self-managed clusters, service-account tokens — you can remove the host access entirely with <code>flatpak override --user --no-talk-name=org.freedesktop.Flatpak com.aptakube.Aptakube</code>, and everything except cloud authentication and Open Shell will keep working. The shims then fail with a clear message rather than misbehaving.</p>
+  </description>
+  <content_rating type="oars-1.1"/>
+  <categories>
+    <category>Development</category>
+    <category>Utility</category>
+  </categories>
+  <keywords>
+    <keyword>kubernetes</keyword>
+    <keyword>k8s</keyword>
+    <keyword>cluster</keyword>
+    <keyword>kubectl</keyword>
+    <keyword>devops</keyword>
+  </keywords>
+  <recommends>
+    <display_length compare="ge">800</display_length>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </recommends>
+  <provides>
+    <binary>aptakube</binary>
+  </provides>
+  <launchable type="desktop-id">com.aptakube.Aptakube.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://aptakube.com/screenshot.png</image>
+      <caption>Browsing workloads across clusters</caption>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="1.18.4" date="2026-07-07">
+      <url>https://github.com/aptakube/aptakube/releases/tag/1.18.4</url>
+    </release>
+  </releases>
+</component>

@@ -17,7 +17,10 @@ cd "$extra_root"
 
 dm="$(bsdtar -tf geolibre.deb | grep '^data\.tar' | head -n1)"
 [ -n "$dm" ] || { echo "no data member in geolibre.deb" >&2; exit 1; }
-bsdtar -xOf geolibre.deb "$dm" | bsdtar -xf -
+# --no-same-owner: on a system-wide install Flatpak runs apply_extra as root with
+# every capability dropped, so restoring the archive's recorded uid/gid fails and
+# aborts the unpack even though every member extracted fine.
+bsdtar -xOf geolibre.deb "$dm" | bsdtar --no-same-owner -xf -
 
 [ -x usr/bin/geolibre-desktop ] || { echo "geolibre-desktop not found in .deb" >&2; exit 1; }
 

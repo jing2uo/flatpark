@@ -91,6 +91,15 @@ Detail + schema in the [contributing guide](https://flatpark.org/contributing/).
 - **Inspect the artifact.** Extract (`bsdtar` for `.deb`/zip, `tar` for tarball), check
   `readelf -d` NEEDED against the runtime's coverage, locate the icon / `.desktop` / metainfo,
   find the largest icon available.
+- **Always unpack with `--no-same-owner`.** For a *system-wide* install Flatpak runs
+  `apply_extra` as **root with `--cap-drop ALL`**, so it cannot `chown` to whatever uid the
+  archive recorded. Both `bsdtar` and `tar` restore ownership by default under uid 0, and the
+  resulting `EPERM` aborts the unpack — every member extracts, yet the install dies with
+  `apply_extra script failed, exit status 256`. It never reproduces under `--user`, where the
+  script runs as you and ownership is never restored. Artifacts built without `fakeroot` carry
+  a real uid (`1000`, `1001`, …) and trip this; `.deb`s from a proper `dpkg-deb` do not, which
+  is why it hides. Check with
+  `bsdtar --numeric-owner -tvf <artifact> | awk '{print $3":"$4}' | sort -u`.
 - **Pick the runtime.** `org.freedesktop.Platform//25.08` by default; `org.gnome.Platform//50`
   for GTK / WebKitGTK / Tauri. **Always the major the rest of the catalog is on** — match what
   the existing manifests pin, never an older major to dodge a build break. A single straggler
@@ -138,6 +147,16 @@ Detail + schema in the [contributing guide](https://flatpark.org/contributing/).
 3. Install from the signed local repo into an **isolated** `--installation=test` so it never
    pollutes your everyday Flatpak state (recipe in the contributing guide). Installing
    exercises `apply_extra` (the extra-data download + unpack).
+   A custom installation runs `apply_extra` as **you**, so it never exercises the root path a
+   system-wide install takes. To cover that too, run the script under the same constraints
+   Flatpak imposes there — uid 0, no capabilities:
+   ```sh
+   RT=$(ls -d ~/.local/share/flatpak/runtime/org.freedesktop.Platform/x86_64/25.08/*/files)
+   bwrap --unshare-user --uid 0 --gid 0 --cap-drop ALL \
+     --ro-bind "$RT" /usr --symlink usr/bin /bin --symlink usr/lib /lib --symlink usr/lib64 /lib64 \
+     --bind <dir-with-the-artifact> /app/extra --chdir /app/extra --dev /dev --tmpfs /tmp \
+     /bin/sh -c 'sh /app/extra/apply_extra.sh; echo rc=$?'
+   ```
 4. **Smoke-test the actual launch:** the app must start, and its data must land inside the
    sandbox (`~/.var/app/<id>/…`). Confirm no missing libs (`LD_TRACE_LOADED_OBJECTS=1` → 0
    "not found"). Note in the PR anything you *couldn't* verify (GUI render on a real session,

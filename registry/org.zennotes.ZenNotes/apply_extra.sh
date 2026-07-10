@@ -20,7 +20,10 @@ cd "$extra_root"
 # tree (the inner data.tar compression is auto-detected).
 rm -rf stage zennotes
 mkdir stage
-bsdtar -xOf zennotes.deb 'data.tar*' | bsdtar -xf - -C stage
+# --no-same-owner: on a system-wide install Flatpak runs apply_extra as root with
+# every capability dropped, so restoring the archive's recorded uid/gid fails and
+# aborts the unpack even though every member extracted fine.
+bsdtar -xOf zennotes.deb 'data.tar*' | bsdtar --no-same-owner -xf - -C stage
 [ -x stage/opt/ZenNotes/ZenNotes ] || { echo "ZenNotes binary not found in .deb" >&2; exit 1; }
 mv stage/opt/ZenNotes zennotes
 rm -rf stage zennotes.deb

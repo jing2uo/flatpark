@@ -14,7 +14,10 @@ cd "$extra_root"
 [ -f materialgram.tar.zst ] || { echo "missing extra-data: materialgram.tar.zst" >&2; exit 1; }
 
 # org.freedesktop.Platform ships tar + zstd; extract just the binary.
-zstd -dc materialgram.tar.zst | tar -xf - usr/bin/materialgram
+# --no-same-owner: on a system-wide install Flatpak runs apply_extra as root with
+# every capability dropped, so restoring the archive's recorded uid/gid fails and
+# aborts the unpack even though every member extracted fine.
+zstd -dc materialgram.tar.zst | tar --no-same-owner -xf - usr/bin/materialgram
 [ -f usr/bin/materialgram ] || { echo "materialgram binary not found in tarball" >&2; exit 1; }
 mv usr/bin/materialgram materialgram
 rm -rf usr materialgram.tar.zst

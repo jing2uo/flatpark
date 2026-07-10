@@ -21,7 +21,10 @@ cd "$extra_root"
 # FHS tree (the inner data.tar compression is auto-detected).
 rm -rf stage yaak
 mkdir stage
-bsdtar -xOf yaak.deb 'data.tar*' | bsdtar -xf - -C stage
+# --no-same-owner: on a system-wide install Flatpak runs apply_extra as root with
+# every capability dropped, so restoring the archive's recorded uid/gid fails and
+# aborts the unpack even though every member extracted fine.
+bsdtar -xOf yaak.deb 'data.tar*' | bsdtar --no-same-owner -xf - -C stage
 [ -x stage/usr/bin/yaak-app-client ] || { echo "yaak-app-client not found in .deb" >&2; exit 1; }
 mv stage/usr yaak
 rm -rf stage yaak.deb

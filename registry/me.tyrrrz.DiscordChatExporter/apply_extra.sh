@@ -15,13 +15,18 @@ cd "$extra_root"
 
 [ -f dce.zip ] || { echo "missing extra-data: dce.zip" >&2; exit 1; }
 
-# The Platform runtime has no unzip, but bsdtar (libarchive) reads zip directly.
 rm -rf dce
 mkdir dce
-bsdtar -xf dce.zip -C dce
+# --no-same-owner is required, not cosmetic. For a system-wide install Flatpak
+# runs apply_extra as root with every capability dropped, and the zip records
+# uid/gid 1001 in its Info-ZIP extra fields. Under uid 0 bsdtar restores
+# ownership by default, so it chowns each member to 1001 and gets EPERM without
+# CAP_CHOWN. libarchive counts that as a warning, and a warning still makes
+# bsdtar exit 1 — every file extracts, yet set -e aborts the install.
+bsdtar --no-same-owner -xf dce.zip -C dce
 [ -f dce/DiscordChatExporter.dll ] || { echo "DiscordChatExporter.dll not found in zip" >&2; exit 1; }
 
-# The publish zip does not carry the unix executable bit; the apphost launcher
-# (and the createdump helper next to it) must be made executable.
+# The apphost launcher already carries 0755, but the createdump helper beside it
+# does not; make both executable regardless.
 chmod +x dce/DiscordChatExporter dce/createdump 2>/dev/null || chmod +x dce/DiscordChatExporter
 rm -f dce.zip

@@ -20,7 +20,10 @@ cd "$extra_root"
 # just the app tree (inner data.tar compression is auto-detected).
 rm -rf stage hiresti
 mkdir stage
-bsdtar -xOf hiresti.deb 'data.tar*' | bsdtar -xf - -C stage ./usr/share/hiresti
+# --no-same-owner: on a system-wide install Flatpak runs apply_extra as root with
+# every capability dropped, so restoring the archive's recorded uid/gid fails and
+# aborts the unpack even though every member extracted fine.
+bsdtar -xOf hiresti.deb 'data.tar*' | bsdtar --no-same-owner -xf - -C stage ./usr/share/hiresti
 [ -f stage/usr/share/hiresti/main.py ] || { echo "main.py not found in .deb" >&2; exit 1; }
 mv stage/usr/share/hiresti hiresti
 rm -rf stage hiresti.deb

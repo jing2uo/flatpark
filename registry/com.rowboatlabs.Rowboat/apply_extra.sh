@@ -21,15 +21,18 @@ deb="rowboat-amd64.deb"
 rm -rf stage rowboat
 mkdir stage
 if command -v bsdtar >/dev/null 2>&1; then
-  bsdtar -xOf "$deb" 'data.tar*' | bsdtar -xf - -C stage
+  # --no-same-owner: on a system-wide install Flatpak runs apply_extra as root with
+  # every capability dropped, so restoring the archive's recorded uid/gid fails and
+  # aborts the unpack even though every member extracted fine.
+  bsdtar -xOf "$deb" 'data.tar*' | bsdtar --no-same-owner -xf - -C stage
 else
   member="$(ar t "$deb" | grep '^data.tar' | head -n 1)"
   [ -n "$member" ] || { echo "data.tar member not found in .deb" >&2; exit 1; }
   case "$member" in
-    *.tar.xz) ar p "$deb" "$member" | tar -xJ -C stage ;;
-    *.tar.gz) ar p "$deb" "$member" | tar -xz -C stage ;;
-    *.tar.zst) ar p "$deb" "$member" | tar --zstd -x -C stage ;;
-    *.tar) ar p "$deb" "$member" | tar -x -C stage ;;
+    *.tar.xz) ar p "$deb" "$member" | tar --no-same-owner -xJ -C stage ;;
+    *.tar.gz) ar p "$deb" "$member" | tar --no-same-owner -xz -C stage ;;
+    *.tar.zst) ar p "$deb" "$member" | tar --no-same-owner --zstd -x -C stage ;;
+    *.tar) ar p "$deb" "$member" | tar --no-same-owner -x -C stage ;;
     *) echo "unsupported data archive: $member" >&2; exit 1 ;;
   esac
 fi

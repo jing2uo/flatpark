@@ -20,6 +20,9 @@ cd "$extra_root"
 # version-stamped top dir (jdk-21.0.x+y-jre); strip it to a stable path.
 rm -rf jre
 mkdir jre
-tar -xzf jre.tar.gz -C jre --strip-components=1
+# --no-same-owner: on a system-wide install Flatpak runs apply_extra as root with
+# every capability dropped, so restoring the archive's recorded uid/gid fails and
+# aborts the unpack even though every member extracted fine.
+tar --no-same-owner -xzf jre.tar.gz -C jre --strip-components=1
 [ -x jre/bin/java ] || { echo "java binary not found in JRE tarball" >&2; exit 1; }
 rm -f jre.tar.gz

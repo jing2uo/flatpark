@@ -14,7 +14,10 @@ cd "$extra_root"
 
 rm -rf stage devpod
 mkdir stage
-bsdtar -xOf devpod.deb 'data.tar*' | bsdtar -xf - -C stage
+# --no-same-owner: on a system-wide install Flatpak runs apply_extra as root with
+# every capability dropped, so restoring the archive's recorded uid/gid fails and
+# aborts the unpack even though every member extracted fine.
+bsdtar -xOf devpod.deb 'data.tar*' | bsdtar --no-same-owner -xf - -C stage
 [ -x "stage/usr/bin/DevPod Desktop" ] || { echo "DevPod desktop binary not found in .deb" >&2; exit 1; }
 [ -x stage/usr/bin/devpod-cli ] || { echo "devpod-cli binary not found in .deb" >&2; exit 1; }
 

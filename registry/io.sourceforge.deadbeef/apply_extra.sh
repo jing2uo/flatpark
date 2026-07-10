@@ -11,7 +11,13 @@ cd "$extra_root"
 
 [ -f deadbeef-static.tar.bz2 ] || { echo "missing extra-data: deadbeef-static.tar.bz2" >&2; exit 1; }
 
-tar -xjf deadbeef-static.tar.bz2
+# --no-same-owner: on a system-wide install Flatpak runs apply_extra as root with
+
+# every capability dropped, so restoring the archive's recorded uid/gid fails and
+
+# aborts the unpack even though every member extracted fine.
+
+tar --no-same-owner -xjf deadbeef-static.tar.bz2
 app_dir="$(find . -maxdepth 1 -type d -name 'deadbeef-*' | sort | head -n1)"
 [ -n "$app_dir" ] || { echo "no deadbeef directory in tarball" >&2; exit 1; }
 

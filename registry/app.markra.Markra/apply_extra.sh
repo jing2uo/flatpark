@@ -19,7 +19,10 @@ cd "$extra_root"
 # FHS tree (the inner data.tar compression is auto-detected).
 rm -rf stage markra
 mkdir stage
-bsdtar -xOf markra.deb 'data.tar*' | bsdtar -xf - -C stage
+# --no-same-owner: on a system-wide install Flatpak runs apply_extra as root with
+# every capability dropped, so restoring the archive's recorded uid/gid fails and
+# aborts the unpack even though every member extracted fine.
+bsdtar -xOf markra.deb 'data.tar*' | bsdtar --no-same-owner -xf - -C stage
 [ -x stage/usr/bin/markra ] || { echo "markra binary not found in .deb" >&2; exit 1; }
 mkdir markra
 mv stage/usr/bin/markra markra/markra

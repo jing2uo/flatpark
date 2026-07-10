@@ -16,7 +16,10 @@ cd "$extra_root"
 
 # org.freedesktop.Platform ships tar + gzip; the archive holds one top-level
 # directory, ABDownloadManager/.
-tar -xzf abdm.tar.gz
+# --no-same-owner: on a system-wide install Flatpak runs apply_extra as root with
+# every capability dropped, so restoring the archive's recorded uid/gid fails and
+# aborts the unpack even though every member extracted fine.
+tar --no-same-owner -xzf abdm.tar.gz
 [ -x ABDownloadManager/bin/ABDownloadManager ] || { echo "launcher not found in tarball" >&2; exit 1; }
 
 rm -f abdm.tar.gz

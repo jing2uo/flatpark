@@ -19,13 +19,16 @@ cd "$extra_root"
 # The Platform runtime has no unzip, but bsdtar (libarchive) reads zip directly.
 rm -rf ytd
 mkdir ytd
-bsdtar -xf ytd.zip -C ytd
+# --no-same-owner: on a system-wide install Flatpak runs apply_extra as root with
+# every capability dropped, so restoring the archive's recorded uid/gid fails and
+# aborts the unpack even though every member extracted fine.
+bsdtar --no-same-owner -xf ytd.zip -C ytd
 [ -f ytd/YoutubeDownloader.dll ] || { echo "YoutubeDownloader.dll not found in zip" >&2; exit 1; }
 
 # Stage the ffmpeg binary next to the app so YoutubeDownloader auto-detects it
 # (it probes AppContext.BaseDirectory). The archive also carries ffprobe/ffplay,
 # which the app never calls — extract only ffmpeg to keep the install lean.
-bsdtar -xf ffmpeg.zip -C ytd ffmpeg
+bsdtar --no-same-owner -xf ffmpeg.zip -C ytd ffmpeg
 [ -f ytd/ffmpeg ] || { echo "ffmpeg not found in ffmpeg.zip" >&2; exit 1; }
 
 # The publish zip does not carry the unix executable bit; the apphost launcher

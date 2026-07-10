@@ -14,7 +14,10 @@ cd "$extra_root"
 [ -f electerm.tar.gz ] || { echo "missing extra-data: electerm.tar.gz" >&2; exit 1; }
 
 # org.freedesktop.Platform ships tar + gzip.
-tar -xzf electerm.tar.gz
+# --no-same-owner: on a system-wide install Flatpak runs apply_extra as root with
+# every capability dropped, so restoring the archive's recorded uid/gid fails and
+# aborts the unpack even though every member extracted fine.
+tar --no-same-owner -xzf electerm.tar.gz
 d="$(echo electerm-*-linux-x64)"
 [ -d "$d" ] || { echo "electerm app dir not found in tarball" >&2; exit 1; }
 rm -rf electerm

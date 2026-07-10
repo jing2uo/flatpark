@@ -16,7 +16,10 @@ cd "$extra_root"
 # Extract the JRE to a stable path the wrapper expects: /app/extra/jre.
 rm -rf jre jre-stage
 mkdir -p jre-stage
-tar -xzf zulu-jre.tar.gz -C jre-stage
+# --no-same-owner: on a system-wide install Flatpak runs apply_extra as root with
+# every capability dropped, so restoring the archive's recorded uid/gid fails and
+# aborts the unpack even though every member extracted fine.
+tar --no-same-owner -xzf zulu-jre.tar.gz -C jre-stage
 jre_java="$(find jre-stage -path '*/bin/java' -type f | head -n 1)"
 [ -n "$jre_java" ] || { echo "failed to find java in zulu-jre.tar.gz" >&2; exit 1; }
 mv "$(dirname "$(dirname "$jre_java")")" jre

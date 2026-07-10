@@ -18,7 +18,10 @@ cd "$extra_root"
 # directly and auto-detects the inner data.tar compression.
 rm -rf stage Orca
 mkdir stage
-bsdtar -xOf orca.deb 'data.tar*' | bsdtar -xf - -C stage
+# --no-same-owner: on a system-wide install Flatpak runs apply_extra as root with
+# every capability dropped, so restoring the archive's recorded uid/gid fails and
+# aborts the unpack even though every member extracted fine.
+bsdtar -xOf orca.deb 'data.tar*' | bsdtar --no-same-owner -xf - -C stage
 [ -x stage/opt/Orca/orca-ide ] || { echo "Orca binary not found in .deb" >&2; exit 1; }
 mv stage/opt/Orca Orca
 rm -rf stage orca.deb

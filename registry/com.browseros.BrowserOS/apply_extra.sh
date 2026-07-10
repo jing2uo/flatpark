@@ -11,7 +11,10 @@ cd "$extra_root"
 
 rm -rf stage browseros
 mkdir stage
-bsdtar -xOf browseros.deb 'data.tar*' | bsdtar -xf - -C stage
+# --no-same-owner: on a system-wide install Flatpak runs apply_extra as root with
+# every capability dropped, so restoring the archive's recorded uid/gid fails and
+# aborts the unpack even though every member extracted fine.
+bsdtar -xOf browseros.deb 'data.tar*' | bsdtar --no-same-owner -xf - -C stage
 [ -x stage/usr/lib/browseros/browseros ] || { echo "browseros binary not found in .deb" >&2; exit 1; }
 mv stage/usr/lib/browseros browseros
 

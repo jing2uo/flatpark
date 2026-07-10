@@ -23,12 +23,21 @@ finish-args:
   # Saved server passwords, when the user chooses the system keyring over
   # AeroFTP's own encrypted vault.
   - --talk-name=org.freedesktop.secrets
-  # No --filesystem. AeroFTP's local pane therefore browses the sandbox home
-  # (~/.var/app/com.aeroftp.AeroFTP) rather than the real one, and transfers to
-  # or from anywhere else go through the file-chooser portal, which the app opens
-  # with GtkFileChooserNative. Users who want the local pane pointed at their
-  # real home — the way upstream's own manifest ships it — opt in with a
-  # `flatpak override`, documented in the metainfo.
+  # Local file access. AeroFTP's local pane lists a directory tree directly:
+  # get_local_files (src-tauri/src/lib.rs) calls tokio::fs::read_dir on the path
+  # the pane points at. The document portal can hand over a file the user picked
+  # once, but it cannot back a browsable tree, so without a --filesystem grant
+  # the pane shows only ~/.var/app/com.aeroftp.AeroFTP and the user sees an empty
+  # home with no error. Grant home, plus the two usual removable-media mounts,
+  # because copying to and from an external drive is a core use of a transfer
+  # client. This matches the permission upstream's own .deb-derived packaging
+  # grants, and the permission FileZilla ships on Flathub, so it is the ecosystem
+  # norm rather than a concession; it does mean the home confinement is largely
+  # decorative, which the app page should state plainly rather than imply
+  # otherwise.
+  - --filesystem=home
+  - --filesystem=/media
+  - --filesystem=/run/media
 modules:
   # The Tauri tray-icon dlopen-s libayatana-appindicator at startup and PANICS if
   # it is missing — and the GNOME runtime does not ship it, so the app cannot

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=GSE Profiler
+GenericName=Extension Profiler
+Comment=Debug, profile and manage GNOME Shell extensions
+Exec=gse-profiler
+Icon=io.github.todevelopers.GseProfiler
+Terminal=false
+Categories=Development;
+Keywords=gnome;extension;profile;debug;inspect;
+StartupNotify=true
+StartupWMClass=io.github.todevelopers.GseProfiler

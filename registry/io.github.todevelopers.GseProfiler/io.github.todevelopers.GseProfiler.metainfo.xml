@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.todevelopers.GseProfiler</id>
+  <metadata_license>MIT</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+
+  <name>GSE Profiler</name>
+  <summary>Debug, profile and manage GNOME Shell extensions</summary>
+
+  <description>
+    <p>
+      GSE Profiler is a GTK4 desktop application for managing, debugging,
+      and profiling GNOME Shell extensions. It communicates with a bridge
+      extension running inside gnome-shell to provide live function timing,
+      a flame graph visualizer, a filterable log viewer, and a read-only
+      state inspector.
+    </p>
+    <p>Features:</p>
+    <ul>
+      <li>Extension manager with enable/disable toggle and state badges</li>
+      <li>Live log viewer with UUID filter, log-level filter, and full-text search</li>
+      <li>Flame graph profiler with per-function highlighting and call table</li>
+      <li>Inspector for browsing extension stateObj properties at runtime</li>
+    </ul>
+    <p>Why this app needs the listed permissions:</p>
+    <ul>
+      <li>GNOME Shell extensions folder — to install the bridge extension and extensions fetched from GitHub.</li>
+      <li>User runtime folder gse-profiler — Unix socket used by the bridge extension to talk to the app.</li>
+      <li>System journal (read-only) — to show GNOME Shell and extension logs in the built-in log viewer.</li>
+      <li>org.gnome.Shell — to list, enable, disable and inspect installed extensions via the org.gnome.Shell.Extensions interface.</li>
+      <li>org.gnome.SessionManager — to log out the session after the bridge is installed or removed, so GNOME Shell picks up the change.</li>
+      <li>Network access — to download GNOME Shell extensions from GitHub on user request and to check whether an installed GitHub-sourced extension has a newer upstream commit. Used only for explicit user actions and a one-shot update check at app start; no telemetry or background traffic.</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">io.github.todevelopers.GseProfiler.desktop</launchable>
+
+  <url type="homepage">https://github.com/todevelopers/gseprofiler</url>
+  <url type="bugtracker">https://github.com/todevelopers/gseprofiler/issues</url>
+  <url type="contribute">https://github.com/todevelopers/gseprofiler</url>
+
+  <developer id="io.github.todevelopers">
+    <name>Tomáš Gažovič</name>
+  </developer>
+
+  <content_rating type="oars-1.1"/>
+
+  <supports>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </supports>
+  <requires>
+    <display_length compare="ge">768</display_length>
+  </requires>
+
+  <screenshots>
+    <screenshot type="default">
+      <image type="source">https://raw.githubusercontent.com/todevelopers/gseprofiler/main/data/screenshots/flamegraph.png</image>
+      <caption>Flame graph profiler with per-function highlighting and call table</caption>
+    </screenshot>
+    <screenshot>
+      <image type="source">https://raw.githubusercontent.com/todevelopers/gseprofiler/main/data/screenshots/swimlane.png</image>
+      <caption>Swimlane view showing when and how often each function runs</caption>
+    </screenshot>
+    <screenshot>
+      <image type="source">https://raw.githubusercontent.com/todevelopers/gseprofiler/main/data/screenshots/histogram.png</image>
+      <caption>Histogram ranking functions by self-time to find where time is spent</caption>
+    </screenshot>
+    <screenshot>
+      <image type="source">https://raw.githubusercontent.com/todevelopers/gseprofiler/main/data/screenshots/inspector.png</image>
+      <caption>Inspector for browsing extension stateObj properties at runtime</caption>
+    </screenshot>
+    <screenshot>
+      <image type="source">https://raw.githubusercontent.com/todevelopers/gseprofiler/main/data/screenshots/logs.png</image>
+      <caption>Live log viewer with UUID and log-level filtering</caption>
+    </screenshot>
+  </screenshots>
+
+  <releases>
+    <release version="1.2.0" date="2026-07-09">
+      <description>
+        <p>Added:</p>
+        <ul>
+          <li>Export profiles to speedscope and Chrome trace-event formats — the profiler Save button is now a split button: primary click keeps the JSON save (Ctrl+S unchanged), the dropdown adds "Export for speedscope…" and "Export for Firefox Profiler / Perfetto…".</li>
+        </ul>
+        <p>Fixed:</p>
+        <ul>
+          <li>Profiler now recursively patches nested target properties instead of only one level deep, so calls on deeper holders are captured during profiling instead of running invisibly.</li>
+          <li>Total wall time stat card now sums self time instead of total time per function, so nested calls are no longer double-counted.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.1.0" date="2026-06-11">
+      <description>
+        <p>Added:</p>
+        <ul>
+          <li>Install extensions from GitHub — install a GNOME Shell extension directly from a GitHub repository URL, including repos where the extension lives in a subdirectory, with per-stage progress during install and update.</li>
+          <li>Check for Updates — on-demand update check per extension with automatic reinstall; the update indicator is now folded into the status dot.</li>
+          <li>Uninstall action available for all user-installed extensions.</li>
+          <li>Installed commit row links straight to the commit on GitHub.</li>
+          <li>Log Viewer — structured capture controls (defaulting to gnome-shell), log attribution by GLIB_DOMAIN, a tag-chip filter bar replacing the old Selected filter, and help tooltips on the filters.</li>
+        </ul>
+        <p>Changed:</p>
+        <ul>
+          <li>Wayland only — X11 support dropped to shrink the Flatpak permission surface.</li>
+          <li>Shell restart after bridge install/remove now goes through D-Bus instead of a subprocess script.</li>
+          <li>Profiler stat cards reworked with a demand-weighted layout.</li>
+          <li>Extension provenance is now tracked in a dedicated registry instead of metadata.json.</li>
+          <li>Bridge logging unified through GLib.log_structured; noisy lifecycle logs removed (errors and warnings only).</li>
+        </ul>
+        <p>Fixed:</p>
+        <ul>
+          <li>GitHub installs now reconcile the registry against what is on disk rather than the live D-Bus list.</li>
+          <li>GSettings schemas are compiled after extracting a GitHub-installed extension.</li>
+          <li>Log Viewer: tag bar no longer overflows the window, re-fits chips when counts grow, captures gnome-shell by executable path, and fixes the tag popover background in dark mode.</li>
+          <li>Details panel: "Homepage" no longer wraps character-by-character.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.0.0" date="2026-05-21">
+      <description>
+        <p>First public release.</p>
+        <ul>
+          <li>Extension Manager — list installed GNOME Shell extensions, enable/disable with state badges, open source folder in editor</li>
+          <li>Log Viewer — live journalctl stream filtered by extension UUID and log level with full-text search</li>
+          <li>Profiler — live function timing via runtime monkey-patching, visualized as Flamegraph, Swimlane, or Histogram; per-function call table; save/load sessions as JSON</li>
+          <li>Inspector — read-only live view into a running extension's stateObj properties and methods</li>
+          <li>Bridge Extension auto-installed on first launch; communicates over a Unix socket; compatible with GNOME Shell 46–50</li>
+          <li>Flatpak bundle built against the GNOME 50 runtime</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+</component>

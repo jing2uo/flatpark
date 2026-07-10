@@ -1,0 +1,99 @@
+id: io.github.todevelopers.GseProfiler
+runtime: org.gnome.Platform
+runtime-version: '50'
+sdk: org.gnome.Sdk
+command: gse-profiler
+separate-locales: false
+
+finish-args:
+  # Standard GTK/Wayland display + IPC plumbing. Wayland-only by design
+  # (the app targets GNOME 48+, which is Wayland-only for this use case).
+  - --share=ipc
+  - --socket=wayland
+  # GPU acceleration for GTK4 rendering — without it GTK falls back to
+  # software rendering and the profiler's flame graph, swimlane and
+  # histogram views get noticeably sluggish.
+  - --device=dri
+  # List, enable, disable and inspect GNOME Shell extensions (core feature).
+  # The well-known D-Bus name for the Extensions service is org.gnome.Shell
+  # itself — the org.gnome.Shell.Extensions interface lives on it.
+  - --talk-name=org.gnome.Shell
+  # Log out the session after the bridge extension is installed/removed
+  # (GNOME Shell can only pick up new extensions after a full logout on Wayland).
+  - --talk-name=org.gnome.SessionManager
+  # Read the systemd journal to show GNOME Shell and extension logs in the
+  # built-in log viewer (the app is a Shell-extension debugger — surfacing
+  # logs is a core feature). Read-only, scoped to the journal subtree:
+  #   /run/log/journal  — volatile (current boot, RAM)
+  #   /var/log/journal  — persistent (Fedora/Arch/most GNOME distros default)
+  # Both are required because some systems use only one. Same pattern as GNOME Logs.
+  - --filesystem=/run/log/journal:ro
+  - --filesystem=/var/log/journal:ro
+  # Install the bundled bridge extension and extensions fetched from GitHub
+  # into the GNOME Shell extensions directory the host watches.
+  - --filesystem=~/.local/share/gnome-shell/extensions:create
+  # AF_UNIX socket the bridge extension (running inside gnome-shell) uses to
+  # talk to the app. :create bind-mounts the whole subdirectory so files
+  # created inside are visible on the host (single-file mounts are unreliable).
+  - --filesystem=xdg-run/gse-profiler:create
+  # Fetch GNOME Shell extensions from GitHub on user request (download
+  # tarballs from api.github.com / codeload.github.com, check for newer
+  # upstream commits). No telemetry or background traffic.
+  - --share=network
+
+modules:
+  # Read the systemd journal (log viewer). Built from the pinned PyPI sdist;
+  # libsystemd headers come from the GNOME SDK.
+  - name: python3-systemd
+    buildsystem: simple
+    build-commands:
+      - pip3 install --verbose --exists-action=i --no-index
+          --find-links="file://${PWD}" --prefix=${FLATPAK_DEST}
+          --no-build-isolation .
+    sources:
+      - type: archive
+        url: https://files.pythonhosted.org/packages/10/9e/ab4458e00367223bda2dd7ccf0849a72235ee3e29b36dce732685d9b7ad9/systemd-python-235.tar.gz
+        sha256: 4e57f39797fd5d9e2d22b8806a252d7c0106c936039d1e71c8c6b8008e695c0a
+
+  - name: python3-pathspec
+    # pathspec implements git-wildmatch — used by the GitHub installer to
+    # filter out files marked `export-ignore` in .gitattributes and any
+    # tracked-but-ignored files in .gitignore before installing. Shipped
+    # as a universal (pure-Python) wheel to avoid a build step.
+    buildsystem: simple
+    build-commands:
+      - pip3 install --verbose --no-deps --no-index
+          --prefix=${FLATPAK_DEST} pathspec-1.1.1-py3-none-any.whl
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/f1/d9/7fb5aa316bc299258e68c73ba3bddbc499654a07f151cba08f6153988714/pathspec-1.1.1-py3-none-any.whl
+        sha256: a00ce642f577bf7f473932318056212bc4f8bfdf53128c78bbd5af0b9b20b189
+
+  - name: gse-profiler
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 apply_extra.sh /app/bin/apply_extra
+      - install -Dm755 gse-profiler-wrapper /app/bin/gse-profiler
+      - install -Dm644 io.github.todevelopers.GseProfiler.desktop /app/share/applications/io.github.todevelopers.GseProfiler.desktop
+      - install -Dm644 io.github.todevelopers.GseProfiler.metainfo.xml /app/share/metainfo/io.github.todevelopers.GseProfiler.metainfo.xml
+      - install -Dm644 io.github.todevelopers.GseProfiler.svg /app/share/icons/hicolor/scalable/apps/io.github.todevelopers.GseProfiler.svg
+    sources:
+      # BEGIN MANAGED EXTRA-DATA
+      - type: extra-data
+        filename: gse-profiler.deb
+        only-arches:
+          - x86_64
+        url: https://github.com/todevelopers/gseprofiler/releases/download/v1.2.0/gse-profiler_1.2.0_all.deb
+        sha256: cc7e63eaa0509a82352b8fde2e92558932e53d79eb41c783fa32a6d0e8ef46c2
+        size: 90424
+      # END MANAGED EXTRA-DATA
+      - type: file
+        path: apply_extra.sh
+      - type: file
+        path: gse-profiler-wrapper
+      - type: file
+        path: io.github.todevelopers.GseProfiler.desktop
+      - type: file
+        path: io.github.todevelopers.GseProfiler.metainfo.xml
+      - type: file
+        path: io.github.todevelopers.GseProfiler.svg

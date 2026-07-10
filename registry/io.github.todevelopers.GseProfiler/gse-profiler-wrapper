@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+
+# GSE Profiler is a pure-Python GTK4 app staged by apply_extra to
+# /app/extra/{app,bridge-extension}. The org.gnome.Platform runtime provides
+# the interpreter and the GTK4/libadwaita/PyGObject stack; main.py puts its
+# own package root on sys.path.
+exec python3 /app/extra/app/main.py "$@"

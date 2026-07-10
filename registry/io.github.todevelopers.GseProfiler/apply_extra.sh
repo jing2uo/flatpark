@@ -19,10 +19,13 @@ cd "$extra_root"
 
 # The Platform runtime has no ar/dpkg, but bsdtar (libarchive) reads the .deb
 # ar container directly; pipe its data member into a second bsdtar to unpack
-# the tree (upstream pins the inner compression to xz, bsdtar auto-detects).
+# the tree (the inner data.tar compression is auto-detected). --no-same-owner
+# keeps the root and non-root paths identical: system-wide installs run
+# apply_extra as uid 0 with all capabilities dropped, where restoring a
+# non-root owner recorded in the archive would EPERM.
 rm -rf stage app bridge-extension
 mkdir stage
-bsdtar -xOf gse-profiler.deb 'data.tar*' | bsdtar -xf - -C stage
+bsdtar -xOf gse-profiler.deb 'data.tar*' | bsdtar --no-same-owner -xf - -C stage
 [ -f stage/usr/share/gse-profiler/app/main.py ] || { echo "app payload not found in .deb" >&2; exit 1; }
 mv stage/usr/share/gse-profiler/app app
 mv stage/usr/share/gse-profiler/bridge-extension bridge-extension

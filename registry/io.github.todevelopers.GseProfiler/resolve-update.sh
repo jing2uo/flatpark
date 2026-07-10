@@ -25,7 +25,7 @@ date="$(jq -r '.published_at' <<<"$rel" | cut -c1-10)"
 # The thin arch-independent package is `gse-profiler_<ver>_all.deb`. Match it
 # exactly so the source tarball and the self-hosted .flatpak bundle attached
 # to the same Release are excluded.
-url="$(jq -r '.assets[] | select(.name | test("^gse-profiler_.*_all\\.deb$")) | .browser_download_url' <<<"$rel" | head -n1)"
+url="$(jq -r 'first(.assets[] | select(.name | test("^gse-profiler_.*_all\\.deb$")) | .browser_download_url)' <<<"$rel")"
 
 [ -n "$version" ] && [ -n "$url" ] || { echo "failed to resolve GSE Profiler release" >&2; exit 1; }
 echo "resolved GSE Profiler $version ($date): $url" >&2

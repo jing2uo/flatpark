@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>app.mqttviewer.MQTTViewer</id>
+  <name>MQTT Viewer</name>
+  <summary>Fast MQTT visualisation and debugging tool</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <developer id="app.mqttviewer">
+    <name>Sam Webster</name>
+  </developer>
+  <url type="homepage">https://mqttviewer.app</url>
+  <url type="bugtracker">https://github.com/mqtt-viewer/mqtt-viewer/issues</url>
+  <url type="vcs-browser">https://github.com/mqtt-viewer/mqtt-viewer</url>
+  <description>
+    <p>This is a community package of MQTT Viewer, maintained independently and unaffiliated with the MQTT Viewer project. It repackages the official upstream Linux build unmodified. The project also publishes its own official Flatpak repository at dl.mqttviewer.app.</p>
+    <p>MQTT Viewer is a fast, feature-rich desktop client for inspecting and debugging MQTT traffic. It stays responsive against busy public brokers and high-throughput connections.</p>
+    <ul>
+      <li>Connect to multiple brokers at once with a live topic tree.</li>
+      <li>Inspect message history and payloads, including Protobuf and Sparkplug decoding.</li>
+      <li>Visualise topic structure as an interactive graph.</li>
+      <li>Publish messages and export captured traffic.</li>
+    </ul>
+    <p>Permissions: this package keeps a tight sandbox by default — network (for broker connections), display, GPU, and read-write access to your Downloads and Documents folders. MQTT Viewer opens an in-process file chooser rather than the desktop portal, so those two folders are what its export and Protobuf-descriptor dialogs can reach; no broad home access is granted. Connections, message history and settings live inside the sandbox under ~/.var/app/app.mqttviewer.MQTTViewer. To open .proto descriptors kept elsewhere, grant that directory with <code>flatpak override --user --filesystem=~/path/to/protos app.mqttviewer.MQTTViewer</code>. Updates are delivered by Flatpak; the in-app updater reports new versions but does not modify the read-only install.</p>
+  </description>
+  <content_rating type="oars-1.1"/>
+  <categories>
+    <category>Development</category>
+    <category>Network</category>
+  </categories>
+  <keywords>
+    <keyword>MQTT</keyword>
+    <keyword>IoT</keyword>
+    <keyword>broker</keyword>
+    <keyword>messaging</keyword>
+    <keyword>Sparkplug</keyword>
+  </keywords>
+  <recommends>
+    <display_length compare="ge">800</display_length>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </recommends>
+  <provides>
+    <binary>mqtt-viewer</binary>
+  </provides>
+  <launchable type="desktop-id">app.mqttviewer.MQTTViewer.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/mqtt-viewer/mqtt-viewer/main/docs/images/screenshot.png</image>
+      <caption>The MQTT Viewer main window</caption>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="1.0.0" date="2026-07-02">
+      <url>https://github.com/mqtt-viewer/mqtt-viewer/releases/tag/v1.0.0</url>
+    </release>
+  </releases>
+</component>

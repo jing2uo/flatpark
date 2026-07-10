@@ -1,0 +1,24 @@
+id: app.mqttviewer.MQTTViewer
+name: MQTT Viewer
+summary: Fast MQTT visualisation and debugging tool with Sparkplug and Protobuf decoding
+website: https://mqttviewer.app
+source_url: https://github.com/mqtt-viewer/mqtt-viewer
+build:
+  manifest: app.mqttviewer.MQTTViewer.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Development
+  featured: false
+  tags:
+    - MQTT
+    - IoT
+    - Sparkplug
+    - Broker
+    - Debugging
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: false
+  extra_data_first: true
+  dangerous_permissions: []

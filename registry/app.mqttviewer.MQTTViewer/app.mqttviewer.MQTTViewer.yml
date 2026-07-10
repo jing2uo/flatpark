@@ -1,0 +1,55 @@
+id: app.mqttviewer.MQTTViewer
+runtime: org.gnome.Platform
+runtime-version: "50"
+sdk: org.gnome.Sdk
+command: mqtt-viewer
+separate-locales: false
+build-options:
+  no-debuginfo: true
+finish-args:
+  # Wails (Go + WebKitGTK) MQTT client: network is the core function (broker
+  # connections over TCP/TLS/WebSocket) and also carries the update check;
+  # dri for hardware-accelerated WebKit rendering.
+  - --share=ipc
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  # MQTT Viewer opens an in-process GTK3 file chooser
+  # (gtk_file_chooser_dialog_new), so the directories it can reach are exactly
+  # the ones the sandbox exposes. These two cover the common paths: exporting
+  # captured traffic, and loading the .proto descriptors used for Protobuf and
+  # Sparkplug decoding. Anything else is an opt-in `flatpak override` documented
+  # in the metainfo — no broad home access here. The app stores its own database
+  # and settings under XDG dirs, which Flatpak redirects into the sandbox.
+  - --filesystem=xdg-download
+  - --filesystem=xdg-documents
+modules:
+  - name: mqtt-viewer
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 apply_extra.sh /app/bin/apply_extra
+      - install -Dm755 mqtt-viewer-wrapper /app/bin/mqtt-viewer
+      - install -Dm644 app.mqttviewer.MQTTViewer.desktop /app/share/applications/app.mqttviewer.MQTTViewer.desktop
+      - install -Dm644 app.mqttviewer.MQTTViewer.metainfo.xml /app/share/metainfo/app.mqttviewer.MQTTViewer.metainfo.xml
+      - install -Dm644 app.mqttviewer.MQTTViewer.png /app/share/icons/hicolor/512x512/apps/app.mqttviewer.MQTTViewer.png
+    sources:
+      # BEGIN MANAGED EXTRA-DATA
+      - type: extra-data
+        filename: mqtt-viewer.deb
+        only-arches:
+          - x86_64
+        url: https://github.com/mqtt-viewer/mqtt-viewer/releases/download/v1.0.0/MQTT_Viewer_v1.0.0_linux_amd64.deb
+        sha256: 1e7be95a2bf507b93a0ddc7ac57e32869983b6a4dfc3317f82619847d7b61cb8
+        size: 9718308
+      # END MANAGED EXTRA-DATA
+      - type: file
+        path: apply_extra.sh
+      - type: file
+        path: mqtt-viewer-wrapper
+      - type: file
+        path: app.mqttviewer.MQTTViewer.desktop
+      - type: file
+        path: app.mqttviewer.MQTTViewer.metainfo.xml
+      - type: file
+        path: app.mqttviewer.MQTTViewer.png

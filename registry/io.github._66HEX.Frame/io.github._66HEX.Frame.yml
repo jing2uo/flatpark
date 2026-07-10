@@ -1,0 +1,49 @@
+id: io.github._66HEX.Frame
+runtime: org.freedesktop.Platform
+runtime-version: "25.08"
+sdk: org.freedesktop.Sdk
+command: frame
+separate-locales: false
+build-options:
+  no-debuginfo: true
+finish-args:
+  # Native Rust/GPUI media converter. The official tarball includes the app,
+  # ffmpeg/ffprobe and the small library set it needs; the Freedesktop runtime
+  # supplies libc/libstdc++, ALSA, graphics and desktop integration. Local media
+  # files are opened/saved through portals, so broad filesystem access is not
+  # granted by default.
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --socket=pulseaudio
+  - --device=dri
+  - --talk-name=org.freedesktop.Notifications
+modules:
+  - name: frame
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 apply_extra.sh /app/bin/apply_extra
+      - install -Dm755 frame-wrapper /app/bin/frame
+      - install -Dm644 io.github._66HEX.Frame.desktop /app/share/applications/io.github._66HEX.Frame.desktop
+      - install -Dm644 io.github._66HEX.Frame.metainfo.xml /app/share/metainfo/io.github._66HEX.Frame.metainfo.xml
+      - install -Dm644 io.github._66HEX.Frame.png /app/share/icons/hicolor/512x512/apps/io.github._66HEX.Frame.png
+    sources:
+      # BEGIN MANAGED EXTRA-DATA
+      - type: extra-data
+        filename: frame-linux-x86_64.tar.gz
+        only-arches:
+          - x86_64
+        url: https://github.com/66HEX/frame/releases/download/0.30.0/frame-linux-x86_64.tar.gz
+        sha256: 3aa04710a039a3a5ea5b73bc5f50847b90660e41c4e31160645dea637690c74d
+        size: 76234408
+      # END MANAGED EXTRA-DATA
+      - type: file
+        path: apply_extra.sh
+      - type: file
+        path: frame-wrapper
+      - type: file
+        path: io.github._66HEX.Frame.desktop
+      - type: file
+        path: io.github._66HEX.Frame.metainfo.xml
+      - type: file
+        path: io.github._66HEX.Frame.png

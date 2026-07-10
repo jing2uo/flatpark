@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github._66HEX.Frame</id>
+  <name>Frame</name>
+  <summary>Native FFmpeg media converter for video, audio, images and subtitles</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
+  <developer id="app.framegui">
+    <name>66HEX</name>
+  </developer>
+  <url type="homepage">https://www.framegui.app/</url>
+  <url type="bugtracker">https://github.com/66HEX/frame/issues</url>
+  <url type="vcs-browser">https://github.com/66HEX/frame</url>
+  <description>
+    <p>This is a community package of Frame, maintained independently and unaffiliated with the Frame developers. It repackages the official upstream Linux tarball unmodified at install time.</p>
+    <p>Frame is a native media conversion utility built in Rust. It provides a desktop interface for FFmpeg operations, with controls for video, audio, image, subtitle and metadata settings.</p>
+    <p>Features:</p>
+    <ul>
+      <li>Convert video, audio and image files through bundled FFmpeg and FFprobe binaries</li>
+      <li>Configure containers, codecs, bitrate or CRF, resolution, scaling, frame rate and pixel format</li>
+      <li>Edit audio, subtitle and metadata settings for supported media</li>
+      <li>Save reusable conversion presets and monitor conversion progress in the app</li>
+    </ul>
+    <p>Permissions: by default this package grants display, audio, graphics acceleration and notifications only. Local files are expected to be opened and saved through the desktop portal. To work directly with persistent paths outside the sandbox, grant the needed folder with "flatpak override".</p>
+  </description>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Frame conversion workspace</caption>
+      <image>https://raw.githubusercontent.com/66HEX/frame/89f0b43cea5a39660af296e3ffc493bf7709ece9/preview.png</image>
+    </screenshot>
+  </screenshots>
+  <launchable type="desktop-id">io.github._66HEX.Frame.desktop</launchable>
+  <categories>
+    <category>AudioVideo</category>
+    <category>AudioVideoEditing</category>
+    <category>Video</category>
+    <category>Graphics</category>
+  </categories>
+  <keywords>
+    <keyword>ffmpeg</keyword>
+    <keyword>converter</keyword>
+    <keyword>video</keyword>
+    <keyword>audio</keyword>
+    <keyword>image</keyword>
+    <keyword>subtitle</keyword>
+    <keyword>metadata</keyword>
+  </keywords>
+  <recommends>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </recommends>
+  <content_rating type="oars-1.1" />
+  <provides>
+    <binary>frame</binary>
+  </provides>
+  <releases>
+    <release version="0.30.0" date="2026-07-05" />
+  </releases>
+</component>

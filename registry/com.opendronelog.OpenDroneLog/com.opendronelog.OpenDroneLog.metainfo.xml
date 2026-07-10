@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.opendronelog.OpenDroneLog</id>
+  <name>Open DroneLog</name>
+  <summary>Analyze DJI and Litchi drone flight logs privately</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>AGPL-3.0-only</project_license>
+  <developer id="com.opendronelog">
+    <name>Arpan Ghosh</name>
+  </developer>
+  <url type="homepage">https://www.opendronelog.com</url>
+  <url type="bugtracker">https://github.com/arpanghosh8453/open-dronelog/issues</url>
+  <url type="vcs-browser">https://github.com/arpanghosh8453/open-dronelog</url>
+  <description>
+    <p>This is a community package of Open DroneLog, maintained independently and unaffiliated with the Open DroneLog project. It repackages the official upstream Linux build unmodified.</p>
+    <p>Open DroneLog is a high-performance dashboard for organizing and analyzing drone flight logs in one place. Logs are parsed and stored locally in an embedded database, so your flight history never leaves your machine.</p>
+    <ul>
+      <li>Import DJI and Litchi flight logs, with a plugin mechanism for custom log formats.</li>
+      <li>Browse flights on a map, with per-flight reports and telemetry charts.</li>
+      <li>Compare flights and view aggregate statistics across your whole history.</li>
+      <li>Everything is analyzed locally against a bundled DuckDB engine.</li>
+    </ul>
+    <p>Permissions: this package keeps a tight sandbox by default — display, GPU, a system tray icon, and network. Network is needed for two things: encrypted DJI logs (v13 and newer) require fetching a decryption keychain from DJI's API using your own DJI developer key, and the map view loads tiles. Parsing and analysis themselves are local. Log files are imported through the desktop portal's file picker, so Open DroneLog reaches exactly the files you choose and nothing else; no filesystem access is pre-granted, and the flight log database lives inside the sandbox under ~/.var/app/com.opendronelog.OpenDroneLog.</p>
+    <p>Custom parser plugins: the plugin mechanism runs an external command named in your parsers.json. Inside the sandbox that command must exist in the Flatpak runtime, so a plugin that relies on a host interpreter or a script elsewhere on your system will not be found. Grant the directory holding your parser with <code>flatpak override --user --filesystem=~/path/to/parsers com.opendronelog.OpenDroneLog</code>, and note that a host Python or Node interpreter is not reachable from the sandbox.</p>
+  </description>
+  <content_rating type="oars-1.1"/>
+  <categories>
+    <category>Science</category>
+    <category>Utility</category>
+  </categories>
+  <keywords>
+    <keyword>drone</keyword>
+    <keyword>DJI</keyword>
+    <keyword>Litchi</keyword>
+    <keyword>flight log</keyword>
+    <keyword>telemetry</keyword>
+  </keywords>
+  <recommends>
+    <display_length compare="ge">800</display_length>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </recommends>
+  <provides>
+    <binary>open-dronelog</binary>
+  </provides>
+  <launchable type="desktop-id">com.opendronelog.OpenDroneLog.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/arpanghosh8453/open-dronelog/main/screenshots/interface_dark.png</image>
+      <caption>The flight dashboard (dark theme)</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/arpanghosh8453/open-dronelog/main/screenshots/interface_light.png</image>
+      <caption>The flight dashboard (light theme)</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/arpanghosh8453/open-dronelog/main/screenshots/flight_map.png</image>
+      <caption>Flight path on the map view</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/arpanghosh8453/open-dronelog/main/screenshots/individual_stats.png</image>
+      <caption>Per-flight telemetry and statistics</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/arpanghosh8453/open-dronelog/main/screenshots/Comparison.png</image>
+      <caption>Comparing flights side by side</caption>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="3.3.0" date="2026-05-01">
+      <url>https://github.com/arpanghosh8453/open-dronelog/releases/tag/3.3.0</url>
+    </release>
+  </releases>
+</component>

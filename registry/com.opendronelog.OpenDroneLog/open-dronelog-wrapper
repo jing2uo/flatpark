@@ -1,0 +1,18 @@
+#!/bin/sh
+set -eu
+
+# open-dronelog is a single Tauri v2 (Rust + WebKitGTK) binary staged by
+# apply_extra to /app/extra/open-dronelog/bin. The React frontend and the DuckDB
+# engine are both linked into the executable, so there is no resource dir to
+# resolve and no database server to reach. Besides the libraries in
+# org.gnome.Platform (webkit2gtk-4.1, gtk-3, libsoup-3, cairo), it dlopen-s
+# libayatana-appindicator3 for its tray icon; that stack is built by the
+# manifest into /app/lib, which is already on the runtime's search path.
+# Flatpak redirects the XDG base dirs into the per-app data dir, so the flight
+# log database stays inside the sandbox.
+
+# WebKitGTK's DMABUF renderer paints a blank window under many drivers inside
+# the Flatpak sandbox; the compositing path is the reliable default here.
+export WEBKIT_DISABLE_DMABUF_RENDERER=1
+
+exec /app/extra/open-dronelog/bin/open-dronelog "$@"

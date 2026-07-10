@@ -1,0 +1,145 @@
+id: com.opendronelog.OpenDroneLog
+runtime: org.gnome.Platform
+runtime-version: "50"
+sdk: org.gnome.Sdk
+command: open-dronelog
+separate-locales: false
+build-options:
+  no-debuginfo: true
+finish-args:
+  # Tauri v2 / WebKitGTK flight-log analyzer with a bundled DuckDB.
+  # dri for hardware-accelerated WebKit rendering.
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  # Network: encrypted DJI logs (v13+) require fetching the decryption keychain
+  # from DJI's API with the user's own developer key, and the dashboard's map
+  # view loads tiles. Log parsing itself is local.
+  - --share=network
+  # System tray (Tauri tray-icon).
+  - --talk-name=org.kde.StatusNotifierWatcher
+  - --filesystem=xdg-run/tray-icon:create
+  # No --filesystem: logs are imported through GtkFileChooserNative, which
+  # Flatpak routes to the desktop portal, so the files the user picks are granted
+  # on demand. The DuckDB database lives in the XDG data dir, which Flatpak
+  # redirects into the sandbox. Optional overrides are documented in the metainfo.
+modules:
+  # The Tauri tray-icon dlopen-s libayatana-appindicator at startup and PANICS if
+  # it is missing — and the GNOME runtime does not ship it, so the app cannot
+  # even start without it. Build the Ayatana stack from the Flathub-maintained
+  # shared-modules recipe (flathub/shared-modules/libayatana-appindicator), which
+  # carries the build-fix patches the modern toolchain needs (intltool perl5.26,
+  # libdbusmenu valgrind, ayatana-ido introspection). Git sources are pinned to
+  # immutable commits.
+  - name: intltool
+    cleanup:
+      - "*"
+    sources:
+      - type: archive
+        url: https://launchpad.net/intltool/trunk/0.51.0/+download/intltool-0.51.0.tar.gz
+        sha256: 67c74d94196b153b774ab9f89b2fa6c6ba79352407037c8c14d5aeb334e959cd
+      - type: patch
+        path: intltool-perl5.26-regex-fixes.patch
+  - name: libdbusmenu
+    buildsystem: autotools
+    build-options:
+      cflags: -Wno-error
+    cleanup:
+      - "*.la"
+      - /include
+      - /lib/pkgconfig
+      - /libexec
+      - /share/doc
+      - /share/gtk-doc
+    config-opts:
+      - --with-gtk=3
+      - --disable-dumper
+      - --disable-static
+      - --disable-tests
+      - --disable-gtk-doc
+      - --enable-introspection=no
+      - --disable-vala
+    sources:
+      - type: archive
+        url: https://launchpad.net/libdbusmenu/16.04/16.04.0/+download/libdbusmenu-16.04.0.tar.gz
+        sha256: b9cc4a2acd74509435892823607d966d424bd9ad5d0b00938f27240a1bfa878a
+      - type: patch
+        paths:
+          - 0001-Fix-HAVE_VALGRIND-AM_CONDITIONAL.patch
+  - name: ayatana-ido
+    buildsystem: cmake-ninja
+    cleanup:
+      - /include
+      - /lib/pkgconfig
+    config-opts:
+      - -DENABLE_INTROSPECTION=OFF
+      # Force /app/lib (not lib64): newer cmake defaults LIBDIR to lib64 on
+      # x86_64, but pkg-config only searches /app/lib/pkgconfig, so the next
+      # module would not find this one's .pc. Keep the whole stack in /app/lib.
+      - -DCMAKE_INSTALL_LIBDIR=lib
+    sources:
+      - type: git
+        url: https://github.com/AyatanaIndicators/ayatana-ido.git
+        tag: "0.10.4"
+        commit: f968079b09e2310fefc3fc307359025f1c74b3eb
+      - type: patch
+        paths:
+          - 0001-Make-introspection-configurable.patch
+  - name: libayatana-indicator
+    buildsystem: cmake-ninja
+    cleanup:
+      - /include
+      - /lib/pkgconfig
+      - /libexec
+      - /share
+    config-opts:
+      - -DCMAKE_INSTALL_LIBDIR=lib
+    sources:
+      - type: git
+        url: https://github.com/AyatanaIndicators/libayatana-indicator.git
+        tag: "0.9.4"
+        commit: 611bb384b73fa6311777ba4c41381a06f5b99dad
+  - name: libayatana-appindicator
+    buildsystem: cmake-ninja
+    cleanup:
+      - /include
+      - /lib/pkgconfig
+    config-opts:
+      - -DENABLE_BINDINGS_MONO=NO
+      - -DENABLE_BINDINGS_VALA=NO
+      - -DENABLE_GTKDOC=NO
+      - -DCMAKE_INSTALL_LIBDIR=lib
+    sources:
+      - type: git
+        url: https://github.com/AyatanaIndicators/libayatana-appindicator.git
+        tag: "0.5.94"
+        commit: 31e8bb083b307e1cc96af4874a94707727bd1e79
+  - name: open-dronelog
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 apply_extra.sh /app/bin/apply_extra
+      - install -Dm755 open-dronelog-wrapper /app/bin/open-dronelog
+      - install -Dm644 com.opendronelog.OpenDroneLog.desktop /app/share/applications/com.opendronelog.OpenDroneLog.desktop
+      - install -Dm644 com.opendronelog.OpenDroneLog.metainfo.xml /app/share/metainfo/com.opendronelog.OpenDroneLog.metainfo.xml
+      - install -Dm644 com.opendronelog.OpenDroneLog.png /app/share/icons/hicolor/512x512/apps/com.opendronelog.OpenDroneLog.png
+    sources:
+      # BEGIN MANAGED EXTRA-DATA
+      - type: extra-data
+        filename: open-dronelog.deb
+        only-arches:
+          - x86_64
+        url: https://github.com/arpanghosh8453/open-dronelog/releases/download/3.3.0/open-dronelog_3.3.0_linux_amd64.deb
+        sha256: 6a22b3048f3a8fea498dbd7a4ab5796c475b47c68fb336d96cb5aef061ee7618
+        size: 17076640
+      # END MANAGED EXTRA-DATA
+      - type: file
+        path: apply_extra.sh
+      - type: file
+        path: open-dronelog-wrapper
+      - type: file
+        path: com.opendronelog.OpenDroneLog.desktop
+      - type: file
+        path: com.opendronelog.OpenDroneLog.metainfo.xml
+      - type: file
+        path: com.opendronelog.OpenDroneLog.png

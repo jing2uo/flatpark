@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Open DroneLog
+Comment=A high-performance drone flight log analyzer
+Exec=open-dronelog
+Icon=com.opendronelog.OpenDroneLog
+Terminal=false
+Categories=Science;Utility;
+StartupWMClass=open-dronelog
+Keywords=drone;DJI;Litchi;flight;log;telemetry;

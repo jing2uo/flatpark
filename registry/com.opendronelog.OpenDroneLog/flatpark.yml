@@ -1,0 +1,24 @@
+id: com.opendronelog.OpenDroneLog
+name: Open DroneLog
+summary: Private, high-performance dashboard for organizing and analyzing DJI and Litchi flight logs
+website: https://www.opendronelog.com
+source_url: https://github.com/arpanghosh8453/open-dronelog
+build:
+  manifest: com.opendronelog.OpenDroneLog.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Science
+  featured: false
+  tags:
+    - Drone
+    - DJI
+    - Litchi
+    - Flight logs
+    - Analytics
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: false
+  extra_data_first: true
+  dangerous_permissions: []

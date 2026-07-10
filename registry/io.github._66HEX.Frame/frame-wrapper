@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+
+# Frame is a native Rust/GPUI app staged by apply_extra to /app/extra/frame.
+# Upstream's update code detects Flatpak via FLATPAK_ID and /.flatpak-info, so
+# updates are handled by FlatPark rather than the bundled self-updater.
+
+exec /app/extra/frame/bin/frame "$@"

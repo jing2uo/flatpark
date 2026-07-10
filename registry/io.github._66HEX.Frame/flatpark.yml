@@ -1,0 +1,23 @@
+id: io.github._66HEX.Frame
+name: Frame
+summary: Native FFmpeg media converter for video, audio, images and subtitles
+website: https://www.framegui.app/
+source_url: https://github.com/66HEX/frame
+build:
+  manifest: io.github._66HEX.Frame.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: AudioVideo
+  tags:
+    - FFmpeg
+    - Video
+    - Audio
+    - Converter
+    - Media
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: false
+  extra_data_first: true
+  dangerous_permissions: []

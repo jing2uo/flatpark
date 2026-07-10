@@ -9,6 +9,7 @@ build:
   mode: extra-data
 catalog:
   category: AudioVideo
+  featured: true
   tags:
     - Music
     - Lyrics

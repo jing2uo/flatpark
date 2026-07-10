@@ -9,7 +9,7 @@ build:
   mode: extra-data
 catalog:
   category: Office
-  featured: false
+  featured: true
   tags:
     - Outliner
     - Logseq

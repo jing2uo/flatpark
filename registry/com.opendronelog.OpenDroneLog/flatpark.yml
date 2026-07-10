@@ -9,7 +9,7 @@ build:
   mode: extra-data
 catalog:
   category: Science
-  featured: false
+  featured: true
   tags:
     - Drone
     - DJI

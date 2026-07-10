@@ -16,11 +16,23 @@
 # won't catch it either — there the script runs as the invoking user and
 # ownership is never restored.
 #
-# This does not need root itself: `bwrap --unshare-user --uid 0` gives an
-# unprivileged user namespace whose root has no capabilities over the host, and
-# a chown to an unmapped uid fails there just as a dropped CAP_CHOWN does under
-# the real system helper (EINVAL rather than EPERM; same failure branch in
-# libarchive and tar).
+# Getting "uid 0 with no capabilities" has two routes, and we pick whichever the
+# host allows:
+#
+#   * Real root (`sudo bwrap ... --cap-drop ALL`). This is what flatpak actually
+#     does, so a chown fails with the same EPERM the system helper reports. Used
+#     when already root, or when passwordless sudo is available (CI).
+#   * An unprivileged user namespace (`bwrap --unshare-user --uid 0`), whose root
+#     has no capabilities over the host. A chown to an unmapped uid fails with
+#     EINVAL rather than EPERM — a different errno, but the same failure branch
+#     in both libarchive and tar. Used on a dev box without sudo.
+#
+# The userns route is not always available: distros that set
+# `kernel.apparmor_restrict_unprivileged_userns=1` (Ubuntu 23.10+, and the
+# GitHub Actions runners) deny it, and bwrap fails while *setting up* the
+# sandbox — before apply_extra runs at all. That is why the routes are probed
+# rather than assumed, and why a probe failure is reported as its own error
+# instead of being blamed on the unpack script.
 #
 # Usage: check-apply-extra.sh <app-id>...
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -31,6 +43,40 @@ need flatpak; need bwrap; need curl; need sha256sum; need node
 [ "$#" -gt 0 ] || die "usage: check-apply-extra.sh <app-id>..."
 
 arch="$(flatpak --default-arch)"
+
+# Mirror flatpak's apply_extra sandbox: uid 0, no caps, no network, no /proc
+# (flatpak passes FLATPAK_RUN_FLAG_NO_PROC there).
+sandbox_common=(--unshare-pid --unshare-net --die-with-parent --cap-drop ALL)
+
+# Pick a route to uid 0, most faithful first, and prove it works before trusting
+# a nonzero exit from apply_extra to mean anything.
+sandbox_cmd=()
+probe_sandbox() {
+    "${sandbox_cmd[@]}" "${sandbox_common[@]}" --ro-bind /usr /usr \
+        --symlink usr/bin /bin --symlink usr/lib /lib --symlink usr/lib64 /lib64 \
+        /bin/true 2>/dev/null
+}
+sandbox_ok=""
+as_root=()       # how to run a command as real root, empty if we already are
+real_root=""     # set when uid 0 in the sandbox is the host's real root
+if [ "$(id -u)" = 0 ]; then
+    sandbox_cmd=(bwrap)
+    real_root=1
+    probe_sandbox || die "bwrap cannot create a sandbox even as root"
+else
+    if sudo -n true 2>/dev/null; then
+        sandbox_cmd=(sudo -n bwrap)
+        if probe_sandbox; then sandbox_ok=1; as_root=(sudo -n); real_root=1; fi
+    fi
+    if [ -z "$sandbox_ok" ]; then
+        # No sudo, or sudo's bwrap failed: fall back to an unprivileged userns.
+        sandbox_cmd=(bwrap --unshare-user --uid 0 --gid 0)
+        probe_sandbox || die "cannot create the apply_extra sandbox: unprivileged user namespaces look restricted (check kernel.apparmor_restrict_unprivileged_userns) and no passwordless sudo is available. Run this as root, grant passwordless sudo, or relax that sysctl."
+    fi
+fi
+# Root-owned files land in the work dir on the real-root route; clean up with the
+# same privilege that made them.
+cleanup() { rm -rf "$@" 2>/dev/null || "${as_root[@]}" rm -rf "$@" 2>/dev/null || true; }
 
 check_one() {
     load_app "$1"
@@ -67,7 +113,7 @@ check_one() {
     work="$(mktemp -d)"
     log_file="$(mktemp)"
     # shellcheck disable=SC2064
-    trap "rm -rf '$work' '$log_file'" EXIT
+    trap "cleanup '$work' '$log_file'" EXIT
 
     local src filename url want got
     for src in "${sources[@]}"; do
@@ -81,13 +127,19 @@ check_one() {
 
     cp "$apply" "$work/apply_extra.sh"
 
-    # Mirror flatpak's apply_extra sandbox: uid 0, no caps, no network, no /proc
-    # (flatpak passes FLATPAK_RUN_FLAG_NO_PROC there), runtime at /usr, the
-    # extra-data dir bound read-write at /app/extra.
+    # A system-wide install unpacks into a root-owned /app/extra. On the real-root
+    # route the sandbox has uid 0 but no CAP_DAC_OVERRIDE, so a work dir still
+    # owned by the invoking user is neither traversable nor writable there —
+    # match production and hand it to root. The userns route needs no such thing:
+    # its uid 0 *is* the invoking user.
+    if [ -n "$real_root" ]; then
+        "${as_root[@]}" chown -R 0:0 "$work"
+    fi
+
+    # The runtime goes at /usr, the extra-data dir is bound read-write at
+    # /app/extra. sandbox_cmd/sandbox_common carry the uid-0-no-caps setup.
     local rc=0
-    bwrap \
-        --unshare-user --unshare-pid --unshare-net --die-with-parent \
-        --uid 0 --gid 0 --cap-drop ALL \
+    "${sandbox_cmd[@]}" "${sandbox_common[@]}" \
         --ro-bind "$files" /usr \
         --symlink usr/bin /bin --symlink usr/sbin /sbin \
         --symlink usr/lib /lib --symlink usr/lib64 /lib64 \
@@ -96,6 +148,14 @@ check_one() {
         /bin/sh -c 'sh /app/extra/apply_extra.sh' >"$log_file" 2>&1 || rc=$?
 
     if [ "$rc" -ne 0 ]; then
+        # bwrap reports its own setup failures on stderr prefixed `bwrap:`, and
+        # exits before apply_extra runs. Blaming the unpack script for those sent
+        # one reviewer chasing a --no-same-owner bug that wasn't there.
+        if grep -q '^bwrap: ' "$log_file"; then
+            warn "$APP_ID: bwrap output:"
+            tail -n 20 "$log_file" | sed 's/^/    /' >&2
+            die "$APP_ID: the sandbox failed to start, so apply_extra never ran. This is a problem with this checker's environment, not with the app."
+        fi
         # A chown failure names every member; the tail is enough to identify it.
         warn "$APP_ID: last lines of apply_extra output:"
         tail -n 20 "$log_file" | sed 's/^/    /' >&2

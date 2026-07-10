@@ -147,17 +147,12 @@ Detail + schema in the [contributing guide](https://flatpark.org/contributing/).
 3. Install from the signed local repo into an **isolated** `--installation=test` so it never
    pollutes your everyday Flatpak state (recipe in the contributing guide). Installing
    exercises `apply_extra` (the extra-data download + unpack).
-   A custom installation runs `apply_extra` as **you**, so it never exercises the root path a
-   system-wide install takes. To cover that too, run the script under the same constraints
-   Flatpak imposes there — uid 0, no capabilities:
-   ```sh
-   RT=$(ls -d ~/.local/share/flatpak/runtime/org.freedesktop.Platform/x86_64/25.08/*/files)
-   bwrap --unshare-user --uid 0 --gid 0 --cap-drop ALL \
-     --ro-bind "$RT" /usr --symlink usr/bin /bin --symlink usr/lib /lib --symlink usr/lib64 /lib64 \
-     --bind <dir-with-the-artifact> /app/extra --chdir /app/extra --dev /dev --tmpfs /tmp \
-     /bin/sh -c 'sh /app/extra/apply_extra.sh; echo rc=$?'
-   ```
-4. **Smoke-test the actual launch:** the app must start, and its data must land inside the
+4. `scripts/check-apply-extra.sh <id>` — runs `apply_extra` as **root with every capability
+   dropped**, which is what a *system-wide* install does and what step 3 never reaches (a
+   custom installation runs it as you). It downloads the pinned artifact, checks its sha256,
+   and unpacks it in that sandbox. `pr-checks` runs this for apps a PR **adds**; run it
+   yourself whenever you touch an unpack script or re-pin to an artifact from a new builder.
+5. **Smoke-test the actual launch:** the app must start, and its data must land inside the
    sandbox (`~/.var/app/<id>/…`). Confirm no missing libs (`LD_TRACE_LOADED_OBJECTS=1` → 0
    "not found"). Note in the PR anything you *couldn't* verify (GUI render on a real session,
    login flows, hardware paths) — coverage is always partial and honesty about that matters.

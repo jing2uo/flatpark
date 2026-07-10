@@ -148,6 +148,16 @@ jobs:
           ids="$(./scripts/changed-apps.sh "$base" HEAD | tr '\n' ' ')"
           echo "ids=$ids" >> "$GITHUB_OUTPUT"
           echo "changed apps: ${ids:-<none>}"
+          # Apps this PR introduces: nothing existed under registry/<id>/ at base.
+          # The apply_extra check downloads the full pinned artifact (hundreds of
+          # MB for some apps), so it is scoped to new submissions — the moment a
+          # never-before-installed unpack script first meets review.
+          new_ids=""
+          for id in $ids; do
+            git cat-file -e "$base:registry/$id" 2>/dev/null || new_ids="$new_ids $id"
+          done
+          echo "new_ids=${new_ids# }" >> "$GITHUB_OUTPUT"
+          echo "new apps: ${new_ids:-<none>}"
       - uses: actions/setup-node@v6
         if: steps.changed.outputs.ids != ''
         with:
@@ -170,6 +180,14 @@ jobs:
             ./scripts/build-app.sh "$id"
             echo "::endgroup::"
           done
+      # Building proves the manifest is sound; it says nothing about whether the
+      # app can be *installed*. extra-data is fetched on the user's machine and
+      # unpacked by apply_extra, which a system-wide install runs as root with
+      # --cap-drop ALL — a path neither the build nor a --user install exercises.
+      # Runs after the build so the runtime is already installed.
+      - name: Check apply_extra under a system-wide install (new apps only)
+        if: steps.changed.outputs.new_ids != ''
+        run: ./scripts/check-apply-extra.sh ${{ steps.changed.outputs.new_ids }}
       - name: Bundle changed apps into installable .flatpak files
         if: steps.changed.outputs.ids != ''
         run: |

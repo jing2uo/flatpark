@@ -114,10 +114,14 @@ Detail + schema in the [contributing guide](https://flatpark.org/contributing/).
   - **Tauri / WebKitGTK** → `WEBKIT_DISABLE_DMABUF_RENDERER=1` in the wrapper (else blank
     window). If the app has a **tray icon**, Tauri's `tray-icon` `dlopen`s
     libayatana-appindicator and *panics* when it's absent — the GNOME runtime doesn't ship
-    it, so build the Ayatana stack (intltool → libdbusmenu → ayatana-ido →
-    libayatana-indicator → libayatana-appindicator) from Flathub's `shared-modules` recipe,
-    git sources pinned to commits. Reference:
-    [`registry/com.ccswitch.desktop`](../registry/com.ccswitch.desktop).
+    it. **Do not duplicate the five-module Ayatana source build in each app.** Consume the
+    pinned `ayatana-stack` archive from [`flatpark/prebuilt`](https://github.com/flatpark/prebuilt)
+    as a normal module before the app module; copy the current URL and SHA-256 from
+    [`registry/com.ccswitch.desktop`](../registry/com.ccswitch.desktop). The archive is built
+    against a specific GNOME SDK major, so migrate it explicitly when the catalog runtime
+    major changes. Add `--filesystem=xdg-run/tray-icon:create` only when the app actually
+    exposes a tray icon. If another missing open-source support stack is shared by multiple
+    apps, prefer one reproducible release in `flatpark/prebuilt` over per-app copies.
   - **Host-dependent behavior** (the app shells out to host tools or probes `/proc`) → adapt
     from the *outside*, never by patching the payload: wrapper env, `PATH` shims that
     `flatpak-spawn --host` the tool, an `LD_PRELOAD` shim. Reference:

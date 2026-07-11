@@ -25,12 +25,15 @@ own:
   [`com.ccswitch.desktop`](https://github.com/flatpark/flatpark/tree/main/registry/com.ccswitch.desktop):
   the fullest Tauri example. Its wrapper exports
   `WEBKIT_DISABLE_DMABUF_RENDERER=1` (without it WebKitGTK paints a blank
-  window under many drivers), and it gets a working system tray by building the
-  Ayatana appindicator stack — which the GNOME runtime doesn't ship, and which
-  Tauri's `tray-icon` `dlopen`s and panics without — from Flathub's
-  `shared-modules` recipe, with every git source pinned to an immutable commit.
-  Its `finish-args` are also a good model for scoping: it grants the individual
-  CLI config paths it manages rather than `--filesystem=home`.
+  window under many drivers). If the app uses Tauri's `tray-icon`, it also
+  needs the Ayatana appindicator stack: the GNOME runtime does not ship it,
+  and `tray-icon` `dlopen`s it and can panic when it is absent. **Do not copy
+  and maintain the five-module source recipe in each app.** Use FlatPark's
+  audited prebuilt stack from
+  [`flatpark/prebuilt`](https://github.com/flatpark/prebuilt), pinning the
+  release archive by SHA-256 as shown below. Its `finish-args` are also a good
+  model for scoping: it grants the individual CLI config paths it manages
+  rather than `--filesystem=home`.
 - **Host-dependent behavior, payload untouched** —
   [`io.enpass.Enpass`](https://github.com/flatpark/flatpark/tree/main/registry/io.enpass.Enpass):
   Enpass validates the browser behind its extension's localhost connection by
@@ -42,6 +45,47 @@ own:
   `--talk-name=org.freedesktop.Flatpak`, normally an auto-reject, so the package
   declares it under `policy.dangerous_permissions` and argues for it — expect
   that level of scrutiny if you go this route.
+
+## Reusing FlatPark prebuilt support libraries
+
+FlatPark keeps reusable, redistributable support libraries in
+[`flatpark/prebuilt`](https://github.com/flatpark/prebuilt). These archives are
+built by GitHub Actions from manifests that pin every source and patch, and each
+consuming app pins the resulting archive by SHA-256. This avoids compiling and
+maintaining the same dependency stack independently in many app directories.
+The prebuilt repository is only for open-source supporting libraries; proprietary
+app payloads must continue to use `extra-data` from the vendor's official URL.
+
+For a Tauri application that uses `tray-icon` on `org.gnome.Platform//50`, add
+the current Ayatana stack as a normal archive module before the app module:
+
+```yaml
+modules:
+  - name: ayatana-stack
+    buildsystem: simple
+    build-commands:
+      - cp -a ./. /app/
+    sources:
+      - type: archive
+        url: https://github.com/flatpark/prebuilt/releases/download/ayatana-v1/ayatana-stack-ayatana-v1-gnome-50-x86_64.tar.xz
+        sha256: 37a91a0840b06da5319c36275fad2b1dca906152553f295944b81f202d1476fc
+```
+
+Also grant the tray socket when the app actually exposes a tray icon:
+
+```yaml
+finish-args:
+  - --filesystem=xdg-run/tray-icon:create
+```
+
+Copy the current module from an existing manifest such as
+[`com.ccswitch.desktop`](https://github.com/flatpark/flatpark/tree/main/registry/com.ccswitch.desktop),
+not an old source-build recipe. The archive is tied to its stated runtime/SDK
+major. When the catalog moves to a new GNOME major, use a prebuilt release made
+for that major rather than silently reusing the old one. If a missing library is
+not yet available from `flatpark/prebuilt`, first check whether it is shared by
+multiple apps; prefer adding one reproducible stack there over duplicating it in
+every app manifest.
 
 ## Add an app
 

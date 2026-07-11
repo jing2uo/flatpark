@@ -8,3 +8,4 @@ Terminal=false
 Categories=Network;FileTransfer;Utility;
 StartupWMClass=aeroftp
 Keywords=FTP;FTPS;SFTP;WebDAV;S3;cloud;transfer;
+MimeType=application/x-aerovault;application/x-aeroftp;application/x-aeroftp-keystore;application/x-aerozip;application/x-aeroftp-script;x-scheme-handler/ftp;x-scheme-handler/ftps;x-scheme-handler/sftp;

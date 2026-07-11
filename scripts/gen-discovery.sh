@@ -21,11 +21,16 @@ Comment=$REPO_COMMENT
 GPGKey=$gpgkey_b64
 EOF
 
+# SuggestRemoteName pins the auto-added remote to our canonical name; without
+# it flatpak derives one from the ref (e.g. "tabby-origin") and every
+# documented `flatpak install flatpark <id>` command misses for that user.
 cat > "$ref_file" <<EOF
 [Flatpak Ref]
 Name=$APP_ID
 Branch=$APP_BRANCH
+Title=$APP_NAME
 Url=$REPO_URL
+SuggestRemoteName=$REMOTE_NAME
 RuntimeRepo=$RUNTIME_REPO_URL
 GPGKey=$gpgkey_b64
 IsRuntime=false

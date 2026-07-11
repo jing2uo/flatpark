@@ -1,0 +1,35 @@
+---
+import Base from '../layouts/Base.astro';
+import Topbar from '../components/Topbar.astro';
+import { loadCatalog } from '../lib/data.mjs';
+
+// Cloudflare Pages serves dist/404.html with a real 404 status for unmatched
+// routes; without this file it falls back to index.html with 200 (soft-404s).
+const { repo } = loadCatalog();
+---
+
+<Base title={`Page not found — ${repo.title}`} description="This page does not exist.">
+  <Topbar repo={repo} />
+  <main class="mx-auto max-w-6xl px-5 py-24 text-center">
+    <p class="text-7xl font-extrabold tracking-tight text-brand">404</p>
+    <h1 class="mt-4 text-2xl font-extrabold tracking-tight">Page not found</h1>
+    <p class="mx-auto mt-3 max-w-md text-muted">
+      This page doesn't exist — the app may have been de-listed, or the
+      address is mistyped.
+    </p>
+    <div class="mt-8 flex justify-center gap-3">
+      <a
+        href="/apps/"
+        class="inline-flex h-11 items-center rounded-full bg-brand px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-dark"
+      >
+        Browse all apps
+      </a>
+      <a
+        href="/"
+        class="inline-flex h-11 items-center rounded-full border border-line px-6 text-sm font-semibold hover:bg-canvas"
+      >
+        Home
+      </a>
+    </div>
+  </main>
+</Base>

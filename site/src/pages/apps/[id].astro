@@ -52,8 +52,8 @@ const ld = {
 ---
 
 <Base
-  title={`${app.name} — ${repo.title}`}
-  description={`${app.summary} — install ${app.name} as a signed Flatpak from ${repo.title}.`}
+  title={`Install ${app.name} on Linux — Flatpak | ${repo.title}`}
+  description={`Install ${app.name} on any Linux distro (Fedora, Arch, Ubuntu, Bazzite) as a signed, sandboxed Flatpak. ${app.summary}`}
   image={app.icon}
 >
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(ld)} />

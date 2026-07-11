@@ -20,6 +20,12 @@ if [ -n "${RUNTIME_REPO_URL:-}" ]; then
     flatpak --user remote-add --if-not-exists --from "$RUNTIME_REMOTE_NAME" "$RUNTIME_REPO_URL" || true
     args+=(--install-deps-from="$RUNTIME_REMOTE_NAME" --user)
 fi
+# The publish workflow exposes the authoritative local repo under this name.
+# Put it after Flathub so flatpak-builder can resolve FlatPark-owned runtimes
+# without changing how ordinary Freedesktop/GNOME dependencies are fetched.
+if flatpak --user remotes --columns=name | grep -qxF flatpark-build; then
+    args+=(--install-deps-from=flatpark-build)
+fi
 
 ( cd "$APP_SRC" && flatpak-builder "${args[@]}" "$build_dir" "$MANIFEST" )
 log "built $APP_ID into $REPO_DIR"

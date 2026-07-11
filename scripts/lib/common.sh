@@ -25,7 +25,7 @@ load_config() {
     local var
     for var in ROOT REPO_TITLE REPO_HOMEPAGE REPO_COMMENT REPO_URL REPO_FILE_URL \
         RUNTIME_REPO_URL REMOTE_NAME RUNTIME_REMOTE_NAME VERIFY_REMOTE_NAME \
-        REGISTRY_DIR PACKAGING_REPO_URL PACKAGING_BRANCH \
+        REGISTRY_DIR RUNTIMES_DIR PACKAGING_REPO_URL PACKAGING_BRANCH \
         GNUPGHOME_DIR KEY_NAME KEY_EMAIL OUT_DIR REPO_DIR PAGES_DIR PUBKEY_FILE \
         ; do
         declare -g "$var=${!var}"
@@ -35,6 +35,28 @@ load_config() {
     declare -g "_FLATPARK_REPO_DIR_DEFAULT=$_FLATPARK_REPO_DIR_DEFAULT"
     declare -g "_FLATPARK_PAGES_DIR_DEFAULT=$_FLATPARK_PAGES_DIR_DEFAULT"
     declare -g "_FLATPARK_PUBKEY_FILE_DEFAULT=$_FLATPARK_PUBKEY_FILE_DEFAULT"
+}
+
+load_runtime() {
+    local runtime_id="${1:?load_runtime: runtime id required}"
+    local record="$RUNTIMES_DIR/$runtime_id/runtime.conf"
+    [ -f "$record" ] || die "missing runtime registry entry: $record"
+
+    unset RUNTIME_ID RUNTIME_SDK_ID RUNTIME_BRANCH RUNTIME_REPOSITORY \
+        RUNTIME_COMMIT RUNTIME_MANIFEST
+    # runtime.conf is trusted repository data containing shell assignments only.
+    # shellcheck disable=SC1090
+    . "$record"
+    [ "$RUNTIME_ID" = "$runtime_id" ] \
+        || die "runtime id mismatch: wanted $runtime_id got ${RUNTIME_ID:-<empty>}"
+    local var
+    for var in RUNTIME_ID RUNTIME_SDK_ID RUNTIME_BRANCH RUNTIME_REPOSITORY \
+        RUNTIME_COMMIT RUNTIME_MANIFEST; do
+        [ -n "${!var-}" ] || die "runtime entry $record did not set $var"
+        declare -g "$var=${!var}"
+    done
+    [[ "$RUNTIME_COMMIT" =~ ^[0-9a-f]{40}$ ]] \
+        || die "runtime commit must be a full 40-character SHA: $RUNTIME_COMMIT"
 }
 
 app_record_path() {

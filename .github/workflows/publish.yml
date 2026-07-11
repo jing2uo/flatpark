@@ -13,6 +13,7 @@ on:
     # by definition, so nothing is ever missed.
     paths:
       - "registry/**"
+      - "runtimes/**"
       - "site/**"
       - "scripts/**"
       - "config/**"
@@ -101,6 +102,45 @@ jobs:
           # on a stale repo — better to fail the run and retry.
           rclone sync "r2:$R2_BUCKET/objects" "$REPO_DIR/objects" --size-only --fast-list
           rclone sync "r2:$R2_BUCKET" "$REPO_DIR" --exclude "objects/**" --checksum --fast-list
+
+      - name: Decide which runtimes to build
+        id: runtimes
+        env:
+          REBUILD_ALL: ${{ github.event_name == 'workflow_dispatch' && inputs.rebuild_all }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          base=""
+          [ -f "$REPO_DIR/.published-sha" ] && base="$(cat "$REPO_DIR/.published-sha")"
+          git rev-parse --verify -q "${base}^{commit}" >/dev/null 2>&1 || base="$BEFORE"
+          if [ "$REBUILD_ALL" = "true" ] || [ ! -f "$REPO_DIR/summary" ]; then
+            ids="$(./scripts/scan-runtimes.sh | tr '\n' ' ')"
+          elif git rev-parse --verify -q "${base}^{commit}" >/dev/null 2>&1; then
+            ids="$(./scripts/changed-runtimes.sh "$base" "$GITHUB_SHA" | tr '\n' ' ')"
+          else
+            ids="$(./scripts/scan-runtimes.sh | tr '\n' ' ')"
+          fi
+          echo "ids=$ids" >> "$GITHUB_OUTPUT"
+          echo "building runtimes: ${ids:-<none>} (diff base: ${base:-<none>})"
+
+      - name: Build changed runtimes into the repo
+        if: steps.runtimes.outputs.ids != ''
+        env:
+          IDS: ${{ steps.runtimes.outputs.ids }}
+        run: |
+          for id in $IDS; do
+            echo "::group::build runtime $id"; ./scripts/build-runtime.sh "$id"; echo "::endgroup::"
+          done
+
+      - name: Expose FlatPark runtimes to app builds
+        run: |
+          # A runtime built above is not in the old R2 summary yet. Refresh the
+          # local summary now; publish-repo.sh replaces it with a signed one
+          # after all runtime and app builds finish.
+          if [ -n "${{ steps.runtimes.outputs.ids }}" ]; then
+            flatpak build-update-repo "$REPO_DIR"
+          fi
+          flatpak remote-add --user --if-not-exists --no-gpg-verify \
+            flatpark-build "file://$REPO_DIR"
 
       - name: Decide which apps to build
         id: apps

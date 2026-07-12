@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+
+# The upstream build is Wayland-only. Flatpak redirects HOME and XDG data paths
+# into the app sandbox; libsecret stores encrypted client state in the host
+# Secret Service through the explicitly granted D-Bus name.
+export GDK_BACKEND=wayland
+exec /app/extra/bundle/zuko "$@"

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>dev.adonm.zuko</id>
+  <name>Zuko</name>
+  <summary>Private remote shells over Iroh</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>Apache-2.0</project_license>
+  <developer id="dev.adonm">
+    <name>Adon Metcalfe</name>
+  </developer>
+  <url type="homepage">https://zuko.adonm.dev/</url>
+  <url type="bugtracker">https://github.com/adonm/zuko/issues</url>
+  <url type="vcs-browser">https://github.com/adonm/zuko</url>
+  <description>
+    <p>This is the FlatPark community package of Zuko. It repackages the official upstream Linux build unmodified at install time.</p>
+    <p>Zuko provides private remote shells for machines you own without opening inbound ports or operating a VPN. Pair once with a short code, then reconnect by name.</p>
+    <ul>
+      <li>Real remote PTY sessions with terminal scrollback, selection, copy and paste</li>
+      <li>Iroh connectivity with NAT traversal, relay fallback and end-to-end encryption</li>
+      <li>Explicit client authorization and saved host management</li>
+      <li>Temporary TCP tunnels from the client to services on the remote host</li>
+    </ul>
+    <p>The package has network access for Iroh and uses the host Secret Service for encrypted client identity and saved-host state. It has no X11 socket and no access to host or home-directory files. A Secret Service provider such as GNOME Keyring or KWallet must be running and unlocked.</p>
+  </description>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Zuko's Linux client ready to pair with a host</caption>
+      <image>https://raw.githubusercontent.com/adonm/zuko/main/docs/zuko-linux.png</image>
+    </screenshot>
+  </screenshots>
+  <launchable type="desktop-id">dev.adonm.zuko.desktop</launchable>
+  <categories>
+    <category>Network</category>
+    <category>System</category>
+  </categories>
+  <keywords>
+    <keyword>terminal</keyword>
+    <keyword>remote</keyword>
+    <keyword>shell</keyword>
+    <keyword>Iroh</keyword>
+    <keyword>peer-to-peer</keyword>
+  </keywords>
+  <recommends>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </recommends>
+  <content_rating type="oars-1.1" />
+  <provides>
+    <binary>zuko</binary>
+  </provides>
+  <releases>
+    <release version="0.9.21" date="2026-07-12" />
+  </releases>
+</component>

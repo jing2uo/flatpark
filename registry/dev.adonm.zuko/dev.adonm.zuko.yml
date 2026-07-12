@@ -1,0 +1,47 @@
+id: dev.adonm.zuko
+runtime: org.freedesktop.Platform
+runtime-version: "25.08"
+sdk: org.freedesktop.Sdk
+command: zuko
+separate-locales: false
+build-options:
+  no-debuginfo: true
+finish-args:
+  # Iroh needs network access for direct connections, NAT traversal and relay
+  # fallback. Flutter uses shared memory and DRI for Wayland rendering. Client
+  # identity and saved hosts are stored through the host Secret Service.
+  - --share=network
+  - --share=ipc
+  - --socket=wayland
+  - --device=dri
+  - --talk-name=org.freedesktop.secrets
+  # No X11 socket and no host or home-directory filesystem access.
+modules:
+  - name: zuko
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 apply_extra.sh /app/bin/apply_extra
+      - install -Dm755 zuko-wrapper /app/bin/zuko
+      - install -Dm644 dev.adonm.zuko.desktop /app/share/applications/dev.adonm.zuko.desktop
+      - install -Dm644 dev.adonm.zuko.metainfo.xml /app/share/metainfo/dev.adonm.zuko.metainfo.xml
+      - install -Dm644 dev.adonm.zuko.png /app/share/icons/hicolor/512x512/apps/dev.adonm.zuko.png
+    sources:
+      # BEGIN MANAGED EXTRA-DATA
+      - type: extra-data
+        filename: zuko-linux-x86_64.tar.gz
+        only-arches:
+          - x86_64
+        url: https://github.com/adonm/zuko/releases/download/v0.9.21/zuko-linux-v0.9.21-x86_64.tar.gz
+        sha256: b8d39798e514267f9cbea21c1ea41703c38619fc64fff2493dcd33ec929dcc16
+        size: 26661687
+      # END MANAGED EXTRA-DATA
+      - type: file
+        path: apply_extra.sh
+      - type: file
+        path: zuko-wrapper
+      - type: file
+        path: dev.adonm.zuko.desktop
+      - type: file
+        path: dev.adonm.zuko.metainfo.xml
+      - type: file
+        path: dev.adonm.zuko.png

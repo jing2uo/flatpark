@@ -15,3 +15,5 @@ site/public/screenshots/
 
 # brainstorm visual-companion scratch
 .superpowers/brainstorm/
+
+.wrangler

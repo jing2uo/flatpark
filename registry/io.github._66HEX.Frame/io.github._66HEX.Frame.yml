@@ -33,9 +33,9 @@ modules:
         filename: frame-linux-x86_64.tar.gz
         only-arches:
           - x86_64
-        url: https://github.com/66HEX/frame/releases/download/0.30.0/frame-linux-x86_64.tar.gz
-        sha256: 3aa04710a039a3a5ea5b73bc5f50847b90660e41c4e31160645dea637690c74d
-        size: 76234408
+        url: https://github.com/66HEX/frame/releases/download/0.31.0/frame-linux-x86_64.tar.gz
+        sha256: 1ff0c0c505cafd6638db38d5b9ff989688ba33c3fd13036e48e94a457efb14e1
+        size: 76275526
       # END MANAGED EXTRA-DATA
       - type: file
         path: apply_extra.sh

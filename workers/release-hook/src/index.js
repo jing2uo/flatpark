@@ -37,6 +37,18 @@ export default {
       if (request.method !== "POST") {
         return json(405, { error: "method not allowed" });
       }
+
+      // Rate limit before any parsing or GitHub calls. IP check first so a
+      // single noisy source is cut off without draining the shared bucket.
+      const ip = request.headers.get("cf-connecting-ip") || "unknown";
+      if (!(await env.IP_LIMITER.limit({ key: ip })).success) {
+        return json(429, { error: "rate limited; retry later" });
+      }
+      if (!(await env.GLOBAL_LIMITER.limit({ key: "all" })).success) {
+        console.log(JSON.stringify({ msg: "global rate limit hit", ip }));
+        return json(429, { error: "rate limited; retry later" });
+      }
+
       const len = Number(request.headers.get("content-length") || "0");
       if (!len || len > 4096) {
         return json(400, { error: "body must be small JSON with content-length" });

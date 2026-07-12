@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>dev.spikehd.Dorion</id>
+  <name>Dorion</name>
+  <summary>Tiny alternative Discord client with themes, plugins and a small footprint</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
+  <developer id="dev.spikehd">
+    <name>SpikeHD</name>
+  </developer>
+  <url type="homepage">https://spikehd.dev/projects/dorion/</url>
+  <url type="bugtracker">https://github.com/SpikeHD/Dorion/issues</url>
+  <url type="vcs-browser">https://github.com/SpikeHD/Dorion</url>
+  <description>
+    <p>This is a community package of Dorion, maintained independently and unaffiliated with Dorion or Discord. It repackages the official upstream build unmodified.</p>
+    <p>Dorion is an alternative Discord client built on Tauri, using the system WebKitGTK instead of a bundled browser engine, which keeps the install and its memory use small. It supports client mods (Shelter is bundled), themes and plugins.</p>
+    <p>Permissions: by default this package keeps a tight sandbox — network, display, audio, tray and notifications — which is enough for chatting, voice calls and screen sharing through the desktop portal. Config, themes, plugins and login data live inside the sandbox. A couple of optional capabilities are not granted by default; enable the ones you need with "flatpak override":</p>
+    <ul>
+      <li>Webcam for video calls: <code>flatpak override --user --device=all dev.spikehd.Dorion</code></li>
+      <li>Share application audio while screen sharing: <code>flatpak override --user --filesystem=xdg-run/pipewire-0 dev.spikehd.Dorion</code></li>
+    </ul>
+    <p>Rich Presence: Dorion's built-in RPC server (off by default — enable it under Settings) listens on a Discord IPC socket. Inside the sandbox that socket is created in the app's private runtime directory, where games running on the host cannot find it. Link it into the place they look, and Rich Presence from host games works — no extra permission needed:</p>
+    <ul>
+      <li><code>ln -sf /run/user/$(id -u)/.flatpak/dev.spikehd.Dorion/xdg-run/discord-ipc-0 /run/user/$(id -u)/discord-ipc-0</code></li>
+    </ul>
+    <p>Known sandbox limit: separately from the socket above, Dorion can also detect games by scanning the process list. A sandboxed app only sees its own processes, and Flatpak reserves /proc so the host's process list cannot be shared in. Automatic detection of games that do not speak Discord IPC themselves therefore does not work in this package, and no permission can enable it.</p>
+  </description>
+  <launchable type="desktop-id">dev.spikehd.Dorion.desktop</launchable>
+  <categories>
+    <category>Network</category>
+    <category>InstantMessaging</category>
+  </categories>
+  <keywords>
+    <keyword>discord</keyword>
+    <keyword>chat</keyword>
+    <keyword>client</keyword>
+    <keyword>messaging</keyword>
+    <keyword>voice</keyword>
+  </keywords>
+  <content_rating type="oars-1.1">
+    <content_attribute id="social-chat">intense</content_attribute>
+    <content_attribute id="social-audio">intense</content_attribute>
+    <content_attribute id="social-info">moderate</content_attribute>
+  </content_rating>
+  <recommends>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </recommends>
+  <provides>
+    <binary>dorion</binary>
+  </provides>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Dorion with the OldCord theme</caption>
+      <image>https://github.com/SpikeHD/Dorion/assets/25207995/c73a2333-31fb-404a-9489-5e1b1f8cfa54</image>
+    </screenshot>
+    <screenshot>
+      <caption>Performance settings</caption>
+      <image>https://github.com/user-attachments/assets/a3364e03-7de2-4293-8cd7-cf655e99546f</image>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="6.12.2" date="2026-03-16" />
+    <release version="6.12.1" date="2026-03-15" />
+    <release version="6.12.0" date="2026-01-04" />
+  </releases>
+</component>

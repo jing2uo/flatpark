@@ -1,0 +1,88 @@
+id: dev.spikehd.Dorion
+runtime: org.gnome.Platform
+runtime-version: "50"
+sdk: org.gnome.Sdk
+command: dorion
+separate-locales: false
+build-options:
+  no-debuginfo: true
+finish-args:
+  # Tauri/WebKitGTK Discord client. The .deb links only libwebkit2gtk-4.1,
+  # libjavascriptcoregtk-4.1, libgtk-3, libsoup-3, libcairo, libgdk-pixbuf,
+  # libxcb and OpenSSL 3 — all shipped by org.gnome.Platform 50 (verified
+  # against the binary's NEEDED set, 0 missing).
+  - --share=ipc
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  # Voice chat: microphone in / audio out. Dorion turns on WebKitGTK's WebRTC
+  # and media-stream settings, so calls go through the runtime's WebKitGTK.
+  - --socket=pulseaudio
+  # dri for hardware-accelerated WebKit rendering; the app also enumerates GPU
+  # adapters at startup to decide its own renderer settings.
+  - --device=dri
+  # Desktop notifications.
+  - --talk-name=org.freedesktop.Notifications
+  # System tray (Tauri tray-icon) — Dorion can close/minimize to tray.
+  - --talk-name=org.kde.StatusNotifierWatcher
+  - --filesystem=xdg-run/tray-icon:create
+  # Screen sharing (video) works out of the box through the desktop portal.
+  # Deliberately NOT granted by default (the app works without them; users opt in
+  # per the metainfo notes via `flatpak override`):
+  #   --device=all                    -> webcam for video calls
+  #   --filesystem=xdg-run/pipewire-0 -> share application audio while screen sharing
+  #
+  # Rich Presence needs no finish-arg. Dorion's RPC server (off by default) binds
+  # its Discord IPC socket under the sandbox's XDG_RUNTIME_DIR, which is visible
+  # on the host at /run/user/$UID/.flatpak/dev.spikehd.Dorion/xdg-run/; a symlink
+  # from the path host games look at reaches it, verified with a host-side IPC
+  # handshake. The metainfo carries the command.
+  # Its other half — detecting games by scanning the process list — cannot work
+  # here at all: a sandbox sees only its own processes and Flatpak reserves /proc
+  # ("Path /proc is reserved by Flatpak"), so no --filesystem grant can share the
+  # host's in. That is a sandbox property, not something to buy with permissions.
+modules:
+  # The Tauri tray-icon dlopen-s libayatana-appindicator at startup and PANICS if
+  # it is missing — and the GNOME runtime does not ship it, so the app cannot
+  # even start without it.
+  # Prebuilt ayatana tray stack (libdbusmenu, ayatana-ido, libayatana-indicator,
+  # libayatana-appindicator) from https://github.com/flatpark/prebuilt, built
+  # against org.gnome.Sdk//50; the tag's manifest records the exact sources,
+  # pins and patches. One pinned archive instead of five source builds per app,
+  # and no launchpad.net downloads at build time.
+  - name: ayatana-stack
+    buildsystem: simple
+    build-commands:
+      - cp -a ./. /app/
+    sources:
+      - type: archive
+        url: https://github.com/flatpark/prebuilt/releases/download/ayatana-v1/ayatana-stack-ayatana-v1-gnome-50-x86_64.tar.xz
+        sha256: 37a91a0840b06da5319c36275fad2b1dca906152553f295944b81f202d1476fc
+  - name: dorion
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 apply_extra.sh /app/bin/apply_extra
+      - install -Dm755 dorion-wrapper /app/bin/dorion
+      - install -Dm644 dev.spikehd.Dorion.desktop /app/share/applications/dev.spikehd.Dorion.desktop
+      - install -Dm644 dev.spikehd.Dorion.metainfo.xml /app/share/metainfo/dev.spikehd.Dorion.metainfo.xml
+      - install -Dm644 dev.spikehd.Dorion.png /app/share/icons/hicolor/512x512/apps/dev.spikehd.Dorion.png
+    sources:
+      # BEGIN MANAGED EXTRA-DATA
+      - type: extra-data
+        filename: dorion.deb
+        only-arches:
+          - x86_64
+        url: https://github.com/SpikeHD/Dorion/releases/download/v6.12.2/Dorion_6.12.2_amd64.deb
+        sha256: e12dc43691d1139746709d9806ce448cb3de5aeaff1a4962d7a7859866d09393
+        size: 9675100
+      # END MANAGED EXTRA-DATA
+      - type: file
+        path: apply_extra.sh
+      - type: file
+        path: dorion-wrapper
+      - type: file
+        path: dev.spikehd.Dorion.desktop
+      - type: file
+        path: dev.spikehd.Dorion.metainfo.xml
+      - type: file
+        path: dev.spikehd.Dorion.png

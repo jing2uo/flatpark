@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Dorion
+Comment=Tiny alternative Discord client with themes, plugins and a small footprint
+Exec=dorion %u
+Icon=dev.spikehd.Dorion
+Terminal=false
+Categories=Network;InstantMessaging;
+StartupWMClass=Dorion
+StartupNotify=true
+MimeType=x-scheme-handler/discord;
+Keywords=discord;chat;client;messaging;voice;

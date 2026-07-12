@@ -1,0 +1,22 @@
+id: dev.spikehd.Dorion
+name: Dorion
+summary: Tiny alternative Discord client with themes, plugins and a small footprint
+website: https://spikehd.dev/projects/dorion/
+source_url: https://github.com/SpikeHD/Dorion
+build:
+  manifest: dev.spikehd.Dorion.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Network
+  tags:
+    - Discord
+    - Chat
+    - InstantMessaging
+    - Tauri
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: false
+  extra_data_first: true
+  dangerous_permissions: []

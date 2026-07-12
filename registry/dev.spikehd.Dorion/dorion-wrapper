@@ -1,0 +1,18 @@
+#!/bin/sh
+set -eu
+
+# Dorion is a Tauri (WebKitGTK) binary staged by apply_extra to
+# /app/extra/dorion/usr/bin/Dorion, next to the usr/lib/Dorion resource tree it
+# resolves relative to itself (see apply_extra.sh). It links only against
+# libraries in org.gnome.Platform (webkit2gtk-4.1, gtk-3, libsoup-3, OpenSSL 3)
+# plus libayatana-appindicator, which the binary dlopen-s for its tray icon and
+# which the manifest installs into /app/lib (the GNOME runtime does not ship it).
+#
+# Config, themes, plugins and the Discord webdata all go to the XDG dirs, which
+# Flatpak redirects into the per-app home (~/.var/app/dev.spikehd.Dorion).
+
+# WebKitGTK's DMABUF renderer paints a blank window under many drivers inside the
+# Flatpak sandbox; the compositing path is the reliable default here.
+export WEBKIT_DISABLE_DMABUF_RENDERER=1
+
+exec /app/extra/dorion/usr/bin/Dorion "$@"

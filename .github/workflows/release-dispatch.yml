@@ -1,0 +1,73 @@
+# Push-mode update entry. Upstream CI (flatpark/publish-action -> the
+# hooks.flatpark.org Worker) fires an `app-release` repository_dispatch the
+# moment a release is published; we recompute pins for that one app only and
+# open a focused PR on its own auto/release-<app-id> branch. Several apps
+# releasing the same day just means several small parallel PRs — no shared
+# branch, no races.
+#
+# update-check.yml (the daily full sweep) stays the safety net: it catches
+# releases whose Linux asset was uploaded after the ping, and its supersede
+# step closes any auto/release-* PR still open once the batch covers it.
+# That's also why there is no supersede here — a single-app diff is never a
+# superset of anything else.
+name: release-dispatch
+
+on:
+  repository_dispatch:
+    types: [app-release]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+# Serialize per app: a re-ping for the same app (retag, workflow re-run)
+# queues behind the running one instead of racing the force-push. Different
+# apps proceed in parallel on disjoint branches.
+concurrency:
+  group: release-dispatch-${{ github.event.client_payload.app_id }}
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      # Payload values go through env, never inline ${{ }} inside run — the
+      # Worker validates them, but they still originate outside this repo.
+      - name: Recompute pins for the released app
+        env:
+          APP_ID: ${{ github.event.client_payload.app_id }}
+          TAG: ${{ github.event.client_payload.tag }}
+          UPSTREAM: ${{ github.event.client_payload.repo }}
+        run: |
+          echo "upstream release: ${UPSTREAM:-?} ${TAG:-?} -> $APP_ID"
+          ./scripts/check-updates.sh "$APP_ID"
+      - name: Open / update PR if pins changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+          APP_ID: ${{ github.event.client_payload.app_id }}
+          TAG: ${{ github.event.client_payload.tag }}
+          UPSTREAM: ${{ github.event.client_payload.repo }}
+        run: |
+          if git diff --quiet -- registry/; then
+            echo "no pin changes — asset not uploaded yet or already current; daily update-check is the fallback"
+            exit 0
+          fi
+          branch="auto/release-$APP_ID"
+          git config user.name "flatpark-bot"
+          git config user.email "bot@flatpark.org"
+          git checkout -B "$branch"
+          git add registry/
+          git commit -m "chore(update): $APP_ID $TAG (upstream release)"
+          git push -f origin "$branch"
+
+          title="Update $APP_ID to $TAG"
+          body="$(printf 'Upstream published release `%s` on `%s` and pinged us via flatpark/publish-action.\n\nPins recomputed for `%s` only; the resolver decides the actual version. Merging triggers a rebuild + publish of this app.' "$TAG" "${UPSTREAM:-?}" "$APP_ID")"
+
+          if [ -z "$(gh pr list --head "$branch" --state open --json number -q '.[].number')" ]; then
+            gh pr create --base main --head "$branch" --title "$title" --body "$body"
+          else
+            gh pr edit "$branch" --title "$title" --body "$body"
+          fi

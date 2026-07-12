@@ -2,6 +2,13 @@
 # the extra-data pins, and opens a PR when anything moved. No signing key or R2
 # creds here — it only reads public URLs and opens a PR; a human merges it, which
 # triggers publish.yml.
+#
+# This is the pull-mode safety net. The fast path is release-dispatch.yml:
+# upstream CI pings us on release and a single-app PR opens within minutes.
+# This full sweep still catches everything push mode can't — apps whose
+# upstream never adopted the action, releases whose Linux asset was uploaded
+# after the ping, and resolver hiccups — and its supersede step below cleans
+# up any per-app release PR still open.
 name: update-check
 
 on:
@@ -55,11 +62,13 @@ jobs:
             gh pr edit "$branch" --title "$title" --body "$body"
           fi
 
-          # Supersede older open auto-update PRs (today's batch is recomputed against main,
-          # so it's a superset of any unmerged earlier one) — keep a single open PR.
+          # Supersede older open auto-update PRs and per-app release PRs
+          # (release-dispatch.yml, auto/release-*): today's batch is recomputed
+          # against main, so it's a superset of any unmerged earlier one — keep
+          # a single open PR.
           new="$(gh pr list --head "$branch" --state open --json number -q '.[0].number')"
           for n in $(gh pr list --state open --json number,headRefName \
-                       -q ".[] | select(.headRefName | startswith(\"auto/update-pins-\")) | select(.headRefName != \"$branch\") | .number"); do
+                       -q ".[] | select((.headRefName | startswith(\"auto/update-pins-\")) or (.headRefName | startswith(\"auto/release-\"))) | select(.headRefName != \"$branch\") | .number"); do
             echo "superseding older auto-update PR #$n"
             gh pr close "$n" --comment "Superseded by #$new ($date pin refresh)." --delete-branch || true
           done

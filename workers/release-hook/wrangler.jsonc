@@ -1,0 +1,27 @@
+// FlatPark release hook — the auth bridge between upstream CI and this repo.
+// Deploy: wrangler deploy   (from this directory)
+// Secret: wrangler secret put DISPATCH_TOKEN
+//   A fine-grained PAT scoped to the flatpark/flatpark repository with
+//   Contents: read-and-write (repository_dispatch needs it). Public-repo read
+//   access (on by default for fine-grained PATs) covers the upstream release
+//   check, which would otherwise hit the anonymous 60-req/h limit on shared
+//   Worker egress IPs.
+{
+  "name": "flatpark-release-hook",
+  "main": "src/index.js",
+  "compatibility_date": "2026-07-12",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+    "logs": { "head_sampling_rate": 1 }
+  },
+  "routes": [
+    { "pattern": "hooks.flatpark.org", "custom_domain": true }
+  ],
+  "vars": {
+    // Where the published catalog lives; /apps/<id>.json carries sourceUrl.
+    "SITE_ORIGIN": "https://flatpark.org",
+    // Repo that receives the repository_dispatch (event_type: app-release).
+    "DISPATCH_REPO": "flatpark/flatpark"
+  }
+}

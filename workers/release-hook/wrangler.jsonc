@@ -18,6 +18,25 @@
   "routes": [
     { "pattern": "hooks.flatpark.org", "custom_domain": true }
   ],
+  // Abuse damping: every request that reaches the release check spends one
+  // authenticated GitHub API call, so unauthenticated spam could burn the
+  // PAT's 5000 req/h quota. Counters are per Cloudflare location and
+  // eventually consistent — a damper, not an accounting system.
+  "ratelimits": [
+    {
+      // Per source IP: legit traffic is one ping per release, so 5/min is generous.
+      "name": "IP_LIMITER",
+      "namespace_id": "1",
+      "simple": { "limit": 5, "period": 60 }
+    },
+    {
+      // Whole-endpoint cap (key is constant): ~30/min per location keeps even a
+      // multi-IP flood well under the PAT quota.
+      "name": "GLOBAL_LIMITER",
+      "namespace_id": "2",
+      "simple": { "limit": 30, "period": 60 }
+    }
+  ],
   "vars": {
     // Where the published catalog lives; /apps/<id>.json carries sourceUrl.
     "SITE_ORIGIN": "https://flatpark.org",

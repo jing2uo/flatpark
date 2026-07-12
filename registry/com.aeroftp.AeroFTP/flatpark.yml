@@ -9,7 +9,7 @@ build:
   mode: extra-data
 catalog:
   category: Network
-  upstream_approved: false
+  upstream_approved: true
   tags:
     - FTP
     - SFTP

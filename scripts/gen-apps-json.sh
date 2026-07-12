@@ -92,6 +92,9 @@ remote_cmd="flatpak --user remote-add --if-not-exists $REMOTE_NAME $REPO_FILE_UR
         printf '      "category": "%s",\n' "$(json_escape "$APP_CATEGORY")"
         printf '      "tags": %s,\n' "$(tags_json)"
         printf '      "updateMode": "%s",\n' "$(json_escape "$UPDATE_MODE")"
+        # Public upstream link; the release-hook Worker uses it to verify that
+        # an "app X released tag Y" ping names the repo we actually track.
+        printf '      "sourceUrl": "%s",\n' "$(json_escape "$APP_SOURCE_URL")"
         if [ -n "$icon" ]; then
             printf '      "icon": "%s"\n' "$(json_escape "$icon")"
         else

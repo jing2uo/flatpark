@@ -1,11 +1,14 @@
-# Manual, destructive: reclaim R2 space. Delists apps whose registry/<id>/ is
+# Destructive: reclaim R2 space. Delists apps whose registry/<id>/ is
 # gone, prunes every ref to its current commit, re-signs, republishes, then
 # deletes ONLY the pruned objects from R2 (prune-diff targeted delete — never a
-# blind mirror). Kept separate from the additive daily publish.
+# blind mirror). Kept separate from the additive publish; runs weekly because
+# publish never deletes, so superseded versions accumulate in R2 until pruned.
 name: delist-prune
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * 6"   # Saturday 02:00 UTC (10:00 Beijing)
 
 concurrency:
   group: publish   # share the publish lock so prune never races a publish

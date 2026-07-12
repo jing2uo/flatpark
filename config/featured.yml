@@ -1,0 +1,13 @@
+# Homepage "Editor's pick" carousel — a short, hand-curated, ordered list.
+#
+# This is deliberately separate from per-app `catalog.upstream_approved` (the
+# blue shield): approval is a fact about upstream consent and accumulates
+# forever, while this list is an editorial choice on an independent axis —
+# a pick needs no shield, a shield earns no pick. Keep it small (3-5 apps)
+# or the pick loses its meaning. Order here is the carousel order; unknown
+# ids are skipped with a build warning.
+featured:
+  - app.geolibre.GeoLibre
+  - com.aeroftp.AeroFTP
+  - dev.tabularis.Tabularis
+  - me.tyrrrz.DiscordChatExporter

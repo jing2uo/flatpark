@@ -1,9 +1,12 @@
 ---
 // Editor's pick carousel for the homepage hero — screenshot-led so it reads as a
-// showcase, not another grid card. Only developer-approved apps (catalog.featured)
-// appear; renders nothing when none are featured.
+// showcase, not another grid card. Picks come from config/featured.yml (curated,
+// ordered, small) — an axis independent of the upstream-approved shield, which
+// accumulates while the pick must not. Renders nothing when the list is empty.
 const { apps } = Astro.props;
-const featured = (apps ?? []).filter((a) => a.featured);
+const featured = (apps ?? [])
+  .filter((a) => a.featured)
+  .sort((a, b) => (a.featuredRank ?? 0) - (b.featuredRank ?? 0));
 ---
 
 {featured.length > 0 && (
@@ -27,7 +30,7 @@ const featured = (apps ?? []).filter((a) => a.featured);
           {app.icon && <img src={app.icon} alt="" width="46" height="46" class="h-[46px] w-[46px] shrink-0 rounded-xl border border-line bg-canvas object-contain p-1.5" />}
           <div class="min-w-0">
             <a href={`/apps/${app.id}/`} class="block truncate text-base font-extrabold hover:text-brand">{app.name}</a>
-            <div class="truncate text-xs text-muted">{app.section || app.category} · developer-approved</div>
+            <div class="truncate text-xs text-muted">{app.section || app.category}{app.upstreamApproved ? ' · developer-approved' : ''}</div>
           </div>
         </div>
       </div>

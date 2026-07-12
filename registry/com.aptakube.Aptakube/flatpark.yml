@@ -9,7 +9,7 @@ build:
   mode: extra-data
 catalog:
   category: Development
-  featured: false
+  upstream_approved: false
   tags:
     - Kubernetes
     - Cluster

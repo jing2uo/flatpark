@@ -93,8 +93,8 @@ const ogImage = image ? (Astro.site ? new URL(image, Astro.site).href : image) :
         const sorted = cards.slice().sort((a, b) => {
           if (mode === 'name') return (a.dataset.name || '').localeCompare(b.dataset.name || '');
           if (mode === 'updated') return (b.dataset.updated || '').localeCompare(a.dataset.updated || '');
-          // featured: featured first, then name
-          const f = (b.dataset.featured === '1' ? 1 : 0) - (a.dataset.featured === '1' ? 1 : 0);
+          // approved: developer-approved (blue shield) first, then name
+          const f = (b.dataset.approved === '1' ? 1 : 0) - (a.dataset.approved === '1' ? 1 : 0);
           return f || (a.dataset.name || '').localeCompare(b.dataset.name || '');
         });
         for (const c of sorted) grid?.appendChild(c);

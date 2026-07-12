@@ -9,7 +9,7 @@ build:
   mode: extra-data
 catalog:
   category: Development
-  featured: true
+  upstream_approved: true
   tags:
     - GNOME
     - Extensions

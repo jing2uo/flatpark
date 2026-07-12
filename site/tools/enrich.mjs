@@ -45,6 +45,24 @@ const dataDir = process.env.FLATPARK_DATA_DIR || 'public';
 const appsDir = join(dataDir, 'apps');
 const shotsDir = join(dataDir, 'screenshots');
 
+// Homepage "Editor's pick" — a site-level curated, ordered id list, decoupled
+// from per-app catalog.upstream_approved (the shield) so approvals can
+// accumulate without flooding the carousel. Missing file = empty pick, never
+// fatal.
+const featuredFile = process.env.FLATPARK_FEATURED_FILE || join('..', 'config', 'featured.yml');
+const editorPicks = (() => {
+  try {
+    if (!existsSync(featuredFile)) return [];
+    const ids = YAML.parse(readFileSync(featuredFile, 'utf8'))?.featured ?? [];
+    return Array.isArray(ids) ? ids.map(String) : [];
+  } catch (e) {
+    console.warn(`[enrich] featured list parse failed: ${e.message}`);
+    return [];
+  }
+})();
+// Ids seen during enrichment, to flag stale picks (removed/renamed apps).
+const enrichedIds = new Set();
+
 // Every cache filename produced this run, so orphans from removed/changed
 // screenshots can be pruned once all apps enrich cleanly (keeps R2 lean).
 const keptShots = new Set();
@@ -359,7 +377,7 @@ async function enrichOne(file) {
       if (fy.website) out.website = fy.website;
       if (fy.policy?.proprietary) out.proprietary = true;
       if (fy.build?.mode) out.buildMode = fy.build.mode;
-      out.featured = !!fy.catalog?.featured; // opt-in, developer-approved only
+      out.upstreamApproved = !!fy.catalog?.upstream_approved; // upstream developer consented to this listing
     }
   } catch (e) {
     console.warn(`[enrich] ${base.id}: flatpark.yml parse failed: ${e.message}`);
@@ -372,7 +390,13 @@ async function enrichOne(file) {
 
   // Catalog facets for sort + filter (homepage / browse page).
   out.section = sectionFor(out.category);
-  out.featured = out.featured || false;
+  out.upstreamApproved = out.upstreamApproved || false;
+  // Editor's pick and the shield are independent axes: a pick needs no
+  // approval, an approval earns no pick.
+  const pickRank = editorPicks.indexOf(out.id);
+  out.featured = pickRank >= 0;
+  out.featuredRank = out.featured ? pickRank : null;
+  enrichedIds.add(out.id);
   // Prefer upstream release date; fall back to registry commit time.
   out.updated = out.releases?.[0]?.date || gitUpdated(srcDir) || '';
 
@@ -395,6 +419,9 @@ for (const f of files) {
   }
 }
 console.log(`[enrich] enriched ${n}/${files.length} app file(s) in ${appsDir}`);
+for (const id of editorPicks) {
+  if (!enrichedIds.has(id)) console.warn(`[enrich] featured list names unknown app ${id}`);
+}
 
 // Drop cached webps no longer referenced by any app (renamed after an upstream
 // screenshot swap, or a removed app). Only when every app enriched cleanly —

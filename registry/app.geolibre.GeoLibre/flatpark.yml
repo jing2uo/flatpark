@@ -9,7 +9,7 @@ build:
   mode: extra-data
 catalog:
   category: Science
-  featured: true
+  upstream_approved: true
   tags:
     - GIS
     - Maps

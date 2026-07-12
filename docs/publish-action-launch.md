@@ -59,8 +59,16 @@ wrangler deploy                      # custom_domain route creates the DNS recor
 
 The PAT: GitHub → Settings → Developer settings → Fine-grained tokens →
 scope **only flatpark/flatpark**, permission **Contents: read and write**
-(that's what `repository_dispatch` requires), long expiry. Public-repo read
-(default) also covers the upstream release-existence check.
+(that's what `repository_dispatch` requires), expiration **No expiration**
+(fine-grained tokens allow it unless an org policy caps lifetime). Public-repo
+read (default) also covers the upstream release-existence check. Two lifecycle
+caveats: GitHub deletes PATs unused for a full year (a dispatch-only token on
+a quiet catalog could conceivably idle that long), and if the token ever dies
+the blast radius is every adopter's release workflow failing our step — which
+is why the action README tells upstreams to set `continue-on-error: true`,
+and the daily cron delivers the update either way. Long-term the clean fix is
+a GitHub App (the Worker mints 1-hour installation tokens on demand; nothing
+to rotate or expire).
 
 Smoke-test the deployed Worker:
 

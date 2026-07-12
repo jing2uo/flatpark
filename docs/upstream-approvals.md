@@ -1,13 +1,21 @@
 # Upstream approval records
 
 Every app with the developer-approved blue shield (`catalog.upstream_approved: true`
-in its `flatpark.yml`) must have a row here linking the issue, PR, or discussion
-where the upstream maintainer authorized the FlatPark listing. When flipping the
-flag, cite the same link in the commit message and add the row in the same PR.
+in its `flatpark.yml`) must have a row in the Approved table below linking the
+issue, PR, or discussion where the upstream maintainer authorized the FlatPark
+listing. When flipping the flag, cite the same link in the commit message and add
+the row in the same PR. CI enforces the flag→row direction
+(`scripts/check-approvals.sh`): a `true` flag with no row here fails `pr-checks`;
+a row without the flag only warns (e.g. a withdrawal in progress).
 
-If approval arrived through a private channel (email, Discord, …), record the
-channel, the date, and who gave it — and prefer asking the maintainer to confirm
-somewhere public and linkable.
+Ruling an app upstream-approved requires an **auditable source** — a link a
+reviewer can open and verify, tied to an identity that plausibly speaks for the
+project. A private channel (email, Discord, …) is not enough on its own: ask the
+maintainer to confirm somewhere public and linkable first. When the upstream
+developer publishes the app themselves, have them open the PR first, then put
+that PR link in the table — the PR itself is the evidence.
+
+## Approved
 
 | App | ID | Approval | Date |
 |-----|----|----------|------|
@@ -22,6 +30,8 @@ somewhere public and linkable.
 | Folia | `top.izuna.foliamajor` | [chthollyphile/folia-site#3](https://github.com/chthollyphile/folia-site/issues/3) | 2026-07-10 |
 | GSE Profiler | `io.github.todevelopers.GseProfiler` | Approved by construction — submitted and maintained by its own developer ([flatpark#83](https://github.com/flatpark/flatpark/pull/83)) | 2026-07-10 |
 | AeroFTP | `com.aeroftp.AeroFTP` | Maintainer co-maintains the package: [flatpark#98](https://github.com/flatpark/flatpark/pull/98) and [axpdev-lab/aeroftp#388](https://github.com/axpdev-lab/aeroftp/issues/388) — "I took the recipe on from our side to co-maintain it" | 2026-07-10 |
+
+## Not approved
 
 Checked but **not** (or not yet) approved — do not flip without new evidence:
 

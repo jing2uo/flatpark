@@ -38,6 +38,8 @@ jobs:
             echo "audit $d"
             node scripts/audit-descriptor.mjs "$d"   # exit 1 on hard fail; warnings print but pass
           done
+      - name: Check shield flags against the approvals doc
+        run: ./scripts/check-approvals.sh
       - name: Install site deps
         working-directory: site
         run: npm ci || npm install --no-audit --no-fund

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Vixen">
+  <defs>
+    <linearGradient id="bg" x1="20" y1="12" x2="108" y2="116" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#60a5fa"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="tail" x1="22" y1="42" x2="96" y2="92" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f97316"/>
+      <stop offset="1" stop-color="#facc15"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="112" height="112" rx="28" fill="url(#bg)"/>
+  <path d="M29 39c20-15 45-12 63 6 9 9 13 20 12 35-13-17-31-24-53-21 9 7 17 16 24 29-20-5-36-16-46-32-6-9-6-14 0-17Z" fill="url(#tail)"/>
+  <path d="M78 41c9 2 17 8 23 17-10-4-19-4-29 1 2-8 4-14 6-18Z" fill="#fff7ed" opacity="0.9"/>
+  <circle cx="86" cy="56" r="4" fill="#111827"/>
+  <path d="M34 89h60" stroke="#f8fafc" stroke-width="8" stroke-linecap="round" opacity="0.86"/>
+  <path d="M43 73l16 16 29-34" fill="none" stroke="#f8fafc" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

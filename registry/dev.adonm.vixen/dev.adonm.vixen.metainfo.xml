@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>dev.adonm.vixen</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>Apache-2.0</project_license>
+  <name>Vixen</name>
+  <summary>Flutter browser shell backed by Rust BrowserCore</summary>
+  <developer id="dev.adonm">
+    <name>Vixen developers</name>
+  </developer>
+  <description>
+    <p>
+      Vixen is an experimental cross-platform browser with a Rust BrowserCore,
+      WebRender output, headless automation, and a Flutter GUI. The Linux
+      package runs the Flutter shell over the bounded native BrowserCore bridge.
+      This FlatPark package repackages the official GitHub Release archive unchanged.
+    </p>
+  </description>
+  <launchable type="desktop-id">dev.adonm.vixen.desktop</launchable>
+  <provides>
+    <binary>vixen</binary>
+  </provides>
+  <categories>
+    <category>Network</category>
+    <category>WebBrowser</category>
+  </categories>
+  <url type="homepage">https://vixen.adonm.dev/</url>
+  <url type="bugtracker">https://github.com/adonm/vixen/issues</url>
+  <url type="vcs-browser">https://github.com/adonm/vixen</url>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Browsing Example Domain in the Flutter Linux shell</caption>
+      <image>https://raw.githubusercontent.com/adonm/vixen/v0.1.5/docs/assets/vixen-linux.png</image>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="0.1.5" date="2026-07-13">
+      <description>
+        <p>Ship the BrowserCore-backed Flutter shell with the pinned 3.46 beta, Linux Impeller, and an official archive for FlatPark packaging.</p>
+      </description>
+    </release>
+    <release version="0.1.4" date="2026-07-12">
+      <description>
+        <p>Repair release dependency-policy and pinned native archive gates so install-tested Flatpak bundles publish reliably.</p>
+      </description>
+    </release>
+    <release version="0.1.3" date="2026-07-12">
+      <description>
+        <p>Advance the shared BrowserCore and Flutter shell, add bounded accessibility actions and release measurements, and verify installable release Flatpak bundles.</p>
+      </description>
+    </release>
+    <release version="0.1.2" date="2026-07-10">
+      <description>
+        <p>Fix Flatpak GL symbol loading for GTK/WebRender rendering.</p>
+      </description>
+    </release>
+    <release version="0.1.1" date="2026-07-10">
+      <description>
+        <p>Patch release with GitHub CI, Flatpak bundles, and project documentation.</p>
+      </description>
+    </release>
+    <release version="0.1.0" date="2026-07-08">
+      <description>
+        <p>Initial GTK WebRender browser vertical with tab lifecycle.</p>
+      </description>
+    </release>
+  </releases>
+  <content_rating type="oars-1.1" />
+</component>

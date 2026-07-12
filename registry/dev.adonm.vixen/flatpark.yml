@@ -1,0 +1,22 @@
+id: dev.adonm.vixen
+name: Vixen
+summary: Experimental Flutter browser backed by Rust BrowserCore
+website: https://vixen.adonm.dev/
+source_url: https://github.com/adonm/vixen
+build:
+  manifest: dev.adonm.vixen.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Network
+  tags:
+    - Browser
+    - Web
+    - Rust
+    - Flutter
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: false
+  extra_data_first: true
+  dangerous_permissions: []

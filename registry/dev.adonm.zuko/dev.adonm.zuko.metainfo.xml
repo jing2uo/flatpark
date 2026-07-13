@@ -20,12 +20,12 @@
       <li>Explicit client authorization and saved host management</li>
       <li>Temporary TCP tunnels from the client to services on the remote host</li>
     </ul>
-    <p>The package has network access for Iroh and uses the host Secret Service for encrypted client identity and saved-host state. It has no X11 socket and no access to host or home-directory files. A Secret Service provider such as GNOME Keyring or KWallet must be running and unlocked.</p>
+    <p>Zuko requires a Wayland session; X11 sessions are not supported. The package has network access for Iroh and uses the host Secret Service for encrypted client identity and saved-host state. It has no access to host or home-directory files. A Secret Service provider such as GNOME Keyring or KWallet must be running and unlocked.</p>
   </description>
   <screenshots>
     <screenshot type="default">
       <caption>Zuko's Linux client ready to pair with a host</caption>
-      <image>https://raw.githubusercontent.com/adonm/zuko/main/docs/zuko-linux.png</image>
+      <image>https://raw.githubusercontent.com/adonm/zuko/v0.9.24/docs/zuko-linux.png</image>
     </screenshot>
   </screenshots>
   <launchable type="desktop-id">dev.adonm.zuko.desktop</launchable>

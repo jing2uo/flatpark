@@ -31,9 +31,9 @@ modules:
         filename: zuko-linux-x86_64.tar.gz
         only-arches:
           - x86_64
-        url: https://github.com/adonm/zuko/releases/download/v0.9.21/zuko-linux-v0.9.21-x86_64.tar.gz
-        sha256: 257911d135945e653078683821db265212542619492e45b9f1c84dc5eecbd384
-        size: 26660754
+        url: https://github.com/adonm/zuko/releases/download/v0.9.23/zuko-linux-v0.9.23-x86_64.tar.gz
+        sha256: 07d785deffb5d090e7c172c9404515be9e0bb8346ec2407233a14f731c1aca68
+        size: 26664324
       # END MANAGED EXTRA-DATA
       - type: file
         path: apply_extra.sh

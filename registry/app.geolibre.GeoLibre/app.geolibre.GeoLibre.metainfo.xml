@@ -57,6 +57,7 @@
     <binary>geolibre-desktop</binary>
   </provides>
   <releases>
+    <release version="2.1.0" date="2026-07-14" />
     <release version="2.0.0" date="2026-07-11" />
     <release version="1.10.0" date="2026-07-06" />
     <release version="1.9.0" date="2026-07-01" />

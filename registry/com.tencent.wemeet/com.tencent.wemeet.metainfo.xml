@@ -8,7 +8,7 @@
   <developer_name>Tencent</developer_name>
   <launchable type="desktop-id">com.tencent.wemeet.desktop</launchable>
   <metadata_license>CC0-1.0</metadata_license>
-  <project_license>LicenseRef-proprietary=https://wemeet.tencent.com/declare.html</project_license>
+  <project_license>LicenseRef-proprietary=https://meeting.tencent.com/</project_license>
   <description>
     <p>This is a community package that repackages the official upstream WeMeet
     (Tencent Meeting) build unmodified. It is not verified by, affiliated with,
@@ -42,6 +42,7 @@
     </release>
   </releases>
   <url type="homepage">https://meeting.tencent.com/</url>
+  <url type="help">https://meeting.tencent.com/</url>
   <categories>
     <category>Office</category>
     <category>Chat</category>

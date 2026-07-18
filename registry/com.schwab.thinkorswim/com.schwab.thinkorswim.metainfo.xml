@@ -40,6 +40,7 @@
     <binary>thinkorswim</binary>
   </provides>
   <releases>
+    <release version="2026.07.18" date="2026-07-18" />
     <release version="2026.04.23" date="2026-04-23" />
   </releases>
 </component>

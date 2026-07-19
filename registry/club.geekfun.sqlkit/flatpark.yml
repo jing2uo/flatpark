@@ -1,0 +1,24 @@
+id: club.geekfun.sqlkit
+name: SqlKit
+summary: Agentic SQL database client for PostgreSQL, MySQL, Oracle, SQLite and more
+website: https://www.geekfun.club/products/sqlkit/
+source_url: https://github.com/geek-fun/sqlkit
+build:
+  manifest: club.geekfun.sqlkit.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Development
+  tags:
+    - Database
+    - SQL
+    - PostgreSQL
+    - MySQL
+    - Oracle
+    - SQLite
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: false
+  extra_data_first: true
+  dangerous_permissions: []

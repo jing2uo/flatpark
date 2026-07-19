@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+
+# SqlKit is a single Tauri (WebKitGTK) binary staged by apply_extra to
+# /app/extra/sqlkit. Every library it links against — webkit2gtk-4.1, gtk-3,
+# libsoup-3, libdbus-1, libssl/libcrypto, liblzma — is in org.gnome.Platform;
+# it has no tray icon, so the Ayatana appindicator stack is not needed.
+
+# WebKitGTK's DMABUF renderer paints a blank window under many drivers inside the
+# Flatpak sandbox. Disabling it is the reliable default for a WebKitGTK app.
+export WEBKIT_DISABLE_DMABUF_RENDERER=1
+
+exec /app/extra/sqlkit "$@"

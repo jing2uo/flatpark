@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=SqlKit
+Comment=Agentic SQL database client for PostgreSQL, MySQL, Oracle, SQLite and more
+Exec=sqlkit %u
+Icon=club.geekfun.sqlkit
+Terminal=false
+Categories=Development;Database;
+StartupWMClass=sqlkit
+StartupNotify=true
+MimeType=x-scheme-handler/sqlkit;
+Keywords=database;sql;mysql;postgresql;oracle;sqlite;clickhouse;duckdb;client;

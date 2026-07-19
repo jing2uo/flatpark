@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>club.geekfun.sqlkit</id>
+  <name>SqlKit</name>
+  <summary>Agentic SQL database client for PostgreSQL, MySQL, Oracle, SQLite and more</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>Apache-2.0</project_license>
+  <developer id="club.geekfun">
+    <name>geek-fun</name>
+  </developer>
+  <url type="homepage">https://www.geekfun.club/products/sqlkit/</url>
+  <url type="bugtracker">https://github.com/geek-fun/sqlkit/issues</url>
+  <url type="vcs-browser">https://github.com/geek-fun/sqlkit</url>
+  <description>
+    <p>This is a community package of SqlKit, maintained independently. It repackages the official upstream build unmodified.</p>
+    <p>SqlKit is a cross-platform desktop SQL client built on Tauri. Alongside the usual editor and data grid it works as an agent: describe what you need in natural language and it writes queries, inspects schemas and returns results.</p>
+    <ul>
+      <li>Supports PostgreSQL, MySQL, MariaDB, Oracle, SQL Server, SQLite, DuckDB, ClickHouse, Snowflake, BigQuery and many more</li>
+      <li>SQL editor with schema browsing, query history and saved queries</li>
+      <li>Data grid with filtering and in-cell editing; import and export via CSV, Excel, JSONL and SQL</li>
+      <li>Bring-your-own-key AI providers, including local Ollama</li>
+    </ul>
+    <p>This package talks to databases over the network. Its own connection store lives in its private per-app directory. JDBC-backed databases (Oracle, DB2, Teradata, Hive and others) need a Java runtime and driver jars, which SqlKit downloads into ~/.sqlkit; that directory is shared with the host so the download survives restarts.</p>
+    <p>A few capabilities are not granted by default; enable the ones you need with "flatpak override":</p>
+    <ul>
+      <li>Keep a local SQLite/DuckDB file or .sql script accessible across restarts (files picked through the file-chooser dialog work without this, but the grant is per-pick): <code>flatpak override --user --filesystem=/path/to/db club.geekfun.sqlkit</code></li>
+      <li>Reuse your existing host SSH keys for the SSH-tunnel feature: <code>flatpak override --user --filesystem=~/.ssh:ro club.geekfun.sqlkit</code></li>
+    </ul>
+    <p>SqlKit's built-in self-updater cannot replace a Flatpak install. New upstream releases are picked up by FlatPark and delivered through "flatpak update" instead.</p>
+  </description>
+  <launchable type="desktop-id">club.geekfun.sqlkit.desktop</launchable>
+  <categories>
+    <category>Development</category>
+    <category>Database</category>
+  </categories>
+  <keywords>
+    <keyword>database</keyword>
+    <keyword>sql</keyword>
+    <keyword>mysql</keyword>
+    <keyword>postgresql</keyword>
+    <keyword>oracle</keyword>
+    <keyword>sqlite</keyword>
+    <keyword>client</keyword>
+  </keywords>
+  <content_rating type="oars-1.1" />
+  <recommends>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </recommends>
+  <provides>
+    <binary>sqlkit</binary>
+  </provides>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Querying a database in the SqlKit workspace</caption>
+      <image>https://www.geekfun.club/sqlkit-client-ui.png</image>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="0.7.4" date="2026-06-30" />
+    <release version="0.7.3" date="2026-06-30" />
+    <release version="0.7.2" date="2026-06-20" />
+    <release version="0.7.1" date="2026-06-19" />
+    <release version="0.7.0" date="2026-06-19" />
+    <release version="0.6.5" date="2026-06-17" />
+    <release version="0.6.4" date="2026-06-17" />
+    <release version="0.6.3" date="2026-06-17" />
+    <release version="0.6.2" date="2026-06-17" />
+    <release version="0.6.1" date="2026-06-16" />
+    <release version="0.6.0" date="2026-06-16" />
+  </releases>
+</component>

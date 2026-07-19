@@ -1,0 +1,62 @@
+id: club.geekfun.sqlkit
+runtime: org.gnome.Platform
+runtime-version: "50"
+sdk: org.gnome.Sdk
+command: sqlkit
+separate-locales: false
+build-options:
+  no-debuginfo: true
+finish-args:
+  # Tauri/WebKitGTK SQL client (PostgreSQL, MySQL, Oracle, SQL Server, SQLite,
+  # DuckDB, ClickHouse, ...). network is the core function — it talks to
+  # remote/local DB servers; dri for hardware-accelerated WebKit rendering.
+  - --share=ipc
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  # JDBC-backed databases (Oracle, DB2, Teradata, Databricks, Hive and a few
+  # dozen more) run through a Java bridge: SqlKit downloads a managed JRE and the
+  # driver jars into the hardcoded ~/.sqlkit/jre and ~/.sqlkit/jdbc-bridge.
+  # Without persistence they are re-downloaded on every launch. Real-home :create
+  # (not --persist) so the dir is user-accessible and survives a fresh first run.
+  - --filesystem=~/.sqlkit:create
+  # No --filesystem=home: SqlKit's own connection store lives in its private
+  # per-app dir, and local file databases (SQLite/DuckDB), .sql scripts and
+  # CSV/Excel import-export targets are picked through the file-chooser portal.
+  # To keep a local-file connection working across restarts (the portal grant is
+  # per-pick), grant the path with
+  # `flatpak override --user --filesystem=/path/to/db club.geekfun.sqlkit`.
+  # No ~/.ssh by default: the SSH-tunnel feature reads ~/.ssh private keys, but
+  # keys are too sensitive to expose unasked. Users who need tunnels can grant
+  # read-only access with
+  # `flatpak override --user --filesystem=~/.ssh:ro club.geekfun.sqlkit`.
+modules:
+  - name: sqlkit
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 apply_extra.sh /app/bin/apply_extra
+      - install -Dm755 sqlkit-wrapper /app/bin/sqlkit
+      - install -Dm644 club.geekfun.sqlkit.desktop /app/share/applications/club.geekfun.sqlkit.desktop
+      - install -Dm644 club.geekfun.sqlkit.metainfo.xml /app/share/metainfo/club.geekfun.sqlkit.metainfo.xml
+      - install -Dm644 club.geekfun.sqlkit.png /app/share/icons/hicolor/256x256/apps/club.geekfun.sqlkit.png
+    sources:
+      # BEGIN MANAGED EXTRA-DATA
+      - type: extra-data
+        filename: sqlkit.deb
+        only-arches:
+          - x86_64
+        url: https://github.com/geek-fun/sqlkit/releases/download/v0.7.4/SqlKit_0.7.4_amd64.deb
+        sha256: e25cfd374132020f2fc1aee36fcc6bb9bbcdf2c4f1de1e542571883f6dc2aa00
+        size: 23623120
+      # END MANAGED EXTRA-DATA
+      - type: file
+        path: apply_extra.sh
+      - type: file
+        path: sqlkit-wrapper
+      - type: file
+        path: club.geekfun.sqlkit.desktop
+      - type: file
+        path: club.geekfun.sqlkit.metainfo.xml
+      - type: file
+        path: club.geekfun.sqlkit.png

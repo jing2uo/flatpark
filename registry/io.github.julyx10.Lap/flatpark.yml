@@ -1,0 +1,24 @@
+id: io.github.julyx10.Lap
+name: Lap
+summary: Offline-first photo manager for large local libraries
+website: https://julyx10.github.io/lap/
+source_url: https://github.com/julyx10/lap
+build:
+  manifest: io.github.julyx10.Lap.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Graphics
+  upstream_approved: false
+  tags:
+    - Photos
+    - RAW
+    - Local-first
+    - AI
+    - Duplicates
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: false
+  extra_data_first: true
+  dangerous_permissions: []

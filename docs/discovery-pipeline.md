@@ -97,9 +97,12 @@ comment template. In brief:
 - Only **after the package is live + smoke-tested**. Reuse what §2 found (demand + concerns).
 - **Describe only what our package does** — never claim upstream is broken / needs a workaround
   / that we "fix" their bug (verify any comparison against current upstream first). Hard rule.
-- The ask has three parts: **invite testing** (own coverage is partial, welcome issues/PRs);
+- The ask has four parts, in order: **invite testing** (own coverage is partial, welcome issues/PRs);
+  **ask to be listed as an official install method** (README / docs / download page / website —
+  framed as taking distribution load off them); **offer the exit** → de-list on request;
   **request authorization** → on a yes, add the blue **"developer-approved" shield** + homepage
-  feature; **offer the exit** → de-list on request. `@`-mention the maintainer.
+  feature. `@`-mention the maintainer. Avoid "stopgap" framing — it undercuts the official-listing
+  ask.
 - **STOP — present the draft; post only after approval** (review gate; never auto-post). Don't
   re-post if they've said no.
 

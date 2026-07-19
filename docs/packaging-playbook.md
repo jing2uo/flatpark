@@ -242,15 +242,33 @@ App page: https://flatpark.org/apps/<app-id>
 
 I've only smoke-tested it myself, so my coverage is certainly incomplete — if you have time to put it
 through real use and see what breaks, I'd genuinely appreciate it, and any issue or PR on the packaging
-is very welcome. And if you'd rather I **not** list it, just say so and I'll remove it right away. If
-you're happy for it to stay, I'll add a blue "developer-approved" shield to its FlatPark page and
-feature it on the homepage. Hope this helps your users in the meantime!
+is very welcome.
+
+If you'd be willing to make FlatPark an officially supported install method — recommending it in your
+install docs, on the site, or to your community — I'd be grateful. The idea is that it takes the Flatpak
+packaging and distribution research off your plate while giving your users a clean install and automatic
+updates.
+
+And if you'd rather I **not** list it, just say so and I'll remove it right away. If you're happy for it
+to stay, I'll add a blue "developer-approved" shield to its FlatPark page and feature it on the homepage.
+Hope this helps your users!
 ```
 
-The ask, every time, has three parts: **(1) invite testing** and welcome issues/PRs (be upfront that
-your own verification is partial); **(2) request developer authorization** → on a yes, add the blue
-**"developer-approved" shield** to the app page + a **homepage feature**; **(3) offer the exit** →
-de-list on request. `@`-mention the maintainer at the ask.
+The ask, every time, has **four** parts, in this order: **(1) invite testing** and welcome issues/PRs
+(be upfront that your own verification is partial); **(2) ask to be listed as an official install
+method** — in their README, docs, download page or website, framed as taking distribution and
+packaging-research load off them, never as a knock on how they ship today; **(3) offer the exit** →
+de-list on request, no argument; **(4) request developer authorization** → on a yes, add the blue
+**"developer-approved" shield** to the app page + a **homepage feature**. `@`-mention the maintainer at
+the ask.
+
+Part (2) is the one that grows FlatPark into a channel maintainers adopt deliberately rather than merely
+tolerate, so it is **not** optional — a link from upstream is the thing that actually drives adoption.
+
+**Avoid "stopgap" framing** unless the maintainer has explicitly said they are working on their own
+package. Calling the listing temporary, or closing with "in the meantime", undercuts the very ask in
+part (2): you cannot invite someone to adopt FlatPark officially in one paragraph and describe it as a
+placeholder in another.
 
 **Review gate:** draft the comment, **present it, post only on approval.** Don't re-post if they've
 said no.

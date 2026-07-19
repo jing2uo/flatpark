@@ -1,0 +1,80 @@
+id: com.tldraw.Offline
+runtime: org.freedesktop.Platform
+runtime-version: "25.08"
+sdk: org.freedesktop.Sdk
+# Electron app: use the Electron base app, which ships zypak. zypak redirects
+# Chromium's SUID sandbox onto the Flatpak sandbox so the app keeps an internal
+# sandbox (the wrapper runs it via zypak-wrapper) instead of --no-sandbox. The
+# base is a prebuilt ref merged into the app at build time; the official
+# upstream application tree is fetched as extra-data and left unmodified.
+base: org.electronjs.Electron2.BaseApp
+base-version: "25.08"
+command: tldraw-offline
+separate-locales: false
+build-options:
+  no-debuginfo: true
+finish-args:
+  # Electron (Chromium) whiteboard/canvas app. The prebuilt build bundles
+  # Chromium and its own ffmpeg/ANGLE/SwiftShader; the GTK3, NSS, ATK, dbus,
+  # libsecret and X11 stacks it links come from the Freedesktop runtime.
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  # GPU-accelerated infinite canvas (Chromium compositing).
+  - --device=dri
+  # The app works without an internet connection; network is only for the
+  # update check it runs at startup and from the application menu.
+  - --share=network
+  # A document editor whose whole point is portable .tldraw files on disk: give
+  # it the standard documents directory so saving, reopening from the Home
+  # screen's recent list and keeping working copies all behave normally across
+  # restarts. This is the narrowest grant that makes the core feature work —
+  # the rest of $HOME stays invisible.
+  - --filesystem=xdg-documents
+  # Anything outside ~/Documents is reached through the desktop portal's file
+  # chooser instead. Files passed on the command line (double-click in a file
+  # manager, via the application/x-tldraw association) also arrive through the
+  # document portal rather than as raw host paths: the .desktop Exec ends in
+  # %U, so flatpak exports it with --file-forwarding and rewrites the argument
+  # to `@@u %U @@`.
+  # Strip a leaked ELECTRON_RUN_AS_NODE from the sandbox env so the binary — and
+  # zypak's spawned child/zygote processes, which the wrapper's own `unset`
+  # can't reach — always start as the GUI app rather than as plain Node.
+  - --unset-env=ELECTRON_RUN_AS_NODE
+  # Deliberately NOT granted by default (users opt in per the metainfo notes
+  # via `flatpak override`):
+  #   --filesystem=home -> keep .tldraw files outside ~/Documents, or let a
+  #                        local coding agent reach the same paths the app does
+  #   --socket=pulseaudio -> audio in media embedded on a canvas
+modules:
+  - name: tldraw-offline
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 apply_extra.sh /app/bin/apply_extra
+      - install -Dm755 tldraw-offline-wrapper /app/bin/tldraw-offline
+      - install -Dm644 com.tldraw.Offline.desktop /app/share/applications/com.tldraw.Offline.desktop
+      - install -Dm644 com.tldraw.Offline.metainfo.xml /app/share/metainfo/com.tldraw.Offline.metainfo.xml
+      - install -Dm644 com.tldraw.Offline.xml /app/share/mime/packages/com.tldraw.Offline.xml
+      - install -Dm644 com.tldraw.Offline.png /app/share/icons/hicolor/512x512/apps/com.tldraw.Offline.png
+    sources:
+      # BEGIN MANAGED EXTRA-DATA
+      - type: extra-data
+        filename: tldraw-offline.deb
+        only-arches:
+          - x86_64
+        url: https://github.com/tldraw/tldraw-offline/releases/download/v1.11.0/tldraw-offline-linux-amd64.deb
+        sha256: 8537d12982f460fe5869975aecac45c3dd9d9ab5c14b913b438b79c801f72247
+        size: 105532884
+      # END MANAGED EXTRA-DATA
+      - type: file
+        path: apply_extra.sh
+      - type: file
+        path: tldraw-offline-wrapper
+      - type: file
+        path: com.tldraw.Offline.desktop
+      - type: file
+        path: com.tldraw.Offline.metainfo.xml
+      - type: file
+        path: com.tldraw.Offline.xml
+      - type: file
+        path: com.tldraw.Offline.png

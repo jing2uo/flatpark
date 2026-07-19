@@ -1,0 +1,17 @@
+#!/bin/sh
+set -eu
+
+# tldraw offline is an Electron app staged by apply_extra to
+# /app/extra/tldraw-offline. Run it through zypak-wrapper (from
+# org.electronjs.Electron2.BaseApp): zypak redirects Chromium's SUID sandbox
+# onto the Flatpak sandbox, so the app keeps an internal sandbox rather than
+# running with --no-sandbox. --ozone-platform-hint=auto lets Chromium use
+# Wayland when available and fall back to X11. Flatpak redirects $HOME, so the
+# app's own state (working copies, recent-file list) stays sandboxed; documents
+# themselves are reached through the portal.
+#
+# Defensively clear ELECTRON_RUN_AS_NODE: if it leaks in from the launching
+# environment (e.g. a terminal inside VS Code/Electron), the binary would start
+# as plain Node instead of the GUI app.
+unset ELECTRON_RUN_AS_NODE
+exec zypak-wrapper /app/extra/tldraw-offline/@tldesktop --ozone-platform-hint=auto "$@"

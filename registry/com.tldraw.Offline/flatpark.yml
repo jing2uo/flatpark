@@ -1,0 +1,23 @@
+id: com.tldraw.Offline
+name: tldraw offline
+summary: Local whiteboard and diagramming canvas with portable .tldraw files
+website: https://offline.tldraw.com
+source_url: https://github.com/tldraw/tldraw-offline
+build:
+  manifest: com.tldraw.Offline.yml
+  branch: stable
+  mode: extra-data
+catalog:
+  category: Graphics
+  tags:
+    - Whiteboard
+    - Diagram
+    - Drawing
+    - Canvas
+    - Electron
+update:
+  command: ./resolve-update.sh
+policy:
+  proprietary: true
+  extra_data_first: true
+  dangerous_permissions: []

@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=tldraw offline
+GenericName=Whiteboard
+Comment=A local whiteboard for you and your agents
+Exec=tldraw-offline %U
+Icon=com.tldraw.Offline
+Terminal=false
+StartupNotify=true
+StartupWMClass=tldraw offline
+Categories=Graphics;
+MimeType=application/x-tldraw;
+Keywords=whiteboard;canvas;diagram;drawing;tldraw;sketch;

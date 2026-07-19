@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Lap
+Comment=Offline-first photo manager for large local libraries
+Exec=lap %U
+Icon=io.github.julyx10.Lap
+Terminal=false
+Categories=Graphics;Photography;Viewer;
+StartupWMClass=Lap
+Keywords=photo;photos;library;RAW;HEIC;EXIF;duplicates;faces;

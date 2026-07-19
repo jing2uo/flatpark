@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.julyx10.Lap</id>
+  <name>Lap</name>
+  <summary>Offline-first photo manager for large local libraries</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <developer id="io.github.julyx10">
+    <name>julyx10</name>
+  </developer>
+  <url type="homepage">https://julyx10.github.io/lap/</url>
+  <url type="bugtracker">https://github.com/julyx10/lap/issues</url>
+  <url type="vcs-browser">https://github.com/julyx10/lap</url>
+  <description>
+    <p>This is a community package of Lap, maintained independently and unaffiliated with the Lap project. It repackages the official upstream Linux build unmodified.</p>
+    <p>Lap is a desktop photo manager for libraries that already live on your disk. It reads your existing folder tree in place rather than importing everything into a closed database, and it is built for collections in the 100k-file range.</p>
+    <ul>
+      <li>Browse by timeline, folder, location, camera, lens, tag, rating, subject or face, and save rule-based Smart Albums.</li>
+      <li>Local AI search by text prompt or visual similarity, plus subject tagging and face clustering — inference runs on your own machine.</li>
+      <li>Apple Live Photos are recognized as paired HEIC/MOV, and linked MOV and AAE sidecars follow the photo through rename, move, copy and delete.</li>
+      <li>Duplicate detection, batch move to trash, a four-pane comparison viewer, and basic editing (crop, rotate, flip, resize, adjustments).</li>
+      <li>Support for 60+ photo, RAW and video formats, via bundled LibRaw, libheif and ffmpeg.</li>
+    </ul>
+    <p>Permissions: by default this package can read and write your Pictures directory, and nothing else in your home. Lap manages photos where they already are, so it does need standing access to the folders your library lives in — but the default here is that one directory rather than the whole home directory. Everything Lap generates itself — the SQLite catalog, thumbnails, embeddings and settings — stays inside ~/.var/app/io.github.julyx10.Lap.</p>
+    <p>If your photos live somewhere else, grant that folder: <code>flatpak override --user --filesystem=~/Photos io.github.julyx10.Lap</code>. For a library on an external drive, add <code>--filesystem=/run/media</code> (some systems use <code>/media</code>). If you would rather not enumerate folders at all, <code>flatpak override --user --filesystem=home io.github.julyx10.Lap</code> restores the access digiKam and Shotwell ship with — at the cost of the app being able to read the rest of your home directory. Any of these can be undone with <code>flatpak override --user --reset io.github.julyx10.Lap</code>.</p>
+    <p>Folders you have not granted are still reachable one file at a time through the desktop portal's file chooser; what a grant adds is a browsable, re-scannable library.</p>
+    <p>Network and privacy: Lap works offline, and the network permission covers the map tiles for geotagged photos, the optional multilingual search model (the English model is bundled, so search works without downloading anything), and the anonymous usage statistics the upstream build sends. Upstream documents all of this in its own privacy policy at https://github.com/julyx10/lap/blob/main/PRIVACY.md — worth reading before you install.</p>
+    <p>Updates: install them through Flatpak. Lap's built-in updater downloads a replacement build and writes it over the installed application, which a read-only Flatpak tree does not allow.</p>
+  </description>
+  <content_rating type="oars-1.1"/>
+  <categories>
+    <category>Graphics</category>
+    <category>Photography</category>
+    <category>Viewer</category>
+  </categories>
+  <keywords>
+    <keyword>photo</keyword>
+    <keyword>photos</keyword>
+    <keyword>library</keyword>
+    <keyword>RAW</keyword>
+    <keyword>HEIC</keyword>
+    <keyword>EXIF</keyword>
+    <keyword>duplicates</keyword>
+    <keyword>faces</keyword>
+  </keywords>
+  <recommends>
+    <display_length compare="ge">1024</display_length>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </recommends>
+  <provides>
+    <binary>lap</binary>
+  </provides>
+  <launchable type="desktop-id">io.github.julyx10.Lap.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/julyx10/lap/main/docs/public/screenshots/01%20lap-main-dark.jpg</image>
+      <caption>The library in timeline view</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/julyx10/lap/main/docs/public/screenshots/02%20lap-ai-search.jpg</image>
+      <caption>Searching the library with a local AI text prompt</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/julyx10/lap/main/docs/public/screenshots/05%20lap-location.jpg</image>
+      <caption>Geotagged photos on the map</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/julyx10/lap/main/docs/public/screenshots/07%20lap-edit-image.jpg</image>
+      <caption>Editing an image</caption>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="0.3.0" date="2026-07-17">
+      <url>https://github.com/julyx10/lap/releases/tag/v0.3.0</url>
+    </release>
+    <release version="0.2.4" date="2026-06-16" />
+    <release version="0.2.3" date="2026-05-27" />
+    <release version="0.2.2" date="2026-05-10" />
+  </releases>
+</component>

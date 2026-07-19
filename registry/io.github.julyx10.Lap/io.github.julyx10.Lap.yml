@@ -1,0 +1,70 @@
+id: io.github.julyx10.Lap
+runtime: org.gnome.Platform
+runtime-version: "50"
+sdk: org.gnome.Sdk
+command: lap
+separate-locales: false
+build-options:
+  no-debuginfo: true
+finish-args:
+  # Tauri v2 / WebKitGTK photo library manager.
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  # dri for hardware-accelerated WebKit rendering and video decode.
+  - --device=dri
+  # Video files in the library play in the viewer through WebKitGTK's GStreamer
+  # backend, which needs an audio sink.
+  - --socket=pulseaudio
+  # Lap works offline; network covers the two features that reach out. The map
+  # view for geotagged photos loads its tiles over the network, and the optional
+  # multilingual search model is downloaded on demand from the upstream
+  # lap-binaries release (the English model ships inside the .deb, so search
+  # works without it). Telemetry also travels this way — see the metainfo, which
+  # states plainly that the upstream build links tauri-plugin-aptabase.
+  - --share=network
+  # Lap is a manager for photos that already live on your disk: it browses your
+  # existing folder tree in place, and its core operations (import, rename,
+  # move, copy, delete to trash, sidecar handling for Live Photos) act on those
+  # files where they are. The document portal can hand over files the user
+  # picked once, but it cannot back a browsable, re-scannable library tree, so
+  # some standing filesystem grant is needed or the app opens on an empty home
+  # under ~/.var/app/io.github.julyx10.Lap with nothing to add.
+  #
+  # The default is the photo directory and nothing else. Peers in this category
+  # (digiKam, Shotwell on Flathub) grant all of $HOME, which would work here
+  # too, but a photo manager has an obvious narrowest-useful scope and starting
+  # from it means the default install cannot read the rest of the home
+  # directory. Libraries kept elsewhere, and external drives, are one
+  # `flatpak override` away; the metainfo spells out those commands so the app
+  # page carries them.
+  - --filesystem=xdg-pictures
+modules:
+  - name: lap
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 apply_extra.sh /app/bin/apply_extra
+      - install -Dm755 lap-wrapper /app/bin/lap
+      - install -Dm644 io.github.julyx10.Lap.desktop /app/share/applications/io.github.julyx10.Lap.desktop
+      - install -Dm644 io.github.julyx10.Lap.metainfo.xml /app/share/metainfo/io.github.julyx10.Lap.metainfo.xml
+      - install -Dm644 io.github.julyx10.Lap.png /app/share/icons/hicolor/512x512/apps/io.github.julyx10.Lap.png
+    sources:
+      # BEGIN MANAGED EXTRA-DATA
+      - type: extra-data
+        filename: lap.deb
+        only-arches:
+          - x86_64
+        url: https://github.com/julyx10/lap/releases/download/v0.3.0/Lap_0.3.0_amd64.deb
+        sha256: 541155356c9d269fdd8308e13ce1e941aa5166862cd21ca70b472e67123495a8
+        size: 214269138
+      # END MANAGED EXTRA-DATA
+      - type: file
+        path: apply_extra.sh
+      - type: file
+        path: lap-wrapper
+      - type: file
+        path: io.github.julyx10.Lap.desktop
+      - type: file
+        path: io.github.julyx10.Lap.metainfo.xml
+      - type: file
+        path: io.github.julyx10.Lap.png

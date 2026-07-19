@@ -1,0 +1,21 @@
+#!/bin/sh
+set -eu
+
+# /app/extra/lap/bin/Lap is the upstream Tauri (WebKitGTK) binary staged by
+# apply_extra, with its resources alongside at /app/extra/lap/lib/Lap. It links
+# only against libraries org.gnome.Platform provides (webkit2gtk-4.1, gtk-3,
+# libsoup-3, cairo, gdk-pixbuf, openssl); ONNX Runtime is linked into the binary
+# itself, and the ffmpeg/ffprobe sidecars are static enough to need nothing
+# beyond libc and libstdc++. The GPU execution providers ONNX Runtime looks for
+# (CUDA, ROCm, TensorRT, OpenVINO) are dlopen-ed if present and simply absent
+# here, so inference runs on the CPU provider.
+#
+# Flatpak redirects the XDG base directories into the per-app data dir, so the
+# SQLite catalog, thumbnails and settings stay inside the sandbox even though
+# the photos themselves are read from the user's real folders.
+
+# WebKitGTK's DMABUF renderer paints a blank window under many drivers inside
+# the Flatpak sandbox; the compositing path is the reliable default here.
+export WEBKIT_DISABLE_DMABUF_RENDERER=1
+
+exec /app/extra/lap/bin/Lap "$@"

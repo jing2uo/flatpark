@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.tldraw.Offline</id>
+  <name>tldraw offline</name>
+  <summary>Local whiteboard and diagramming canvas</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>LicenseRef-proprietary=https://github.com/tldraw/tldraw-offline#license</project_license>
+  <developer id="com.tldraw">
+    <name>tldraw</name>
+  </developer>
+  <url type="homepage">https://offline.tldraw.com</url>
+  <url type="bugtracker">https://github.com/tldraw/tldraw-offline/issues</url>
+  <url type="help">https://app.notion.com/p/tldraw/User-manual-39a3e4c324c080e7b2eacc5afd078e85</url>
+  <url type="vcs-browser">https://github.com/tldraw/tldraw-offline</url>
+  <description>
+    <p>This is a community package of tldraw offline, maintained independently and unaffiliated with tldraw. It repackages the official upstream Linux build unmodified.</p>
+    <p>tldraw offline is a desktop application for drawing, diagramming and whiteboarding on tldraw's infinite canvas. There are no accounts and no servers, and the app works without an internet connection. Documents are saved as portable .tldraw files you can keep private, back up or share.</p>
+    <ul>
+      <li>Draw, add text and media, or build a diagram on an infinite canvas.</li>
+      <li>Each document opens in its own window, with working copies kept so unsaved work can be recovered after an unexpected exit.</li>
+      <li>Portable .tldraw files that move between machines; legacy .tldr files can be opened and exported.</li>
+      <li>Optionally connect a coding agent to inspect a canvas and write document scripts.</li>
+    </ul>
+    <p>Note that .tldraw files can embed document scripts that run when the file is opened, and an agent granted access to the app can read and edit your documents. Only open files and grant access to agents you trust.</p>
+    <p>Permissions: this package keeps a tight sandbox by default — display, GPU, network for the startup update check, and your Documents directory, so saving and reopening .tldraw files works normally. The rest of your home directory stays invisible; files kept elsewhere are reached through the desktop portal's file chooser, and only the ones you pick become visible to the app. A few optional capabilities are not granted by default; enable the ones you need with "flatpak override":</p>
+    <ul>
+      <li>Keep .tldraw files outside your Documents directory, or let a local coding agent share the same paths: <code>flatpak override --user --filesystem=home com.tldraw.Offline</code></li>
+      <li>Audio playback for media embedded on a canvas: <code>flatpak override --user --socket=pulseaudio com.tldraw.Offline</code></li>
+    </ul>
+    <p>The app checks for updates at startup, but cannot install them itself inside Flatpak — updates arrive through FlatPark instead.</p>
+  </description>
+  <content_rating type="oars-1.1"/>
+  <categories>
+    <category>Graphics</category>
+  </categories>
+  <keywords>
+    <keyword>whiteboard</keyword>
+    <keyword>canvas</keyword>
+    <keyword>diagram</keyword>
+    <keyword>drawing</keyword>
+    <keyword>sketch</keyword>
+  </keywords>
+  <branding>
+    <color type="primary">#2f80ed</color>
+  </branding>
+  <recommends>
+    <display_length compare="ge">800</display_length>
+    <control>keyboard</control>
+    <control>pointing</control>
+    <control>touch</control>
+  </recommends>
+  <provides>
+    <binary>tldraw-offline</binary>
+    <mediatype>application/x-tldraw</mediatype>
+  </provides>
+  <launchable type="desktop-id">com.tldraw.Offline.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://offline.tldraw.com/social-og.png</image>
+      <caption>The tldraw offline canvas</caption>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="1.11.0" date="2026-07-17">
+      <url>https://github.com/tldraw/tldraw-offline/releases/tag/v1.11.0</url>
+    </release>
+  </releases>
+</component>

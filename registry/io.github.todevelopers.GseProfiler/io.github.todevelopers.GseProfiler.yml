@@ -83,9 +83,9 @@ modules:
         filename: gse-profiler.deb
         only-arches:
           - x86_64
-        url: https://github.com/todevelopers/gseprofiler/releases/download/v1.2.0/gse-profiler_1.2.0_all.deb
-        sha256: cc7e63eaa0509a82352b8fde2e92558932e53d79eb41c783fa32a6d0e8ef46c2
-        size: 90424
+        url: https://github.com/todevelopers/gseprofiler/releases/download/v1.3.0/gse-profiler_1.3.0_all.deb
+        sha256: 7f473d210c92bdd797a7394ebbfb1f0e77c718346b823b92fda2ba6323e44fde
+        size: 110748
       # END MANAGED EXTRA-DATA
       - type: file
         path: apply_extra.sh

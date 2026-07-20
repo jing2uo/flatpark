@@ -49,6 +49,7 @@
     <binary>zuko</binary>
   </provides>
   <releases>
+    <release version="0.10.13" date="2026-07-19" />
     <release version="0.10.12" date="2026-07-19" />
     <release version="0.10.10" date="2026-07-17" />
     <release version="0.10.9" date="2026-07-17" />

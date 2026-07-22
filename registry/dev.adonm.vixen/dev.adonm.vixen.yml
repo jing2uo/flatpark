@@ -1,0 +1,46 @@
+id: dev.adonm.vixen
+runtime: org.gnome.Platform
+runtime-version: "50"
+sdk: org.gnome.Sdk
+command: vixen
+separate-locales: false
+build-options:
+  no-debuginfo: true
+finish-args:
+  # Flutter's GTK embedder and BrowserCore's WebRender/Impeller surfaces.
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  # Browser navigation and the explicit download destination are core features.
+  - --share=network
+  - --filesystem=xdg-download
+modules:
+  - name: vixen
+    buildsystem: simple
+    build-commands:
+      - install -Dm755 apply_extra.sh /app/bin/apply_extra
+      - install -Dm755 vixen-wrapper /app/bin/vixen
+      - install -Dm644 dev.adonm.vixen.desktop /app/share/applications/dev.adonm.vixen.desktop
+      - install -Dm644 dev.adonm.vixen.metainfo.xml /app/share/metainfo/dev.adonm.vixen.metainfo.xml
+      - install -Dm644 dev.adonm.vixen.svg /app/share/icons/hicolor/scalable/apps/dev.adonm.vixen.svg
+    sources:
+      # BEGIN MANAGED EXTRA-DATA
+      - type: extra-data
+        filename: vixen-linux-x86_64.tar.gz
+        only-arches:
+          - x86_64
+        url: https://github.com/adonm/vixen/releases/download/v0.1.5/vixen-linux-x86_64.tar.gz
+        sha256: ec57607e3515fbfb0059aa4cc7db70f77b2cef06fc60c2e7e6d751e49badee17
+        size: 31274318
+      # END MANAGED EXTRA-DATA
+      - type: file
+        path: apply_extra.sh
+      - type: file
+        path: vixen-wrapper
+      - type: file
+        path: dev.adonm.vixen.desktop
+      - type: file
+        path: dev.adonm.vixen.metainfo.xml
+      - type: file
+        path: dev.adonm.vixen.svg

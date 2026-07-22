@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Vixen
+Comment=Flutter browser shell backed by Rust BrowserCore
+Exec=vixen
+Icon=dev.adonm.vixen
+Terminal=false
+Type=Application
+Categories=Network;WebBrowser;
+StartupNotify=true
+Keywords=browser;web;internet;

@@ -63,9 +63,9 @@ modules:
         filename: orca.deb
         only-arches:
           - x86_64
-        url: https://github.com/stablyai/orca/releases/download/v1.4.150/orca-ide_1.4.150_amd64.deb
-        sha256: d4e0dcc0279b03cfa4222e0df23bc9a85317c1e64721a6f06fc069dc9f772fd9
-        size: 161562356
+        url: https://github.com/stablyai/orca/releases/download/v1.4.152/orca-ide_1.4.152_amd64.deb
+        sha256: 36f83ae1de5a3d524cea0154ef494f42953d632cf9f4e89cbb15b1f8c6b7052c
+        size: 161531484
       # END MANAGED EXTRA-DATA
       - type: file
         path: apply_extra.sh

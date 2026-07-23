@@ -58,6 +58,7 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="1.0.235" date="2026-07-22" />
     <release version="1.0.234" date="2026-05-17">
       <url>https://github.com/Eugeny/tabby/releases/tag/v1.0.234</url>
     </release>

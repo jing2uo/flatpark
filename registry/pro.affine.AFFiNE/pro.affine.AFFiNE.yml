@@ -53,9 +53,9 @@ modules:
         filename: affine.deb
         only-arches:
           - x86_64
-        url: https://github.com/toeverything/AFFiNE/releases/download/v0.27.2/affine-0.27.2-stable-linux-x64.deb
-        sha256: 6552ed5946c22df8b64546748bd09fc5c0c7273a5041bb24a5d7708d6b42955c
-        size: 165811776
+        url: https://github.com/toeverything/AFFiNE/releases/download/v0.27.3/affine-0.27.3-stable-linux-x64.deb
+        sha256: c06054662bc800c545bf02cb06073eda73aaadb53f16892bf0929a4fc022c107
+        size: 165865564
       # END MANAGED EXTRA-DATA
       - type: file
         path: apply_extra.sh
